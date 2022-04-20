@@ -1,32 +1,41 @@
-/* Philippe Meyer */
+let width,heightw2,h2,k90degres,k60degres,k45degres,k180degres,k270degres,k360degres,k80degres,k280degres,camFov,focalW,focalH,zoom,focalAverage;
+let needUpdate,saveContext,context,camera,mode,things;
 
 
 
 window.onload = function() {
-	var needUpdate,width,height,fov,h2,w2,k90degres,k270degres,k360degres;
-	var saveContext;
-	var canvas = document.getElementById("canvas");
-	var	context = canvas.getContext("2d");
-	var things = [];
-	var camera = new Camera(0.05,10,toradians(90));
-	var mode = "static";
-init();
+	canvas = document.getElementById("canvas");
+	context = canvas.getContext("2d");
+	things = [];
+	camera = new Camera(0.05,10,toradians(90));
+	mode = "static";
+	init();
+	things = setNotMobs();
+	update();
 
-things.push(new Square(30,100,k90degres,0.5,"A"));
-
-things.push(new Square(30,140,k90degres-0.4,0.25,"B"));
-
-things.push(new Square(30,250,k180degres-0.5,0.1,"C"));
-
-things.push(new Square(45,185,k180degres+1,.3,"D"));
-
-things.push(new Square(22,220,0.9,.3,"E"));
-
-things.push(new Square(50,450,1.5,.7,"F"));
-
-update();
-
+	document.addEventListener("keydown", function(event) {
+		switch(event.keyCode) {
+			case 37: // left ctrlKey shiftKey
+				camera.turn(-1);
+				break;
+			case 39: // right
+				camera.turn(1);
+				break;
+			case 38: // up
+			    camera.walk(1);
+				break;
+			case 40: // down
+				camera.walk(-1);
+				break;
+		}
+	}); 
 	
+	window.onresize = function(event) {
+		init();
+	};
+
+}
+
 function init(){
 	
 	width = canvas.width = window.innerWidth;
@@ -68,7 +77,106 @@ function update() {
 	
 }
 
+function scalarProduct(a,b){
+	var ax=a.x;
+	var ay=a.y;
+	var az=a.z;
+	var bx=b.x;
+	var by=b.y;
+	var bz=b.z;
+	
+	var len = hypo(ax,ay,az);
+	ax=ax/len;
+	ay=ay/len;
+	az=az/len;
+	
+	len = hypo(bx,by,bz);
+	bx=bx/len;
+	by=by/len;
+	bz=bz/len;
+	
+	return ax*bx+ay*by+az*bz;
+	}
+	
+	function scalarProduct2D(a,b){
+	var ax=a.x;
+	var ay=a.y;
+	var bx=b.x;
+	var by=b.y;
+	
+	var len =  Math.sqrt(ax*ax+ay*ay);
+	ax=ax/len;
+	ay=ay/len;
+	
+	len =  Math.sqrt(bx*bx+by*by);
+	bx=bx/len;
+	by=by/len;
+	
+	
+	return ax*bx+ay*by;
+	}
+	
+	function hypo(x,y,z){
+	return Math.sqrt(x*x+y*y+z*z);
+	}
+	
 
+function drawPoly(context,points,poly){
+	
+	context.moveTo(points[poly[0]].x, points[poly[0]].y);		
+
+	for(var i = 1; i < poly.length; i++) {
+		context.lineTo(points[poly[i]].x, points[poly[i]].y);
+	}
+	
+	context.lineTo(points[poly[0]].x, points[poly[0]].y);
+
+}
+
+
+
+function calcRotationGivenAdjacentSide(adjacent, hypotenuse){
+	if(!hypotenuse) hypotenuse = 1; // if already normed
+	var ratio = adjacent/hypotenuse;
+	var result = 1 - ratio*ratio/2;
+	result = Math.acos(result);
+	return result;	
+}
+	
+
+function doRotate(points,pitch, roll, yaw) {
+    var cosa = Math.cos(yaw);
+    var sina = Math.sin(yaw);
+
+    var cosb = Math.cos(pitch);
+    var sinb = Math.sin(pitch);
+
+    var cosc = Math.cos(roll);
+    var sinc = Math.sin(roll);
+
+    var Axx = cosa*cosb;
+    var Axy = cosa*sinb*sinc - sina*cosc;
+    var Axz = cosa*sinb*cosc + sina*sinc;
+
+    var Ayx = sina*cosb;
+    var Ayy = sina*sinb*sinc + cosa*cosc;
+    var Ayz = sina*sinb*cosc - cosa*sinc;
+
+    var Azx = -sinb;
+    var Azy = cosb*sinc;
+    var Azz = cosb*cosc;
+
+    for (var i = 0; i < points.length; i++) {
+        var px = points[i].x;
+        var py = points[i].y;
+        var pz = points[i].z;
+
+        points[i].x = Axx*px + Axy*py + Axz*pz;
+        points[i].y = Ayx*px + Ayy*py + Ayz*pz;
+        points[i].z = Azx*px + Azy*py + Azz*pz;
+    }
+	return points;
+}
 
 // Converts from degrees to radians.
 function  toradians(degrees) {
@@ -81,50 +189,15 @@ function todegrees(radians) {
 }
 
 
-
-
-
-function scalarProduct(a,b){
-var ax=a.x;
-var ay=a.y;
-var az=a.z;
-var bx=b.x;
-var by=b.y;
-var bz=b.z;
-
-var len = hypo(ax,ay,az);
-ax=ax/len;
-ay=ay/len;
-az=az/len;
-
-len = hypo(bx,by,bz);
-bx=bx/len;
-by=by/len;
-bz=bz/len;
-
-return ax*bx+ay*by+az*bz;
-}
-
-function scalarProduct2D(a,b){
-var ax=a.x;
-var ay=a.y;
-var bx=b.x;
-var by=b.y;
-
-var len =  Math.sqrt(ax*ax+ay*ay);
-ax=ax/len;
-ay=ay/len;
-
-len =  Math.sqrt(bx*bx+by*by);
-bx=bx/len;
-by=by/len;
-
-
-return ax*bx+ay*by;
-}
-
-function hypo(x,y,z){
-return Math.sqrt(x*x+y*y+z*z);
+function setNotMobs(){
+    let things = [];
+    things.push(new Square(30,100,k90degres,0.5,"A"));
+    things.push(new Square(30,140,k90degres-0.4,0.25,"B"));
+    things.push(new Square(30,250,k180degres-0.5,0.1,"C"));
+    things.push(new Square(45,185,k180degres+1,.3,"D"));
+    things.push(new Square(22,220,0.9,.3,"E"));
+    things.push(new Square(50,450,1.5,.7,"F"));
+    return things;
 }
 
 function Camera(rotStep,walkStep,rotation) {
@@ -448,213 +521,222 @@ function Camera(rotStep,walkStep,rotation) {
 	}
 
 }
-// primitive,size,distance,altitude,angleToOrigine,rotation,name
 
-
-
-
-
-function Shape(geometry,size,distance,altitude,angleToOrigine,rotation,name){
-	
-	this.size = size;
-	this.distance = distance;
-	this.altitude = altitude;
-	this.angleToOrigine = angleToOrigine; // something to do with the cam rotation its only an integer
-	this.position = {"x":Math.cos(angleToOrigine)*distance,"y":altitude,"z":Math.sin(angleToOrigine)*distance};	//initial position with camera at 0 degree
-	this.rotation = rotation;// nothing to do with the cam rotation
-	this.geometry = {};
+function Square(size, distance, angleToOrigine, innerRotation, name) {
+    this.size = size;
+    this.distance = distance;
+    this.angleToOrigine = angleToOrigine;
     this.name = name;
-	
-	this.geometry.data = [];
-	this.geometry.poly = [];
-	
-	this.polyNr = geometry.poly.length;
-
-	for(var i = 0;i < geometry.data.length;i++){
-		var aPoint = geometry.data[i];
-		var x = aPoint[0];
-		var y = aPoint[1];
-		var z = aPoint[2];
-		var truePoint = {"x":x,"y":y,"z":z};
-		this.geometry.data.push(truePoint);
-	}
-	for(var i = 0;i < geometry.data.length;i++){
-		var aPoly = geometry.poly[i];
-		this.geometry.poly.push(aPoly);
-	}
-	
-	this.draw=function(){
-		if(camera.position.x == 0 && camera.position.z == 0){		
-			var newRotation = this.angleToOrigine - camera.rotation;
-				if(newRotation <0) newRotation  += k360degres;
-				if(newRotation >k360degres ) newRotation  -= k360degres;
-			
-			var cos = Math.cos(newRotation);
-			var sin = Math.sin(newRotation);
-
-			// not normed
-			this.position = {
-				"x": Math.floor(cos*this.distance),
-				"y": this.altitude,
-				"z":-Math.floor(sin*this.distance)
-			};
+    this.innerRotation = innerRotation;
+    this.positionAbsolute = { x: 0, y: 0 };
+    this.positionRelative = { x: 0, y: 0 };
+    this.half = Math.floor(size / 2);
+    this.geometry = new Cube(); // only for 3D
+    this.hit = false;
+    this.hitAngles = [];
+    this.hitMiddleAngle = 0;
 
 
-		}else{
-			
-			// the circle is enlarged or shrunk but the angler of the camera does not change
-			// the the angle of the cube to the camera changes
-			// Get the distance to the object
-			
-			var cubeX = this.position.x - camera.position.x;
-			var cubeY= this.position.y - camera.position.y;
-			var cubeZ = this.position.z - camera.position.z;
+    var cos = Math.cos(this.angleToOrigine);
+    var sin = -Math.sin(this.angleToOrigine);
+    this.topLeft = { "x": 0, "y": 0 };
+    this.topRight = { "x": 0, "y": 0 };
+    this.bottomLeft = { "x": 0, "y": 0 };
+    this.bottomRight = { "x": 0, "y": 0 };
 
-			var newDistance = hypo(cubeX,cubeY,cubeZ);
-			if(newDistance < 1) newDistance = 1;
-			
-			var cosCube = cubeX / newDistance;
-			var sinCube = cubeZ / newDistance;
-			
-			this.angleToOrigine = calcAngleRadians(cosCube,sinCube);
+    // the real position according to origin point
+    this.positionAbsolute.x = Math.floor(cos * distance);
+    this.positionAbsolute.y = Math.floor(sin * distance);
 
-			this.position = {"x":Math.cos(this.angleToOrigine)*newDistance,"y":this.altitude,"z":Math.sin(this.angleToOrigine)*newDistance};
-			this.distance = newDistance;
-			
-		}
+    this.left = this.positionAbsolute.x - this.size / 2;
+    this.top = this.positionAbsolute.y - this.size / 2;
+    var geometry = this.geometry.data2D;
 
-doDraw = newRotation <= k180degres;		
-		if(doDraw){
-			context.strokeStyle="black"; 
-			var self = this;
-			var scale;
-			var points = [];
-			this.geometry.data.forEach(function(point){
-				var copyOfPoint = {"x":point.x,"y":point.y,"z":point.z};
-				points.push(copyOfPoint);
-			});
-			points = doRotate(points,this.rotation.x+newRotation,this.rotation.y,this.rotation.z);
-			var points2D = [];
-			var size =  this.size;
-			var position = this.position;
-			//newPositionFromCenter
-			//newRotation
-			points.forEach(function(point){
-				point.x *= size;
-				point.y *= size;
-				point.z *= size;
-				
-				point.x += self.position.x;
-				point.y += self.position.y;
-				point.z += self.position.z;
-				
-								
-				scale=fov/(fov-point.z);
-				var x = -Math.floor(point.x*scale);
-				var y = Math.floor(point.y*scale);
-				points2D.push({"x":x,"y":y});
-			
-			});
-			context.beginPath();
-			context.strokeStyle="darkred"; 
-			for(var i = 0;i < this.polyNr-1;i++){
-				var polyPoints = this.geometry.poly[i];
-				drawPoly(context,points2D,polyPoints);
-				context.stroke();
-				context.strokeStyle="black"; 
-			}
-			context.strokeStyle="darkblue"; 
-			drawPoly(context,points2D,polyPoints);
-			context.stroke();
-			
-			var x2d = points2D[this.polyNr/2].x;
-			var y2d = points2D[this.polyNr/2].y;
-			var z3d = points[this.polyNr/2].z;
-			
-			var message = this.name + " : " + Math.floor(todegrees(this.angleToOrigine))+" ° => z = " + Math.floor(z3d) ;
-			context.fillText(message,x2d ,y2d+20);
-			
-		}
-	}
-}	
+    this.topLeft = { "x": geometry.topLeft.x, "y": geometry.topLeft.y };
+    this.topRight = { "x": geometry.topRight.x, "y": geometry.topRight.y };
+    this.bottomLeft = { "x": geometry.bottomLeft.x, "y": geometry.bottomLeft.y };
+    this.bottomRight = { "x": geometry.bottomRight.x, "y": geometry.bottomRight.y };
 
-function drawPoly(context,points,poly){
-	
-	context.moveTo(points[poly[0]].x, points[poly[0]].y);		
+    this.topLeft = simpleRotate(this.topLeft, this.innerRotation);
+    this.topRight = simpleRotate(this.topRight, this.innerRotation);
+    this.bottomLeft = simpleRotate(this.bottomLeft, this.innerRotation);
+    this.bottomRight = simpleRotate(this.bottomRight, this.innerRotation);
 
-	for(var i = 1; i < poly.length; i++) {
-		context.lineTo(points[poly[i]].x, points[poly[i]].y);
-	}
-	
-	context.lineTo(points[poly[0]].x, points[poly[0]].y);
+    this.topLeft.x = this.topLeft.x * this.half + this.positionAbsolute.x;
+    this.topLeft.y = this.topLeft.y * this.half + this.positionAbsolute.y;
 
-}
+    this.topRight.x = this.topRight.x * this.half + this.positionAbsolute.x;
+    this.topRight.y = this.topRight.y * this.half + this.positionAbsolute.y;
+
+    this.bottomLeft.x = this.bottomLeft.x * this.half + this.positionAbsolute.x;
+    this.bottomLeft.y = this.bottomLeft.y * this.half + this.positionAbsolute.y;
+
+    this.bottomRight.x = this.bottomRight.x * this.half + this.positionAbsolute.x;
+    this.bottomRight.y = this.bottomRight.y * this.half + this.positionAbsolute.y;
+
+    this.geometry.normals2D[0] = simpleRotate(this.geometry.normals2D[0], this.innerRotation);
+    this.geometry.normals2D[1] = simpleRotate(this.geometry.normals2D[1], this.innerRotation);
+    this.geometry.normals2D[2] = simpleRotate(this.geometry.normals2D[2], this.innerRotation);
+    this.geometry.normals2D[3] = simpleRotate(this.geometry.normals2D[3], this.innerRotation);
 
 
-
-function calcRotationGivenAdjacentSide(adjacent, hypotenuse){
-	if(!hypotenuse) hypotenuse = 1; // if already normed
-	var ratio = adjacent/hypotenuse;
-	var result = 1 - ratio*ratio/2;
-	result = Math.acos(result);
-	return result;	
-}
-	
-function doRotate(points,pitch, roll, yaw) {
-    var cosa = Math.cos(yaw);
-    var sina = Math.sin(yaw);
-
-    var cosb = Math.cos(pitch);
-    var sinb = Math.sin(pitch);
-
-    var cosc = Math.cos(roll);
-    var sinc = Math.sin(roll);
-
-    var Axx = cosa*cosb;
-    var Axy = cosa*sinb*sinc - sina*cosc;
-    var Axz = cosa*sinb*cosc + sina*sinc;
-
-    var Ayx = sina*cosb;
-    var Ayy = sina*sinb*sinc + cosa*cosc;
-    var Ayz = sina*sinb*cosc - cosa*sinc;
-
-    var Azx = -sinb;
-    var Azy = cosb*sinc;
-    var Azz = cosb*cosc;
-
-    for (var i = 0; i < points.length; i++) {
-        var px = points[i].x;
-        var py = points[i].y;
-        var pz = points[i].z;
-
-        points[i].x = Axx*px + Axy*py + Axz*pz;
-        points[i].y = Ayx*px + Ayy*py + Ayz*pz;
-        points[i].z = Azx*px + Azy*py + Azz*pz;
+    this.draw = function () {
+        this.drawStatic();
     }
-	return points;
+
+    this.drawStatic = function () {
+        // the camera moves : the objects stay stationnary so the positionRelative == positionAbsolute
+        var self = this;
+        context.save();
+        context.strokeStyle = "black";
+        context.strokeStyle = "white";
+        var saveFill = context.fillStyle;
+        var saveStroke = context.strokeStyle;
+
+        // drawing normals :
+        context.globalAlpha = 0.4;
+        context.strokeStyle = "black";
+        context.beginPath();
+
+        context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
+        context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[0].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[0].y * self.size);
+
+        context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
+        context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[1].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[1].y * self.size);
+
+        context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
+        context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[2].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[2].y * self.size);
+
+        context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
+        context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[3].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[3].y * self.size);
+
+        context.stroke();
+        context.closePath();
+
+        context.globalAlpha = 0.8;
+        context.strokeStyle = "black";
+        context.fillStyle = "rgb(20,230,160)";
+        context.beginPath();
+        // Drawing the square
+        context.moveTo(self.topLeft.x, self.topLeft.y);
+        context.lineTo(self.topRight.x, self.topRight.y);
+        context.lineTo(self.bottomRight.x, self.bottomRight.y);
+        context.lineTo(self.bottomLeft.x, self.bottomLeft.y);
+        context.lineTo(self.topLeft.x, self.topLeft.y);
+
+        context.closePath();
+        context.stroke();
+        if (self.hit) {
+            context.fillStyle = "red";
+            context.fill();
+            context.fillStyle = "black";
+            context.fillText(Math.floor(todegrees(self.hitMiddleAngle)) + " °", self.topRight.x + 2, self.topRight.y - 2);
+        }
+        context.fillStyle = "black";
+        context.beginPath();
+        context.strokeStyle = saveStroke;
+        context.fillText(self.name, self.positionAbsolute.x - 2, self.positionAbsolute.y + 2);
+        context.closePath();
+        context.globalAlpha = 1;
+        context.restore();
+    }
+
 }
 
+function drawArrow(context,x1,y1,x2,y2){
+	var branchLentgh = 10;
+	var diffX = x2-x1;
+	var diffY = y1-y2;
+	var dist =  Math.sqrt(diffX*diffX+diffY*diffY);
+	if(dist !=0){
+		branchLentgh = Math.floor(dist/3);
+		diffX = diffX /dist;
+		diffY = diffY /dist;
+		// calculation angle given 2 points, just to practise : don't use cam rotation !
+		var rotation = calcAngleRadians(diffX,diffY);
+		var leftBranch = keepWithInCircle(rotation + k45degres);
+		var rightBranch = keepWithInCircle(rotation - k45degres);
+		context.moveTo(x1, y1);
+		context.lineTo(x2, y2);
+		
+		context.moveTo(x2, y2);
+		context.lineTo(x2-Math.cos(leftBranch)*branchLentgh, y2+Math.sin(leftBranch)*branchLentgh);
+		
+		context.moveTo(x2, y2);
+		context.lineTo(x2, y2);
+		context.lineTo(x2-Math.cos(rightBranch)*branchLentgh, y2+Math.sin(rightBranch)*branchLentgh);
 
+	}
+}
 
-	document.addEventListener("keydown", function(event) {
-		switch(event.keyCode) {
-			case 37: // left ctrlKey shiftKey
-				camera.turn(-1);
-				break;
-			case 39: // right
-				camera.turn(1);
-				break;
-			case 38: // up
-			    camera.walk(1);
-				break;
-			case 40: // down
-				camera.walk(-1);
-				break;
-		}
-	}); 
-	
-	window.onresize = function(event) {
-		init();
-	};
+function Cube() {
+    this.data2D = {
+        "topLeft": { "x": -1, "y": -1 },
+        "topRight": { "x": 1, "y": -1 },
+        "bottomLeft": { "x": -1, "y": 1 },
+        "bottomRight": { "x": 1, "y": 1 }
+    }
+    this.data = [
+        [-1, -1, -1], // left, bottom, back
+        [1, -1, -1], // right, bottom, back
+        [1, 1, -1], // right, top, back
+        [-1, 1, -1], // left, top, back
+        [1, -1, 1], // right, bottom, front
+        [-1, -1, 1], // left, bottom, front
+        [-1, 1, 1],// left, top, front
+        [1, 1, 1] // right, top, front
+    ];
+    this.poly = [];
+    this.poly[0] = [0, 1, 2, 3]; // Back side
+    this.poly[1] = [1, 4, 7, 2]; // Right side
+    this.poly[2] = [4, 5, 6, 7]; // front side
+    this.poly[3] = [5, 0, 3, 6]; // left side
+    this.poly[4] = [5, 4, 1, 0]; // bottom side
+    this.poly[5] = [3, 2, 7, 6]; // top side
 
+    this.normals = [
+        { "x": 0, "y": 0, "z": -1 },
+        { "x": 1, "y": 0, "z": 0 },
+        { "x": 0, "y": 0, "z": 1 },
+        { "x": -1, "y": 0, "z": 0 },
+        { "x": 0, "y": -1, "z": 0 },
+        { "x": 0, "y": 1, "z": 0 },
+    ];
+    this.normals2D = [
+        { "x": 0, "y": -1, "dot": 0 },
+        { "x": 1, "y": 0, "dot": 0 },
+        { "x": 0, "y": 1, "dot": 0 },
+        { "x": -1, "y": 0, "dot": 0 }
+    ];
+
+    this.colors = [
+        "DarkOrchid",
+        "FireBrick",
+        "GoldenRod",
+        "HotPink",
+        "OrangeRed",
+        "MidnightBlue"
+    ]
+}
+
+function simpleRotate(point,angle){
+    var cos = Math.cos(angle);
+    var sin = -Math.sin(angle);
+    rotatedX = point.x * cos - point.y * sin;
+    rotatedY = point.y * cos + point.x * sin;
+    return { "x": rotatedX, "y": rotatedY }
+}
+
+function calcAngleDegrees(x, y) { // origine : MDN docs
+    return Math.atan2(y, x) * 180 / Math.PI;
+}
+
+function calcAngleRadians(x, y) { // origine : calcAngleDegrees
+    return Math.atan2(y, x);
+}
+
+function keepWithInCircle(rotation){
+	if(rotation<0) rotation  += k360degres;
+	if(rotation >k360degres ) rotation  -= k360degres;
+	return rotation;
 }
