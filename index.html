@@ -1,68 +1,20 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Pmg's experiments</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="style.css">
+</head>
 
-<html>
-  <head>
-   <meta charset="utf-8">
-  <title></title>
-   <script src="js/p5collide2dBorrow.js"></script>
-    <script src="js/main.js"></script>
-	<style type="text/css">
-	html, body {
-		margin: 0px;
-		background-color : #eee;
-		font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	}
-	canvas {
-		display: block;
-	}
-	
-	#form{
-	position:absolute;
-	text-align:left;
-	margin:20px;
-	}
-	
-	.ModeContainer div {
-		width: 120px;
-		height :20px;
-		text-align:center;
-		background-color : #fff;
-		padding : 10px;
-		border:1px solid grey;
-		margin-top:5px;
-		border-radius:5px;
-		user-select: none;
-	}
-	
-	.ModeContainer div.chosen{
-		background-color : #ef6e6d;
-	}
-	
-	.ModeContainer div:hover{
-		background-color : #ef6e6d;
-		cursor:hand;
-		cursor:pointer;
-	}
-	
-	.ModeContainer div.chosen:hover{
-		background-color : #ef6e6d;
-		cursor:default;
-	}
-	
-	
-	</style>
-  </head>
-  <body>
-  <div id="form">
-  <label>Mode</label><br />
-  <div class="ModeContainer">
-	  <div id="static" class="mode chosen"> 2D static </div>
-	 <!-- <div id="dynamic" class="mode"> 2D dynamic </div>
-	  <div id="3d" class="mode"> 3D (dynamic) </div>-->
-  </div>
-    </div>
-  <canvas id="canvas"></canvas>
-  </body>
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+<script src="js/main.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/p5collide2dBorrow.js"></script>
 
 </html>
 
