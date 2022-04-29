@@ -1,9 +1,8 @@
 let width,heightw2,h2,k90degres,k60degres,k45degres,k180degres,k270degres,k360degres,k80degres,k280degres,camFov,focalW,focalH,zoom,focalAverage;
-let needUpdate,saveContext,context,camera,mode,things;
-
-
+let needUpdate,saveContext,context,camera,mode,things,debugMode;
 
 window.onload = function() {
+	debugMode = false;
 	canvas = document.getElementById("canvas");
 	context = canvas.getContext("2d");
 	things = [];
@@ -201,12 +200,13 @@ function setNotMobs(){
 }
 
 function Camera(rotStep,walkStep,rotation) {
+	this.knownThings = [];
 	this.rotation = rotation ? rotation : 0; 
 	this.position = {x:0,y:0,z:0};
 	this.previousLocation = {x:0,y:0,z:0}; 
 	this.antePenultLocation = {x:0,y:0,z:0}; 
 
-	this.sightWidth = toradians(120);
+	this.sightWidth = toradians(90);
 	this.sightLength = 200;
 	this.walkStep = walkStep;
 	this.rotStep = rotStep;
@@ -234,13 +234,8 @@ function Camera(rotStep,walkStep,rotation) {
 	
 	this.draw = function(){
 		
-		if(mode=="static"){
-			this.drawStatic();
-		}else if(mode=="dynamic"){
-			this.drawDynamic();
-		} else if (mode=="3d"){
-			this.draw3D();
-		}
+		this.drawStatic();
+
 			
 	}
 	
@@ -257,51 +252,6 @@ function Camera(rotStep,walkStep,rotation) {
 
 		self.drawScanner();
 
-	}
-	
-	this.drawDynamic = function(){
-		
-			var camCos = Math.cos(camera.rotation);
-			var camSin = -Math.sin(camera.rotation);
-			
-			var vectorCam = {x:camCos*50,y:camSin*50};
-			
-			var west = simpleRotate(vectorCam,k90degres);
-			var east = simpleRotate(vectorCam,-k90degres);
-			var north = vectorCam;
-			var south = simpleRotate(vectorCam,-k180degres);
-			
-			context.globalAlpha=0.5;
-			context.beginPath();
-			context.strokeStyle="green"; 
-			
-			context.moveTo(west.x, west.y);
-			context.lineTo(east.x, east.y);
-			context.moveTo(north.x, north.y);
-			context.lineTo(south.x, south.y);
-			
-			context.fillText("W",west.x-5, west.y);
-			context.fillText("E",east.x-5, east.y);
-			context.fillText("N",north.x-5, north.y);
-			context.fillText("S",south.x-5, south.y);
-			
-			context.closePath();
-			context.stroke();
-			
-			context.globalAlpha=1;
-			context.beginPath();
-			context.strokeStyle="darkblue"; 
-			var messagePosition = camera.position.x + "," + camera.position.z;
-	
-			vectorCam = {x:0,y:-30};
-			
-			drawArrow(context,0,0,vectorCam.x,vectorCam.y);
-			context.fillText(messagePosition+" * " + Math.floor(camera.rotation * 180 / Math.PI) +" °", 30, -30);
-			context.closePath();
-			context.stroke();
-	}
-	
-	this.draw3D = function(){
 	}
 	
 	this.drawSoil=function(){
@@ -587,6 +537,18 @@ function Square(size, distance, angleToOrigine, innerRotation, name) {
     this.drawStatic = function () {
         // the camera moves : the objects stay stationnary so the positionRelative == positionAbsolute
         var self = this;
+		var isVisible = false;
+		if(camera.knownThings.indexOf(self.name) != -1){
+			isVisible = true;
+		}else{
+			if(self.hit){
+				camera.knownThings.push(self.name);
+				isVisible = true;
+			}
+		}
+
+		if(!isVisible) return;
+
         context.save();
         context.strokeStyle = "black";
         context.strokeStyle = "white";
@@ -594,24 +556,26 @@ function Square(size, distance, angleToOrigine, innerRotation, name) {
         var saveStroke = context.strokeStyle;
 
         // drawing normals :
-        context.globalAlpha = 0.4;
-        context.strokeStyle = "black";
-        context.beginPath();
+		if(debugMode){
+			context.globalAlpha = 0.4;
+			context.strokeStyle = "black";
+			context.beginPath();
 
-        context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
-        context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[0].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[0].y * self.size);
+			context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
+			context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[0].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[0].y * self.size);
 
-        context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
-        context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[1].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[1].y * self.size);
+			context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
+			context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[1].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[1].y * self.size);
 
-        context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
-        context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[2].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[2].y * self.size);
+			context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
+			context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[2].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[2].y * self.size);
 
-        context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
-        context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[3].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[3].y * self.size);
+			context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
+			context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[3].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[3].y * self.size);
 
-        context.stroke();
-        context.closePath();
+			context.stroke();
+			context.closePath();
+		}
 
         context.globalAlpha = 0.8;
         context.strokeStyle = "black";
@@ -630,13 +594,18 @@ function Square(size, distance, angleToOrigine, innerRotation, name) {
             context.fillStyle = "red";
             context.fill();
             context.fillStyle = "black";
-            context.fillText(Math.floor(todegrees(self.hitMiddleAngle)) + " °", self.topRight.x + 2, self.topRight.y - 2);
+			if(debugMode){
+            	context.fillText(Math.floor(todegrees(self.hitMiddleAngle)) + " °", self.topRight.x + 2, self.topRight.y - 2);
+			}
         }
-        context.fillStyle = "black";
-        context.beginPath();
-        context.strokeStyle = saveStroke;
-        context.fillText(self.name, self.positionAbsolute.x - 2, self.positionAbsolute.y + 2);
-        context.closePath();
+		if(debugMode){
+			context.fillStyle = "black";
+			context.beginPath();
+			context.strokeStyle = saveStroke;
+			context.fillText(self.name, self.positionAbsolute.x - 2, self.positionAbsolute.y + 2);
+			context.closePath();
+		}
+
         context.globalAlpha = 1;
         context.restore();
     }
