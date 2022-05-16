@@ -231,15 +231,7 @@ function Camera(rotStep,walkStep,rotation) {
 
 	}
 
-	
 	this.draw = function(){
-		
-		this.drawStatic();
-
-			
-	}
-	
-	this.drawStatic = function(){
 		var self = this;
 		
 		self.checkCollisions();
@@ -247,10 +239,11 @@ function Camera(rotStep,walkStep,rotation) {
 		self.drawSoil();
 		
 		self.drawCross();
-		
-		self.drawCamera();
 
 		self.drawScanner();
+
+		self.drawCamera();
+
 
 	}
 	
@@ -327,39 +320,45 @@ function Camera(rotStep,walkStep,rotation) {
 			context.globalAlpha=1;	
 			
 			context.beginPath();
-			context.strokeStyle="darkred"; 
-			context.fillStyle="white"; 
+			context.strokeStyle="black"; 
+			context.fillStyle="red"; 
 			
 			context.beginPath();
 			context.arc(camera.position.x, camera.position.z, this.bodyRadius,0, 2*Math.PI,false);
-		
 			context.closePath();
 			context.stroke();
 			context.fill();
-			
 
-
-			var messagePosition = camera.position.x + "," + camera.position.z;
+			//var messagePosition = camera.position.x + "," + camera.position.z;
 			var camCos = Math.cos(camera.rotation);
 			var camSin = -Math.sin(camera.rotation);
 			var vectorCam = {x:camCos*30,y:camSin*30};
 			
-
+			context.fillStyle="white"; 
 			context.beginPath();
-			drawArrow(context,camera.position.x,camera.position.z,camera.position.x+vectorCam.x,camera.position.z+vectorCam.y);
+			//drawArrow(context,camera.position.x,camera.position.z,camera.position.x+vectorCam.x,camera.position.z+vectorCam.y);
+			context.arc(camera.position.x+(vectorCam.x*0.4), camera.position.z+(vectorCam.y*0.4), (this.bodyRadius/3),0, 2*Math.PI,false);
 			context.closePath();
 			context.stroke();
-			
+			context.fill();
+
+			context.fillStyle="black"; 
+			context.beginPath();
+			context.arc(camera.position.x+(vectorCam.x*0.5), camera.position.z+(vectorCam.y*0.5), (this.bodyRadius/4),0, 2*Math.PI,false);
+			context.closePath();
+			context.stroke();
+			context.fill();
+
 			context.strokeStyle="darkred"; 
 			context.fillStyle="black"; 
-			
+			/*
 			context.beginPath();
 			context.fillText(messagePosition, camera.position.x -7, camera.position.z -this.bodyRadius/2);
 			context.fillText(Math.floor(camera.rotation * 180 / Math.PI) +" °", camera.position.x -6, camera.position.z +this.bodyRadius/2);
 
 			context.closePath();
 			context.stroke();
-			
+			*/
 		
 
 			context.restore();
@@ -372,7 +371,7 @@ function Camera(rotStep,walkStep,rotation) {
 		var rotationLeftLimit = camera.rotation-this.sightWidth/2;
 		var rotationRightLimit = camera.rotation+this.sightWidth/2;
 
-		context.strokeStyle="rgb(255,0,0)"; 
+		context.strokeStyle="rgb(255,255,0)"; 
 		var ray;
 		things.forEach(function(x){
 			x.hit = false;
@@ -416,18 +415,6 @@ function Camera(rotStep,walkStep,rotation) {
 		
 		});
 		
-		things.forEach(function(x){
-			if(x.hit){
-//geometry.normals2D[0]
-				
-//scalarProduct2D
-			}
-		
-		});
-		
-		
-		
-		
 		context.moveTo(camera.position.x, camera.position.z);
 		camCos = Math.cos(rotationRightLimit);
 		camSin = -Math.sin(rotationRightLimit);
@@ -456,8 +443,6 @@ function Camera(rotStep,walkStep,rotation) {
 		this.previousLocation.x = this.position.x;
 		this.previousLocation.y = this.position.y;
 		this.previousLocation.z = this.position.z;
-		
-		
 	}
 	
 	this.restorePosition = function(){
@@ -470,6 +455,13 @@ function Camera(rotStep,walkStep,rotation) {
 		this.previousLocation.z = this.antePenultLocation.z;
 	}
 
+}
+
+function Mob(size, distance, angleToOrigine,name){
+	this.size = size;
+    this.distance = distance;
+    this.angleToOrigine = angleToOrigine;
+    this.name = name;
 }
 
 function Square(size, distance, angleToOrigine, innerRotation, name) {
@@ -485,8 +477,7 @@ function Square(size, distance, angleToOrigine, innerRotation, name) {
     this.hit = false;
     this.hitAngles = [];
     this.hitMiddleAngle = 0;
-
-
+	
     var cos = Math.cos(this.angleToOrigine);
     var sin = -Math.sin(this.angleToOrigine);
     this.topLeft = { "x": 0, "y": 0 };
@@ -531,10 +522,6 @@ function Square(size, distance, angleToOrigine, innerRotation, name) {
 
 
     this.draw = function () {
-        this.drawStatic();
-    }
-
-    this.drawStatic = function () {
         // the camera moves : the objects stay stationnary so the positionRelative == positionAbsolute
         var self = this;
 		var isVisible = false;
