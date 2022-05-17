@@ -1,8 +1,10 @@
 let width,heightw2,h2,k90degres,k60degres,k45degres,k180degres,k270degres,k360degres,k80degres,k280degres,camFov,focalW,focalH,zoom,focalAverage;
-let needUpdate,saveContext,context,camera,mode,things,debugMode;
+let needUpdate,saveContext,context,camera,mode,things,debugMode,scribble;
+
 
 window.onload = function() {
 	debugMode = false;
+	scribble = new Scribble();              // global mode
 	canvas = document.getElementById("canvas");
 	context = canvas.getContext("2d");
 	things = [];
@@ -13,19 +15,43 @@ window.onload = function() {
 	update();
 
 	document.addEventListener("keydown", function(event) {
-		switch(event.keyCode) {
-			case 37: // left ctrlKey shiftKey
+		switch(event.code) {
+			case "KeyQ": // left ctrlKey shiftKey
 				camera.turn(-1);
 				break;
-			case 39: // right
+			case "ArrowLeft": // left ctrlKey shiftKey
+				camera.turn(-1);
+				break;
+			case "KeyA": // left ctrlKey shiftKey
+				camera.turn(-1);
+				break;
+
+			case "KeyE": // right
 				camera.turn(1);
 				break;
-			case 38: // up
+			case "ArrowRight": // right
+				camera.turn(1);
+			break;
+			case "KeyD": // left ctrlKey shiftKey
+				camera.turn(1);
+				break;
+
+			case "KeyW": // up
 			    camera.walk(1);
 				break;
-			case 40: // down
-				camera.walk(-1);
+			case "ArrowUp": // up
+			    camera.walk(1);
 				break;
+				
+			case "KeyS": // down
+				camera.walk(-0.75);
+				break;
+			case "KeyS": // down
+				camera.walk(-0.75);
+				break;
+
+		    default:
+				console.log(event.code)
 		}
 	}); 
 	
