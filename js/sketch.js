@@ -365,7 +365,18 @@ function setNotMobs(){
     things.push(new PolyThing(30,140,k90degres-0.4,0.25,"B"));
     things.push(new PolyThing(30,250,k180degres-0.5,0.1,"C"));
     things.push(new PolyThing(45,185,k180degres+1,.3,"D"));
-    things.push(new PolyThing(22,220,0.9,.3,"E"));
+    things.push(new PolyThing(60,220,0.9,.3,"E",[
+		{x:0,y:-1},
+		{x:-0.5,y:-0.25},
+		{x:-1,y:0.25},
+		{x:-1,y:0.5},
+		{x:-0.5,y:1},
+		{x:0,y:1},
+		{x:0.5,y:1},
+		{x:0.5,y:0.5},
+		{x:1,y:1},
+		{x:0.5,y:-0.5},
+		{x:0.,y:-1}]));
     things.push(new PolyThing(50,450,1.5,.7,"F"));
 	things.push(new PolyThing(34,320,1.5,.7,"G"));
 	//things.push(new PolyThing(15,10,1.1,.7,"H"));
@@ -374,9 +385,7 @@ function setNotMobs(){
 
 function PolyThing(size, distance, angleToOrigine, innerRotation, name,matrix) {
 	if (!matrix){
-		matrix = {};
-		matrix.data2D = [{x:-1,y:-1},{x:1,y:-1},{x:1,y:1},{x:-1,y:1}];
-		matrix.normals2D = [{x:0,y:-1,dot:0},{x:1,y:0,dot:0},{x:-1,y:0,dot:0},{x:0,y:1,dot:0}];
+		matrix = [{x:-1,y:-1},{x:1,y:-1},{x:1,y:1},{x:-1,y:1}];
 	}
 
     this.size = size;
@@ -387,7 +396,7 @@ function PolyThing(size, distance, angleToOrigine, innerRotation, name,matrix) {
     this.positionAbsolute = { x: 0, y: 0 };
     this.positionRelative = { x: 0, y: 0 };
     this.half = Math.floor(size / 2);
-    this.geometry = {...matrix};
+    this.geometry = {data2D:matrix};
     this.hit = false;
     this.hitAngles = [];
     this.hitMiddleAngle = 0;
@@ -409,13 +418,6 @@ function PolyThing(size, distance, angleToOrigine, innerRotation, name,matrix) {
 		pt = simpleRotate(pt,this.innerRotation);
 	});
 
-
-	
-	this.geometry.normals2D.forEach((pt)=>{
-		pt = simpleRotate(pt,this.innerRotation);
-	});
-
-
     this.draw = function () {
         // the camera moves : the objects stay stationnary so the positionRelative == positionAbsolute
         var self = this;
@@ -432,44 +434,10 @@ function PolyThing(size, distance, angleToOrigine, innerRotation, name,matrix) {
 		if(!isVisible) return;
 
         context.save();
-        context.strokeStyle = "black";
-        context.strokeStyle = "white";
-        var saveFill = context.fillStyle;
-        var saveStroke = context.strokeStyle;
-
-        // drawing normals :
-		if(debugMode){
-			context.globalAlpha = 0.4;
-			context.strokeStyle = "black";
-			context.beginPath();
-
-			context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
-			context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[0].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[0].y * self.size);
-
-			context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
-			context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[1].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[1].y * self.size);
-
-			context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
-			context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[2].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[2].y * self.size);
-
-			context.moveTo(self.positionAbsolute.x, self.positionAbsolute.y);
-			context.lineTo(self.positionAbsolute.x + self.geometry.normals2D[3].x * self.size, self.positionAbsolute.y + self.geometry.normals2D[3].y * self.size);
-
-			context.stroke();
-			context.closePath();
-		}
-
         context.globalAlpha = 0.8;
         context.strokeStyle = "black";
         context.fillStyle = "rgb(20,230,160)";
         context.beginPath();
-        // Drawing the square
-		//scribble.scribbleLine( self.topLeft.x,self.topLeft.y, self.topRight.x, self.topRight.y);
-		//scribble.scribbleLine( self.topRight.x, self.topRight.y, self.bottomRight.x, self.bottomRight.y);
-		//scribble.scribbleLine( self.bottomRight.x, self.bottomRight.y, self.bottomLeft.x, self.bottomLeft.y);
-		//scribble.scribbleLine( self.bottomLeft.x, self.bottomLeft.y, self.topLeft.x, self.topLeft.y);
-
-		
 
         context.moveTo(self.geometry.data2D[0].x, self.geometry.data2D[0].y);
 		self.geometry.data2D.forEach((pt)=>{
@@ -486,13 +454,6 @@ function PolyThing(size, distance, angleToOrigine, innerRotation, name,matrix) {
             	context.fillText(Math.floor(todegrees(self.hitMiddleAngle)) + " °", self.topRight.x + 2, self.topRight.y - 2);
 			}
         }
-		if(debugMode){
-			context.fillStyle = "black";
-			context.beginPath();
-			context.strokeStyle = saveStroke;
-			context.fillText(self.name, self.positionAbsolute.x - 2, self.positionAbsolute.y + 2);
-			context.closePath();
-		}
 
         context.globalAlpha = 1;
         context.restore();
