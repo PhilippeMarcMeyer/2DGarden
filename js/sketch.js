@@ -3,8 +3,6 @@ let needUpdate,saveContext,context,camera,mode,things,debugMode,scribble;
 
 function setup() {
     debugMode = false;
-	scribble = new Scribble(); 
-    
     createCanvas(windowWidth, windowHeight);
     setUtilValues();
     translate(width / 2, height / 2);
@@ -127,9 +125,7 @@ function Kamera(rotStep,walkStep,rotation) {
 		if(this.rotation >k360degres ) this.rotation = 0;
 	}
 	this.walk = function(amount){// -1 or +1
-		// Calculate new position considering the amount, the position and the direction
-		//collideCirclePoly(cx, cy, diameter, vertices, interior) 
-	
+		// Calculate new position considering the amount, the position and the direction	
 		this.savePosition();
 		var dirx = Math.cos(this.rotation);
 		var dirz = - Math.sin(this.rotation);
@@ -140,7 +136,7 @@ function Kamera(rotStep,walkStep,rotation) {
 	this.draw = function(){
 		var self = this;
 		
-		self.checkCollisions();
+	    self.checkCollisions();
 		
 		self.drawSoil();
 		
@@ -168,12 +164,11 @@ function Kamera(rotStep,walkStep,rotation) {
 				context.stroke();	
 				context.fill();				
 			}); 
-		
 	}
 	this.checkCollisions = function () {
 		var self = this;
 		things.forEach(function (x) {
-			var poly = [x.topLeft, x.topRight, x.bottomRight, x.bottomLeft, x.topLeft];
+			var poly = x.geometry.data2D;
 			if (collideCirclePoly(self.position.x, self.position.z, self.bodyRadius * 2, poly)) {
 				self.restorePosition();
 			}
@@ -299,7 +294,7 @@ function Kamera(rotStep,walkStep,rotation) {
 			context.lineTo(end.x,end.y);
 			things.forEach(function(x){
 				
-				var poly = [x.topLeft,x.topRight,x.bottomRight,x.bottomLeft,x.topLeft];
+				var poly = x.geometry.data2D;
 			
 				if(collideLinePoly(start.x,start.y,end.x,end.y,poly)){
 					x.hit = true;
@@ -366,18 +361,24 @@ function Kamera(rotStep,walkStep,rotation) {
 
 function setNotMobs(){
     let things = [];
-    things.push(new Square(30,100,k90degres,0.5,"A"));
-    things.push(new Square(30,140,k90degres-0.4,0.25,"B"));
-    things.push(new Square(30,250,k180degres-0.5,0.1,"C"));
-    things.push(new Square(45,185,k180degres+1,.3,"D"));
-    things.push(new Square(22,220,0.9,.3,"E"));
-    things.push(new Square(50,450,1.5,.7,"F"));
-	things.push(new Square(34,320,1.5,.7,"G"));
-	//things.push(new Square(15,10,1.1,.7,"H"));
+    things.push(new PolyThing(30,100,k90degres,0.5,"A"));
+    things.push(new PolyThing(30,140,k90degres-0.4,0.25,"B"));
+    things.push(new PolyThing(30,250,k180degres-0.5,0.1,"C"));
+    things.push(new PolyThing(45,185,k180degres+1,.3,"D"));
+    things.push(new PolyThing(22,220,0.9,.3,"E"));
+    things.push(new PolyThing(50,450,1.5,.7,"F"));
+	things.push(new PolyThing(34,320,1.5,.7,"G"));
+	//things.push(new PolyThing(15,10,1.1,.7,"H"));
     return things;
 }
 
-function Square(size, distance, angleToOrigine, innerRotation, name) {
+function PolyThing(size, distance, angleToOrigine, innerRotation, name,matrix) {
+	if (!matrix){
+		matrix = {};
+		matrix.data2D = [{x:-1,y:-1},{x:1,y:-1},{x:1,y:1},{x:-1,y:1}];
+		matrix.normals2D = [{x:0,y:-1,dot:0},{x:1,y:0,dot:0},{x:-1,y:0,dot:0},{x:0,y:1,dot:0}];
+	}
+
     this.size = size;
     this.distance = distance;
     this.angleToOrigine = angleToOrigine;
@@ -386,52 +387,33 @@ function Square(size, distance, angleToOrigine, innerRotation, name) {
     this.positionAbsolute = { x: 0, y: 0 };
     this.positionRelative = { x: 0, y: 0 };
     this.half = Math.floor(size / 2);
-    this.geometry = new Cube(); // only for 3D
+    this.geometry = {...matrix};
     this.hit = false;
     this.hitAngles = [];
     this.hitMiddleAngle = 0;
 	
     var cos = Math.cos(this.angleToOrigine);
     var sin = -Math.sin(this.angleToOrigine);
-    this.topLeft = { "x": 0, "y": 0 };
-    this.topRight = { "x": 0, "y": 0 };
-    this.bottomLeft = { "x": 0, "y": 0 };
-    this.bottomRight = { "x": 0, "y": 0 };
 
     // the real position according to origin point
     this.positionAbsolute.x = Math.floor(cos * distance);
     this.positionAbsolute.y = Math.floor(sin * distance);
 
-    this.left = this.positionAbsolute.x - this.size / 2;
-    this.top = this.positionAbsolute.y - this.size / 2;
-    var geometry = this.geometry.data2D;
 
-    this.topLeft = { "x": geometry.topLeft.x, "y": geometry.topLeft.y };
-    this.topRight = { "x": geometry.topRight.x, "y": geometry.topRight.y };
-    this.bottomLeft = { "x": geometry.bottomLeft.x, "y": geometry.bottomLeft.y };
-    this.bottomRight = { "x": geometry.bottomRight.x, "y": geometry.bottomRight.y };
+	this.geometry.data2D.forEach((pt)=>{
+		pt.x = this.positionAbsolute.x + (this.half * pt.x);
+		pt.y = this.positionAbsolute.y + (this.half * pt.y);
+	});
 
-    this.topLeft = simpleRotate(this.topLeft, this.innerRotation);
-    this.topRight = simpleRotate(this.topRight, this.innerRotation);
-    this.bottomLeft = simpleRotate(this.bottomLeft, this.innerRotation);
-    this.bottomRight = simpleRotate(this.bottomRight, this.innerRotation);
+	this.geometry.data2D.forEach((pt)=>{
+		pt = simpleRotate(pt,this.innerRotation);
+	});
 
-    this.topLeft.x = this.topLeft.x * this.half + this.positionAbsolute.x;
-    this.topLeft.y = this.topLeft.y * this.half + this.positionAbsolute.y;
 
-    this.topRight.x = this.topRight.x * this.half + this.positionAbsolute.x;
-    this.topRight.y = this.topRight.y * this.half + this.positionAbsolute.y;
-
-    this.bottomLeft.x = this.bottomLeft.x * this.half + this.positionAbsolute.x;
-    this.bottomLeft.y = this.bottomLeft.y * this.half + this.positionAbsolute.y;
-
-    this.bottomRight.x = this.bottomRight.x * this.half + this.positionAbsolute.x;
-    this.bottomRight.y = this.bottomRight.y * this.half + this.positionAbsolute.y;
-
-    this.geometry.normals2D[0] = simpleRotate(this.geometry.normals2D[0], this.innerRotation);
-    this.geometry.normals2D[1] = simpleRotate(this.geometry.normals2D[1], this.innerRotation);
-    this.geometry.normals2D[2] = simpleRotate(this.geometry.normals2D[2], this.innerRotation);
-    this.geometry.normals2D[3] = simpleRotate(this.geometry.normals2D[3], this.innerRotation);
+	
+	this.geometry.normals2D.forEach((pt)=>{
+		pt = simpleRotate(pt,this.innerRotation);
+	});
 
 
     this.draw = function () {
@@ -482,16 +464,22 @@ function Square(size, distance, angleToOrigine, innerRotation, name) {
         context.fillStyle = "rgb(20,230,160)";
         context.beginPath();
         // Drawing the square
-        context.moveTo(self.topLeft.x, self.topLeft.y);
-        context.lineTo(self.topRight.x, self.topRight.y);
-        context.lineTo(self.bottomRight.x, self.bottomRight.y);
-        context.lineTo(self.bottomLeft.x, self.bottomLeft.y);
-        context.lineTo(self.topLeft.x, self.topLeft.y);
+		//scribble.scribbleLine( self.topLeft.x,self.topLeft.y, self.topRight.x, self.topRight.y);
+		//scribble.scribbleLine( self.topRight.x, self.topRight.y, self.bottomRight.x, self.bottomRight.y);
+		//scribble.scribbleLine( self.bottomRight.x, self.bottomRight.y, self.bottomLeft.x, self.bottomLeft.y);
+		//scribble.scribbleLine( self.bottomLeft.x, self.bottomLeft.y, self.topLeft.x, self.topLeft.y);
+
+		
+
+        context.moveTo(self.geometry.data2D[0].x, self.geometry.data2D[0].y);
+		self.geometry.data2D.forEach((pt)=>{
+			context.lineTo(pt.x, pt.y);
+		});
 
         context.closePath();
         context.stroke();
         if (self.hit) {
-            context.fillStyle = "gold";
+            context.fillStyle = "#C19864";
             context.fill();
             context.fillStyle = "black";
 			if(debugMode){
@@ -510,57 +498,6 @@ function Square(size, distance, angleToOrigine, innerRotation, name) {
         context.restore();
     }
 
-}
-
-
-function Cube() {
-    this.data2D = {
-        "topLeft": { "x": -1, "y": -1 },
-        "topRight": { "x": 1, "y": -1 },
-        "bottomLeft": { "x": -1, "y": 1 },
-        "bottomRight": { "x": 1, "y": 1 }
-    }
-    this.data = [
-        [-1, -1, -1], // left, bottom, back
-        [1, -1, -1], // right, bottom, back
-        [1, 1, -1], // right, top, back
-        [-1, 1, -1], // left, top, back
-        [1, -1, 1], // right, bottom, front
-        [-1, -1, 1], // left, bottom, front
-        [-1, 1, 1],// left, top, front
-        [1, 1, 1] // right, top, front
-    ];
-    this.poly = [];
-    this.poly[0] = [0, 1, 2, 3]; // Back side
-    this.poly[1] = [1, 4, 7, 2]; // Right side
-    this.poly[2] = [4, 5, 6, 7]; // front side
-    this.poly[3] = [5, 0, 3, 6]; // left side
-    this.poly[4] = [5, 4, 1, 0]; // bottom side
-    this.poly[5] = [3, 2, 7, 6]; // top side
-
-    this.normals = [
-        { "x": 0, "y": 0, "z": -1 },
-        { "x": 1, "y": 0, "z": 0 },
-        { "x": 0, "y": 0, "z": 1 },
-        { "x": -1, "y": 0, "z": 0 },
-        { "x": 0, "y": -1, "z": 0 },
-        { "x": 0, "y": 1, "z": 0 },
-    ];
-    this.normals2D = [
-        { "x": 0, "y": -1, "dot": 0 },
-        { "x": 1, "y": 0, "dot": 0 },
-        { "x": 0, "y": 1, "dot": 0 },
-        { "x": -1, "y": 0, "dot": 0 }
-    ];
-
-    this.colors = [
-        "DarkOrchid",
-        "FireBrick",
-        "GoldenRod",
-        "HotPink",
-        "OrangeRed",
-        "MidnightBlue"
-    ]
 }
 
 function simpleRotate(point,angle){
