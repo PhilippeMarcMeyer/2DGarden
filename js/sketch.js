@@ -68,7 +68,7 @@ function setup() {
 			case "KeyS": // down
 				_camera.walk(-0.75);
 				break;
-			case "KeyS": // down
+			case "ArrowDown": // down
 				_camera.walk(-0.75);
 				break;
 
