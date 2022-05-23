@@ -1,15 +1,16 @@
 {
-    "world" : 1,
+    "name" : "the garden",
+    "radius":2000,
+    "currentCenter":{"x":0,"y":0},
     "data" : {
-        "center":{"x":0,"y":0},
         "rocks" : 
         [
         {
-            "size":125,
+            "size":105,
             "distance":350,
             "angleToOrigine":0.9,
             "name": "Everest",
-            "innerRotation":0,
+            "innerRotation":0.8,
             "color":"#C19864",
             "matrix" : [
                 {"x":0,"y":-1},
@@ -51,7 +52,7 @@
             ]
         },
         {
-            "size":210,
+            "size":115,
             "distance":250,
             "angleToOrigine":3,
             "name": "Monumental",
@@ -59,14 +60,14 @@
             "color":"#d9aa94",
             "matrix" :[
                 {"x":-0.5,"y":-1},
-                {"x":-0.5,"y":-0.5},
-                {"x":-0.5,"y":0},
+                {"x":-0.6,"y":-0.5},
+                {"x":-0.7,"y":0},
                 {"x":-0.5,"y":0.5},
                 {"x":-0.5,"y":1},
                 {"x":0,"y":0.9},
                 {"x":0.5,"y":0.7},
-                {"x":0.5,"y":0.5},
-                {"x":0.5,"y":0},
+                {"x":0.1,"y":0.5},
+                {"x":0.2,"y":0},
                 {"x":0.5,"y":-0.5},
                 {"x":0.5,"y":-0.7},
                 {"x":0,"y":-0.9}
