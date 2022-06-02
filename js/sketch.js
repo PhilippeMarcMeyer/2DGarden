@@ -25,7 +25,7 @@ function setup() {
 	if(!gameLoaded) return;
 	translate(width / 2, height / 2);
 	clear();
-	context.fillStyle="rgb(185,183,184)"; 
+	context.fillStyle=worldModel.baseColor || "rgb(185,183,184)"; 
 	context.rect(-w2 , -h2, width, height);
 	context.fill();
 	context.fillStyle="black"; 
@@ -381,7 +381,7 @@ function PolyThing(data) {
     this.hit = false;
     this.hitAngles = [];
     this.hitMiddleAngle = 0;
-	this.color= data.color;
+	this.colors= data.colors.split(",");
 	this.repeat = data.repeat;
 
 	this.init = function(){
@@ -402,10 +402,16 @@ function PolyThing(data) {
 					})
 					self.geometry.data2D.push(arr);
 				}
-
 			}
 		}
-        
+		if(!self.colors[0]) self.colors[0] = "#ccc";
+        let prevColor = self.colors[0];
+		while(self.colors.length < self.geometry.data2D.length){
+        	prevColor = LightenDarkenColor(prevColor,10);
+			
+			self.colors.push(prevColor);
+		}
+
 		var cos = Math.cos(self.angleToOrigine);
 		var sin = -Math.sin(self.angleToOrigine);
 	
@@ -451,8 +457,8 @@ function PolyThing(data) {
 		self.geometry.data2D.forEach((arr,index)=>{
 			context.save();
 			context.globalAlpha = 1;
-			context.strokeStyle = "black";
-			context.fillStyle = "rgb(20,230,160)";
+			context.strokeStyle = self.colors[index];
+			context.fillStyle = self.colors[index];
 			context.beginPath();
 	
 			let drawPos = drawingPositionGet(arr[0]);
@@ -466,7 +472,6 @@ function PolyThing(data) {
 			})
 			context.closePath();
 			context.stroke();
-			context.fillStyle = self.color;
 			context.fill();
 			context.fillStyle = "black";
 			context.globalAlpha = 1-(index/5);
@@ -498,3 +503,33 @@ function keepWithInCircle(rotation){
 	return rotation;
 }
 
+//Chris Coyier 
+function LightenDarkenColor(col, amt) {
+  
+    var usePound = false;
+  
+    if (col[0] == "#") {
+        col = col.slice(1);
+        usePound = true;
+    }
+ 
+    var num = parseInt(col,16);
+ 
+    var r = (num >> 16) + amt;
+ 
+    if (r > 255) r = 255;
+    else if  (r < 0) r = 0;
+ 
+    var b = ((num >> 8) & 0x00FF) + amt;
+ 
+    if (b > 255) b = 255;
+    else if  (b < 0) b = 0;
+ 
+    var g = (num & 0x0000FF) + amt;
+ 
+    if (g > 255) g = 255;
+    else if (g < 0) g = 0;
+ 
+    return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+  
+}

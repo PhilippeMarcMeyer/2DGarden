@@ -1,6 +1,7 @@
 {
     "name" : "the garden",
     "radius":2000,
+    "baseColor":"#c6d7a8",
     "currentCenter":{"x":0,"y":0},
     "data" : {
         "rocks" : 
@@ -11,7 +12,7 @@
             "angleToOrigine":0.9,
             "name": "Everest",
             "innerRotation":0.8,
-            "color":"#C19864",
+            "colors":"#AF92D3,#AF77D3,#AF55D3",
             "repeat":2,
             "matrix" : [
                 {"x":0,"y":-1},
@@ -33,7 +34,7 @@
             "angleToOrigine":1.9,
             "name": "kilimandjaro",
             "innerRotation":2.5,
-            "color":"#C99874",
+            "colors":"#C99874",
             "repeat" : 3,
             "matrix" : [
                 {"x":-0.5,"y":-1.5},
@@ -59,7 +60,7 @@
             "angleToOrigine":3,
             "name": "Monumental",
             "innerRotation":0.75,
-            "color":"#d9aa94",
+            "colors":"#d9aa94",
             "repeat" : 2,
             "matrix" :[
                 {"x":-0.5,"y":-1},
