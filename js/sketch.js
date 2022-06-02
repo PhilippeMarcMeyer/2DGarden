@@ -227,7 +227,10 @@ function Kamera(rotStep,walkStep,rotation) {
 	}
 	
 	this.drawCamera=function(){
+		var self = this;
 		let drawPos = drawingPositionGet(this.position);
+		//self.drawScanner();
+
 		context.save();
 
 		context.globalAlpha=1;	
@@ -265,6 +268,74 @@ function Kamera(rotStep,walkStep,rotation) {
 
 		context.restore();
 	}
+
+	this.drawScanner=function(){
+		context.save();
+		context.globalAlpha=0.35;
+		context.beginPath();
+		var rotationLeftLimit = camera.rotation-this.sightWidth/2;
+		var rotationRightLimit = camera.rotation+this.sightWidth/2;
+
+		context.strokeStyle="rgb(255,255,0)"; 
+		var ray;
+		things.forEach(function(x){
+			x.hit = false;
+			x.hitAngles.length = 0;
+		});
+		var relativeAngle = - this.sightWidth/2;
+		var step = 0.02;
+		var rayLength =  this.sightLength-this.bodyRadius;
+		for(var i = rotationLeftLimit;i <= rotationRightLimit;i+=step){
+			camCos = Math.cos(i);
+			camSin = -Math.sin(i);
+			
+			var start = {"x":camera.position.x+camCos*this.bodyRadius,"y":camera.position.z+camSin*this.bodyRadius};
+			context.moveTo(start.x, start.y);
+			
+			ray= {x:camCos*rayLength,y:camSin*rayLength};
+			var end = {"x":start.x+ray.x,"y":start.y+ray.y};
+			context.lineTo(end.x,end.y);
+			things.forEach(function(x){
+				
+				var poly = x.geometry.data2D;
+			
+				if(collideLinePoly(start.x,start.y,end.x,end.y,poly)){
+					x.hit = true;
+					x.hitAngles.push(relativeAngle);
+				}					
+			});
+			relativeAngle += step;
+		}
+		things.forEach(function(x){
+			if(x.hit){
+				var nrHits = x.hitAngles.length;
+				if(nrHits==0){
+					x.hit = false;
+				}else if(nrHits==1){
+					x.hitMiddleAngle = x.hitAngles[0];
+				}else{
+					x.hitMiddleAngle = x.hitAngles[Math.floor((nrHits-1)/2)];
+				}
+			}
+		
+		});
+		
+		context.moveTo(camera.position.x, camera.position.z);
+		camCos = Math.cos(rotationRightLimit);
+		camSin = -Math.sin(rotationRightLimit);
+		ray= {x:camCos*this.sightLength,y:camSin*this.sightLength};
+		context.lineTo(camera.position.x+ray.x,camera.position.z+ray.y);
+		context.closePath();
+		context.stroke();
+
+		context.beginPath();
+		context.moveTo(camera.position.x, camera.position.z);
+		context.arc(camera.position.x, camera.position.z, this.sightLength, -rotationRightLimit, -rotationLeftLimit,false);
+		
+		context.closePath();
+		context.stroke();
+		context.restore();
+	}	
 	
 	this.savePosition = function(){
 		
@@ -288,32 +359,53 @@ function Kamera(rotStep,walkStep,rotation) {
 function setNotMobs(world){
 	let rocks = [];
     world.data.rocks.forEach((r)=>{
-		rocks.push(new PolyThing(r.size,r.distance,r.angleToOrigine,r.innerRotation,r.name,r.color,r.matrix));
+			rocks.push(new PolyThing(r));
 	});
     return rocks;
 }
-
-function PolyThing(size, distance, angleToOrigine, innerRotation, name,color,matrix) {
-	if (!matrix){
+//size, distance, angleToOrigine, innerRotation, name,color,matrix
+function PolyThing(data) {
+	if (!data.matrix){
 		matrix = [{x:-1,y:-1},{x:1,y:-1},{x:1,y:1},{x:-1,y:1}];
 	}
 
-    this.size = size;
-    this.distance = distance;
-    this.angleToOrigine = angleToOrigine;
-    this.name = name;
-    this.innerRotation = innerRotation;
+    this.size = data.size;
+    this.distance = data.distance;
+    this.angleToOrigine = data.angleToOrigine;
+    this.name = data.name;
+    this.innerRotation = data.innerRotation;
     this.positionAbsolute = { x: 0, y: 0 };
     this.positionRelative = { x: 0, y: 0 };
-    this.half = Math.floor(size / 2);
-    this.geometry = {data2D:matrix};
+    this.half = Math.floor(data.size / 2);
+    this.geometry = {data2D:data.matrix};
     this.hit = false;
     this.hitAngles = [];
     this.hitMiddleAngle = 0;
-	this.color= color;
+	this.color= data.color;
+	this.repeat = data.repeat;
 
 	this.init = function(){
 		let self = this;
+		if(Array.isArray(self.geometry.data2D[0])){
+			self.repeat=0;
+		}else{
+			let copyGeometry = [...self.geometry.data2D];
+			self.geometry.data2D.length=0;
+			self.geometry.data2D.push(copyGeometry);
+			if(self.repeat > 0){
+				for(let i=0;i<self.repeat;i++){
+					let arr = [];
+					self.geometry.data2D[i].forEach((position, index)=>{
+						if(index%5!=0){
+							arr.push({x:position.x*.7,y:position.y*0.7});
+						}
+					})
+					self.geometry.data2D.push(arr);
+				}
+
+			}
+		}
+        
 		var cos = Math.cos(self.angleToOrigine);
 		var sin = -Math.sin(self.angleToOrigine);
 	
@@ -321,15 +413,21 @@ function PolyThing(size, distance, angleToOrigine, innerRotation, name,color,mat
 		self.positionAbsolute.x = Math.floor(cos * self.distance);
 		self.positionAbsolute.y = Math.floor(sin * self.distance);
 	
-		let rotatedPoints = self.geometry.data2D.map((pt)=>{
-			return simpleRotate(pt,self.innerRotation);
+		self.geometry.data2D.forEach((arr, index)=>{
+			let rotatedPoints = arr.map((pt)=>{
+				return simpleRotate(pt,self.innerRotation);
+			});
+			arr = [...rotatedPoints];
 		});
-		self.geometry.data2D = [...rotatedPoints];
+
+
+	//	self.geometry.data2D = [...rotatedPoints];
 	
-		self.geometry.data2D.forEach((pt)=>{
+		self.geometry.data2D.forEach((arr)=>{
+			arr.forEach((pt)=>{
 			pt.x = self.positionAbsolute.x + (self.half * pt.x);
 			pt.y = self.positionAbsolute.y + (self.half * pt.y);
-		});
+		})});
 	}
    
 
@@ -350,28 +448,31 @@ function PolyThing(size, distance, angleToOrigine, innerRotation, name,color,mat
 		isVisible = true;
 
 		if(!isVisible) return;
+		self.geometry.data2D.forEach((arr,index)=>{
+			context.save();
+			context.globalAlpha = 1;
+			context.strokeStyle = "black";
+			context.fillStyle = "rgb(20,230,160)";
+			context.beginPath();
+	
+			let drawPos = drawingPositionGet(arr[0]);
+			context.moveTo(drawPos.x, drawPos.y);
 
-        context.save();
-        context.globalAlpha = 1;
-        context.strokeStyle = "black";
-        context.fillStyle = "rgb(20,230,160)";
-        context.beginPath();
+			arr.forEach((pt)=>{
 
-		let drawPos = drawingPositionGet(self.geometry.data2D[0]);
-
-        context.moveTo(drawPos.x, drawPos.y);
-		self.geometry.data2D.forEach((pt)=>{
-			drawPos = drawingPositionGet(pt);
-			context.lineTo(drawPos.x, drawPos.y);
+				drawPos = drawingPositionGet(pt);
+				context.lineTo(drawPos.x, drawPos.y);
+		
+			})
+			context.closePath();
+			context.stroke();
+			context.fillStyle = self.color;
+			context.fill();
+			context.fillStyle = "black";
+			context.globalAlpha = 1-(index/5);
+			context.restore();
 		});
 
-        context.closePath();
-        context.stroke();
-		context.fillStyle = self.color;
-		context.fill();
-		context.fillStyle = "black";
-        context.globalAlpha = 1;
-        context.restore();
     }
 }
 

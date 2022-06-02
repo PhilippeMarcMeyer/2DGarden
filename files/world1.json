@@ -12,6 +12,7 @@
             "name": "Everest",
             "innerRotation":0.8,
             "color":"#C19864",
+            "repeat":2,
             "matrix" : [
                 {"x":0,"y":-1},
                 {"x":-0.5,"y":-0.25},
@@ -33,6 +34,7 @@
             "name": "kilimandjaro",
             "innerRotation":2.5,
             "color":"#C99874",
+            "repeat" : 3,
             "matrix" : [
                 {"x":-0.5,"y":-1.5},
                 {"x":-0.5,"y":-1},
@@ -58,6 +60,7 @@
             "name": "Monumental",
             "innerRotation":0.75,
             "color":"#d9aa94",
+            "repeat" : 2,
             "matrix" :[
                 {"x":-0.5,"y":-1},
                 {"x":-0.6,"y":-0.5},
