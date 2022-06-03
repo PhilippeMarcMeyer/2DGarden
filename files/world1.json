@@ -4,6 +4,42 @@
     "baseColor":"#c6d7a8",
     "currentCenter":{"x":0,"y":0},
     "data" : {
+        "plants" : [{
+            "birth":"2022-04-01T07:00:00.000Z",
+            "drawType":"double-curve",
+            "distance":350,
+            "name": "Lilium",
+            "innerRotation":0,
+            "leaves":{
+                "number" : 6,
+                "leafModel" : {
+                    "size":{
+                        "min": 30,
+                        "max":120,
+                        "growthPerDay" : 12,
+                        "angles": [
+                            0.2,
+                            1,
+                            2.1,
+                            3.67,
+                            4.55,
+                            5.28
+                        ]
+                    },
+                    "color":"#2F8C5E",
+                    "matrix": [
+                        {"x":0.449,"y":0.132},
+                        {"x":0.310,"y":0.377},
+                        {"x":0.310,"y":0.549},
+                        {"x":0.586,"y":0.481},
+                        {"x":0.449,"y":0.132},
+                        {"x":0.310,"y":0.377},
+                        {"x":0.310,"y":0.547},
+                        {"x":0.049,"y":0.490}
+                    ]
+                } 
+            }
+        }],
         "rocks" : 
         [
         {

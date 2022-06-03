@@ -63,7 +63,7 @@ function drawingPositionGet(truePosition) {
 				break;
 			case "ArrowRight": // right
 				_camera.turn(1);
-			break;
+				break;
 			case "KeyD": // left ctrlKey shiftKey
 				_camera.turn(1);
 				break;
@@ -76,15 +76,16 @@ function drawingPositionGet(truePosition) {
 				break;
 				
 			case "KeyS": // down
-				_camera.walk(-0.75);
+				_camera.walk(-0.45,true);
 				break;
 			case "ArrowDown": // down
-				_camera.walk(-0.75);
+				_camera.walk(-0.45,true);
 				break;
 
 		    default:
 				console.log(event.code)
-		}
+		};
+		
 	}); 
   }
   
@@ -144,12 +145,19 @@ function Kamera(rotStep,walkStep,rotation) {
 		if(this.rotation > k360degres ) this.rotation = 0;
 	}
 
-	this.walk = function(amount){// -1 or +1
+	this.walk = function(amount,rnd){// -1 or +1
 		var self = this;
 		// Calculate new position considering the amount, the position and the direction	
 		this.savePosition();
-		var dirx = Math.cos(this.rotation);
-		var dirz = - Math.sin(this.rotation);
+		let randomized = 0;
+		if(rnd){
+			let flipCoin = Math.floor(Math.random() * 2)
+			randomized = Math.random();
+			randomized*= flipCoin == 1 ? -1 : 1;
+		}
+		let rotation = this.rotation + randomized;
+		var dirx = Math.cos(rotation);
+		var dirz = - Math.sin(rotation);
 		self.position.x = Math.floor(self.position.x + (dirx * amount * self.walkStep)); 
 		self.position.y = Math.floor(self.position.y + (dirz * amount * self.walkStep));
 
