@@ -178,7 +178,7 @@ function Kamera(rotStep,walkStep,rotation) {
 	this.checkCollisions = function () {
 		var self = this;
 		things.forEach(function (x) {
-			var poly = x.geometry.data2D;
+			var poly = x.geometry.data2D[0];
 			if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, poly)) {
 				self.restorePosition();
 			}
