@@ -1,10 +1,12 @@
 let w2,h2,w4,h4,k90degres,k60degres,k45degres,k180degres,k270degres,k360degres,k80degres,k280degres,camFov,focalW,focalH,zoom,focalAverage;
 let needUpdate,saveContext,context,_camera,mode,things,debugMode,scribble;
 let worldModel,gameLoaded;
+let keys = { up: false, down: false, left: false, right: false }
 
 function setup() {
     debugMode = false;
 	gameLoaded = false;
+	frameRate(25);
 	loadJSON('/files/world1.json', result => {
 		worldModel = {...result}
 		things = setNotMobs(worldModel);
@@ -17,6 +19,7 @@ function setup() {
 		context = drawingContext;
 		_camera = new Kamera(0.2,10,toradians(90));
 		setKeyDown();
+		setKeyUp();
 		gameLoaded = true;
 	  });
   }
@@ -29,6 +32,7 @@ function setup() {
 	context.rect(-w2 , -h2, width, height);
 	context.fill();
 	context.fillStyle="black"; 
+	_camera.setDirection();
 	_camera.draw();
 	things.forEach(function(thing){
 		thing.draw();
@@ -45,49 +49,10 @@ function drawingPositionGet(truePosition) {
 	};
 }
 
-  function setKeyDown(){
-    document.addEventListener("keydown", function(event) {
-		switch(event.code) {
-			case "KeyQ": // left ctrlKey shiftKey
-				_camera.turn(-1);
-				break;
-			case "ArrowLeft": // left ctrlKey shiftKey
-				_camera.turn(-1);
-				break;
-			case "KeyA": // left ctrlKey shiftKey
-				_camera.turn(-1);
-				break;
-
-			case "KeyE": // right
-				_camera.turn(1);
-				break;
-			case "ArrowRight": // right
-				_camera.turn(1);
-				break;
-			case "KeyD": // left ctrlKey shiftKey
-				_camera.turn(1);
-				break;
-
-			case "KeyW": // up
-			    _camera.walk(1);
-				break;
-			case "ArrowUp": // up
-			    _camera.walk(1);
-				break;
-				
-			case "KeyS": // down
-				_camera.walk(-0.45,true);
-				break;
-			case "ArrowDown": // down
-				_camera.walk(-0.45,true);
-				break;
-
-		    default:
-				console.log(event.code)
-		};
-		
-	}); 
-  }
+function secondaryKey() {
+	if (keyIsDown("KeyW"))
+		_camera.walk(1);
+}
   
   function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
@@ -145,6 +110,22 @@ function Kamera(rotStep,walkStep,rotation) {
 		if(this.rotation > k360degres ) this.rotation = 0;
 	}
 
+	this.setDirection = function(){
+
+		if(keys.left){
+			_camera.turn(-1);
+		}
+		if(keys.right){
+			_camera.turn(1);
+		}
+		if(keys.up){
+			_camera.walk(1);
+		}	
+		if(keys.down){
+			_camera.walk(-0.45,true);
+		}	
+	}
+
 	this.walk = function(amount,rnd){// -1 or +1
 		var self = this;
 		// Calculate new position considering the amount, the position and the direction	
@@ -186,9 +167,10 @@ function Kamera(rotStep,walkStep,rotation) {
 	this.checkCollisions = function () {
 		var self = this;
 		things.forEach(function (x) {
-			var poly = x.geometry.data2D[0];
-			if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, poly)) {
-				self.restorePosition();
+			if(x.collider.shape === 'poly'){
+				if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.data)) {
+					self.restorePosition();
+				}
 			}
 		});
 	}
@@ -365,13 +347,99 @@ function Kamera(rotStep,walkStep,rotation) {
 }
 
 function setNotMobs(world){
-	let rocks = [];
+	let notMobs = [];
     world.data.rocks.forEach((r)=>{
-			rocks.push(new PolyThing(r));
+		notMobs.push(new PolyThing(r));
 	});
-    return rocks;
+	world.data.plants.forEach((r)=>{
+		notMobs.push(new Plant(r));
+	});
+	
+    return notMobs;
 }
-//size, distance, angleToOrigine, innerRotation, name,color,matrix
+
+function Plant(data){
+	this.birth = new Date(data.birth);
+	this.today = new Date();
+	this.age = Math.floor((this.today.getTime() - this.birth.getTime()) / (1000 * 3600 * 24));
+	this.size = Math.min(this.age * data.size.growthPerDay + data.size.min,data.size.max);
+	this.distance = data.distance;
+    this.angleToOrigine = data.angleToOrigine;
+    this.name = data.name;
+    this.innerRotation = data.innerRotation;
+    this.positionAbsolute = { x: 0, y: 0 };
+    this.positionRelative = { x: 0, y: 0 };
+    this.half = Math.floor(this.size / 2);
+    this.shape = data.shape;
+    this.hit = false;
+    this.hitAngles = [];
+    this.hitMiddleAngle = 0;
+	this.color= data.color;
+	this.leaves = data.leaves || null;
+	this.collider = {
+		shape:"circle",
+		data:null
+	}
+	this.init = function(){
+		let self = this;
+		if(self.leaves === null){
+			throw 'Not implemented plant crown shape : ' + self.geometry.crown.shape;
+		}
+		let spikesRadius =  Math.min(Math.floor((this.today.getTime() - this.birth.getTime()) / (1000 * 3600 * 24)) * this.leaves.leafModel.size.growthPerDay + this.leaves.leafModel.size.min, this.leaves.leafModel.size.max);
+		self.geometry = {};
+		self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size };
+		if(self.leaves === null){
+			self.geometry.crown = null;
+		}else{
+			self.geometry.crown = { shape: self.leaves.shape, color: self.leaves.leafModel.color, number: self.leaves.number,radius:spikesRadius }
+			self.geometry.crown.spikes = [];
+			if(self.geometry.crown.shape === "double-curve"){
+				for(let i = 0 ; i < self.geometry.crown.number;i++){
+					let matrix = [...self.leaves.leafModel.matrix];
+					self.geometry.crown.spikes.push({
+						curveLeft : {
+							ctrlPt1:matrix[0],
+							pt1:matrix[1],
+							pt2:matrix[2],
+							ctrlPt2:matrix[3]
+						},
+						curveRight : {
+							ctrlPt1:matrix[4],
+							pt1:matrix[5],
+							pt2:matrix[6],
+							ctrlPt2:matrix[7]
+						}
+					})
+				}
+						// the real position according to origin point
+			let cos = Math.cos(self.angleToOrigine);
+			let sin = -Math.sin(self.angleToOrigine);
+			self.positionAbsolute.x = Math.floor(cos * self.distance);
+			self.positionAbsolute.y = Math.floor(sin * self.distance);
+
+				self.geometry.crown.spikes.forEach((spike,index)=>{
+					for (const key in spike.curveLeft) {
+						spike.curveLeft[key] = simpleRotate(spike.curveLeft[key],self.innerRotation+self.leaves.leafModel.angles[index]);
+						spike.curveLeft[key].x = self.positionAbsolute.x + (self.half * spike.curveLeft[key].x);
+						spike.curveLeft[key].y = self.positionAbsolute.y + (self.half * spike.curveLeft[key].y);
+					}
+					for (const key in spike.curveRight) {
+						spike.curveRight[key] = simpleRotate(spike.curveRight[key],self.innerRotation+self.leaves.leafModel.angles[index]);
+						spike.curveRight[key].x = self.positionAbsolute.x + (self.half * spike.curveRight[key].x);
+						spike.curveRight[key].y = self.positionAbsolute.y + (self.half * spike.curveRight[key].y);
+					}
+				});
+
+			}else{
+				throw 'Not implemented plant crown shape : ' + self.geometry.crown.shape;
+			}
+		}
+	}
+	this.draw = function () {
+
+	}
+}
+
 function PolyThing(data) {
 	if (!data.matrix){
 		matrix = [{x:-1,y:-1},{x:1,y:-1},{x:1,y:1},{x:-1,y:1}];
@@ -391,6 +459,10 @@ function PolyThing(data) {
     this.hitMiddleAngle = 0;
 	this.colors= data.colors.split(",");
 	this.repeat = data.repeat;
+	this.collider = {
+		shape:"poly",
+		data:null
+	}
 
 	this.init = function(){
 		let self = this;
@@ -416,7 +488,6 @@ function PolyThing(data) {
         let prevColor = self.colors[0];
 		while(self.colors.length < self.geometry.data2D.length){
         	prevColor = LightenDarkenColor(prevColor,10);
-			
 			self.colors.push(prevColor);
 		}
 
@@ -433,15 +504,13 @@ function PolyThing(data) {
 			});
 			arr = [...rotatedPoints];
 		});
-
-
-	//	self.geometry.data2D = [...rotatedPoints];
 	
 		self.geometry.data2D.forEach((arr)=>{
 			arr.forEach((pt)=>{
 			pt.x = self.positionAbsolute.x + (self.half * pt.x);
 			pt.y = self.positionAbsolute.y + (self.half * pt.y);
 		})});
+		self.collider.data = self.geometry.data2D[0];
 	}
    
 
@@ -541,3 +610,83 @@ function LightenDarkenColor(col, amt) {
     return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
   
 }
+
+function setKeyDown(){
+    document.addEventListener("keydown", function(event) {
+		switch(event.code) {
+			case "KeyQ": 
+				keys.left = true;
+				break;
+			case "ArrowLeft": 
+				keys.left = true;
+				break;
+			case "KeyA":
+				keys.left = true;
+				break;
+
+			case "KeyE": 
+				keys.right = true;
+				break;
+			case "ArrowRight": 
+				keys.right = true;
+				break;
+			case "KeyD": 
+				keys.right = true;
+				break;
+
+			case "KeyW": // up
+				keys.up = true;
+				break;
+			case "ArrowUp": // up
+				keys.up = true;
+				break;
+				
+			case "KeyS": // down
+				keys.down = true;
+				break;
+			case "ArrowDown": // down
+				keys.down = true;
+				break;
+		};
+	}); 
+  }
+
+  function setKeyUp(){
+    document.addEventListener("keyup", function(event) {
+		switch(event.code) {
+			case "KeyQ": 
+				keys.left = false;
+				break;
+			case "ArrowLeft": 
+				keys.left = false;
+				break;
+			case "KeyA": 
+				keys.left = false;
+				break;
+
+			case "KeyE": 
+				keys.right = false;
+				break;
+			case "ArrowRight": 
+				keys.right = false;
+				break;
+			case "KeyD":
+				keys.right = false;
+				break;
+
+			case "KeyW": // up
+				keys.up = false;
+				break;
+			case "ArrowUp": // up
+				keys.up = false;
+				break;
+				
+			case "KeyS": // down
+				keys.down = false;
+				break;
+			case "ArrowDown": // down
+				keys.down = false;
+				break;
+		};
+	}); 
+  }
