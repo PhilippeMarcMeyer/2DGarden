@@ -421,21 +421,15 @@ function Plant(data) {
 				self.geometry.crown.spikes.forEach((spike, index) => {
 					for (const key in spike.curveLeft) {
 						let centralPoint = { ...self.positionAbsolute };
-						let cos = Math.cos(self.leaves.leafModel.angles[index]+self.angleToOrigine);
-						let sin = -Math.sin(self.leaves.leafModel.angles[index]+self.angleToOrigine);
-						centralPoint.x = Math.floor(cos);
-						centralPoint.y = Math.floor(sin);
-						spike.curveLeft[key].x = Math.floor(centralPoint.x + (spike.curveLeft[key].x + spikeRadius));
-						spike.curveLeft[key].y = Math.floor(centralPoint.y + (spike.curveLeft[key].y + spikeRadius));
+						spike.curveLeft[key] = simpleRotate(spike.curveLeft[key],self.innerRotation+self.leaves.leafModel.angles[index]);
+						spike.curveLeft[key].x = Math.floor(centralPoint.x + (spike.curveLeft[key].x * spikeRadius));
+						spike.curveLeft[key].y = Math.floor(centralPoint.y + (spike.curveLeft[key].y * spikeRadius));
 					}
 					for (const key in spike.curveRight) {
 						let centralPoint = { ...self.positionAbsolute };
-						let cos = Math.cos(self.leaves.leafModel.angles[index]);
-						let sin = -Math.sin(self.leaves.leafModel.angles[index]);
-						centralPoint.x = Math.floor(cos);
-						centralPoint.y = Math.floor(sin);
-						spike.curveRight[key].x = Math.floor(centralPoint.x + (spike.curveRight[key].x + spikeRadius));
-						spike.curveRight[key].y = Math.floor(centralPoint.y + (spike.curveRight[key].y + spikeRadius));
+						spike.curveRight[key] = simpleRotate(spike.curveRight[key],self.innerRotation+self.leaves.leafModel.angles[index]);
+						spike.curveRight[key].x = Math.floor(centralPoint.x + (spike.curveRight[key].x * spikeRadius));
+						spike.curveRight[key].y = Math.floor(centralPoint.y + (spike.curveRight[key].y * spikeRadius));
 					}
 			});
 console.log(self.geometry)
@@ -452,22 +446,43 @@ console.log(self.geometry)
 			if(self.geometry.crown.shape === "double-curve"){
 				let color = self.geometry.crown.color;
 				self.geometry.crown.spikes.forEach((spike)=>{
+					let leftPts = {...spike.curveLeft};
+					let rightPts = {...spike.curveRight};
+
+					for (const key in leftPts) {
+						leftPts[key] = drawingPositionGet(leftPts[key]);
+					}
+					for (const key in rightPts) {
+						rightPts[key] = drawingPositionGet(rightPts[key]);
+					}
 					context.save();
 					context.globalAlpha = 1;
 					context.strokeStyle = color;
 					context.fillStyle = color;
 					context.beginPath();
-						curve(spike.curveLeft.ctrlPt1.x,spike.curveLeft.ctrlPt1.y,spike.curveLeft.pt1.x,spike.curveLeft.pt1.y,spike.curveLeft.pt2.x,spike.curveLeft.pt2.y,spike.curveLeft.ctrlPt2.x,spike.curveLeft.ctrlPt2.y);
-						curve(spike.curveRight.ctrlPt1.x,spike.curveRight.ctrlPt1.y,spike.curveRight.pt1.x,spike.curveRight.pt1.y,spike.curveRight.pt2.x,spike.curveRight.pt2.y,spike.curveRight.ctrlPt2.x,spike.curveRight.ctrlPt2.y);
+						curve(leftPts.ctrlPt1.x,leftPts.ctrlPt1.y,leftPts.pt1.x,leftPts.pt1.y,leftPts.pt2.x,leftPts.pt2.y,leftPts.ctrlPt2.x,leftPts.ctrlPt2.y);
+						curve(rightPts.ctrlPt1.x,rightPts.ctrlPt1.y,rightPts.pt1.x,rightPts.pt1.y,rightPts.pt2.x,rightPts.pt2.y,rightPts.ctrlPt2.x,rightPts.ctrlPt2.y);
 					context.closePath();
 					context.stroke();
 					context.fill();
 					context.restore();
 
-				})
+				});
+				//self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size, center: null };
+				if(self.geometry.heart.shape === 'circle'){
+					context.save();
+					context.strokeStyle = self.geometry.heart.color;
+					context.fillStyle = self.geometry.heart.color;
+					context.beginPath();
+					let centralPt = drawingPositionGet({...self.geometry.heart.center});
+					circle(centralPt.x, centralPt.y, self.geometry.heart.diameter);
+					context.closePath();
+					context.stroke();
+					context.fill();
+					context.restore();
+				}
 			}
 		}
-
 	}
 }
 
