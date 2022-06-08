@@ -354,88 +354,119 @@ function setNotMobs(world){
 	world.data.plants.forEach((r)=>{
 		notMobs.push(new Plant(r));
 	});
-	
-    return notMobs;
+
+	return notMobs;
 }
 
-function Plant(data){
+function Plant(data) {
 	this.birth = new Date(data.birth);
 	this.today = new Date();
 	this.age = Math.floor((this.today.getTime() - this.birth.getTime()) / (1000 * 3600 * 24));
-	this.size = Math.min(this.age * data.size.growthPerDay + data.size.min,data.size.max);
+	this.size = Math.min(this.age * data.size.growthPerDay + data.size.min, data.size.max);
 	this.distance = data.distance;
-    this.angleToOrigine = data.angleToOrigine;
-    this.name = data.name;
-    this.innerRotation = data.innerRotation;
-    this.positionAbsolute = { x: 0, y: 0 };
-    this.positionRelative = { x: 0, y: 0 };
-    this.half = Math.floor(this.size / 2);
-    this.shape = data.shape;
-    this.hit = false;
-    this.hitAngles = [];
-    this.hitMiddleAngle = 0;
-	this.color= data.color;
+	this.angleToOrigine = data.angleToOrigine;
+	this.name = data.name;
+	this.innerRotation = data.innerRotation;
+	this.positionAbsolute = { x: 0, y: 0 };
+	this.positionRelative = { x: 0, y: 0 };
+	this.half = Math.floor(this.size / 2);
+	this.shape = data.shape;
+	this.hit = false;
+	this.hitAngles = [];
+	this.hitMiddleAngle = 0;
+	this.color = data.color;
 	this.leaves = data.leaves || null;
 	this.collider = {
-		shape:"circle",
-		data:null
+		shape: "circle",
+		data: null
 	}
-	this.init = function(){
+	this.init = function () {
 		let self = this;
-		if(self.leaves === null){
+		if (self.leaves === null) {
 			throw 'Not implemented plant crown shape : ' + self.geometry.crown.shape;
 		}
-		let spikesRadius =  Math.min(Math.floor((this.today.getTime() - this.birth.getTime()) / (1000 * 3600 * 24)) * this.leaves.leafModel.size.growthPerDay + this.leaves.leafModel.size.min, this.leaves.leafModel.size.max);
+		let spikesRadius = Math.min(self.age * self.leaves.leafModel.size.growthPerDay + self.leaves.leafModel.size.min, self.leaves.leafModel.size.max);
 		self.geometry = {};
-		self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size };
-		if(self.leaves === null){
+		self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size, center: null };
+		if (self.leaves === null) {
 			self.geometry.crown = null;
-		}else{
-			self.geometry.crown = { shape: self.leaves.shape, color: self.leaves.leafModel.color, number: self.leaves.number,radius:spikesRadius }
+		} else {
+			self.geometry.crown = { shape: self.leaves.shape, color: self.leaves.leafModel.color, number: self.leaves.number, radius: spikesRadius }
 			self.geometry.crown.spikes = [];
-			if(self.geometry.crown.shape === "double-curve"){
-				for(let i = 0 ; i < self.geometry.crown.number;i++){
+			if (self.geometry.crown.shape === "double-curve") {
+				for (let i = 0; i < self.geometry.crown.number; i++) {
 					let matrix = [...self.leaves.leafModel.matrix];
 					self.geometry.crown.spikes.push({
-						curveLeft : {
-							ctrlPt1:matrix[0],
-							pt1:matrix[1],
-							pt2:matrix[2],
-							ctrlPt2:matrix[3]
+						curveLeft: {
+							ctrlPt1: matrix[0],
+							pt1: matrix[1],
+							pt2: matrix[2],
+							ctrlPt2: matrix[3]
 						},
-						curveRight : {
-							ctrlPt1:matrix[4],
-							pt1:matrix[5],
-							pt2:matrix[6],
-							ctrlPt2:matrix[7]
+						curveRight: {
+							ctrlPt1: matrix[4],
+							pt1: matrix[5],
+							pt2: matrix[6],
+							ctrlPt2: matrix[7]
 						}
 					})
 				}
-						// the real position according to origin point
-			let cos = Math.cos(self.angleToOrigine);
-			let sin = -Math.sin(self.angleToOrigine);
-			self.positionAbsolute.x = Math.floor(cos * self.distance);
-			self.positionAbsolute.y = Math.floor(sin * self.distance);
-
-				self.geometry.crown.spikes.forEach((spike,index)=>{
+				// the real position according to origin point
+				let cos = Math.cos(self.angleToOrigine);
+				let sin = -Math.sin(self.angleToOrigine);
+				self.positionAbsolute.x = Math.floor(cos * self.distance);
+				self.positionAbsolute.y = Math.floor(sin * self.distance);
+				self.geometry.heart.center = { x: self.positionAbsolute.x, y: self.positionAbsolute.y }
+				const spikeRadius = self.geometry.crown.radius;
+				self.geometry.crown.spikes.forEach((spike, index) => {
 					for (const key in spike.curveLeft) {
-						spike.curveLeft[key] = simpleRotate(spike.curveLeft[key],self.innerRotation+self.leaves.leafModel.angles[index]);
-						spike.curveLeft[key].x = self.positionAbsolute.x + (self.half * spike.curveLeft[key].x);
-						spike.curveLeft[key].y = self.positionAbsolute.y + (self.half * spike.curveLeft[key].y);
+						let centralPoint = { ...self.positionAbsolute };
+						let cos = Math.cos(self.leaves.leafModel.angles[index]+self.angleToOrigine);
+						let sin = -Math.sin(self.leaves.leafModel.angles[index]+self.angleToOrigine);
+						centralPoint.x = Math.floor(cos);
+						centralPoint.y = Math.floor(sin);
+						spike.curveLeft[key].x = Math.floor(centralPoint.x + (spike.curveLeft[key].x + spikeRadius));
+						spike.curveLeft[key].y = Math.floor(centralPoint.y + (spike.curveLeft[key].y + spikeRadius));
 					}
 					for (const key in spike.curveRight) {
-						spike.curveRight[key] = simpleRotate(spike.curveRight[key],self.innerRotation+self.leaves.leafModel.angles[index]);
-						spike.curveRight[key].x = self.positionAbsolute.x + (self.half * spike.curveRight[key].x);
-						spike.curveRight[key].y = self.positionAbsolute.y + (self.half * spike.curveRight[key].y);
+						let centralPoint = { ...self.positionAbsolute };
+						let cos = Math.cos(self.leaves.leafModel.angles[index]);
+						let sin = -Math.sin(self.leaves.leafModel.angles[index]);
+						centralPoint.x = Math.floor(cos);
+						centralPoint.y = Math.floor(sin);
+						spike.curveRight[key].x = Math.floor(centralPoint.x + (spike.curveRight[key].x + spikeRadius));
+						spike.curveRight[key].y = Math.floor(centralPoint.y + (spike.curveRight[key].y + spikeRadius));
 					}
-				});
-
+			});
+console.log(self.geometry)
 			}else{
 				throw 'Not implemented plant crown shape : ' + self.geometry.crown.shape;
 			}
 		}
 	}
 	this.draw = function () {
+		var self = this;
+		isVisible = true;
+		if(!isVisible) return;
+		if(self.geometry && self.geometry.crown ){
+			if(self.geometry.crown.shape === "double-curve"){
+				let color = self.geometry.crown.color;
+				self.geometry.crown.spikes.forEach((spike)=>{
+					context.save();
+					context.globalAlpha = 1;
+					context.strokeStyle = color;
+					context.fillStyle = color;
+					context.beginPath();
+						curve(spike.curveLeft.ctrlPt1.x,spike.curveLeft.ctrlPt1.y,spike.curveLeft.pt1.x,spike.curveLeft.pt1.y,spike.curveLeft.pt2.x,spike.curveLeft.pt2.y,spike.curveLeft.ctrlPt2.x,spike.curveLeft.ctrlPt2.y);
+						curve(spike.curveRight.ctrlPt1.x,spike.curveRight.ctrlPt1.y,spike.curveRight.pt1.x,spike.curveRight.pt1.y,spike.curveRight.pt2.x,spike.curveRight.pt2.y,spike.curveRight.ctrlPt2.x,spike.curveRight.ctrlPt2.y);
+					context.closePath();
+					context.stroke();
+					context.fill();
+					context.restore();
+
+				})
+			}
+		}
 
 	}
 }
