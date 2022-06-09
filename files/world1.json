@@ -4,6 +4,31 @@
     "baseColor":"#ccb9b4",
     "currentCenter":{"x":0,"y":0},
     "data" : {
+        "models" : [{
+            "name": "Lilium-7",
+            "leaves":{
+                "shape":"double-curve",
+                "number" : 7,
+                "leafModel" : {
+                    "size":{
+                        "min": 30,
+                        "max":120,
+                        "growthPerDay" : 9
+                    },
+                    "angles": [
+                        0.1,
+                        0.9,
+                        1.7,
+                        2.67,
+                        3.55,
+                        4.28,
+                        5.15
+                    ],
+                    "color":"#2F8C5E",
+                    "matrix": [{"x":0.49642857142857144,"y":-0.8749999999999999},{"x":0,"y":0},{"x":0,"y":0.6142857142857144},{"x":0.9857142857142855,"y":0.37142857142857133},{"x":0.49642857142857144,"y":-0.8749999999999999},{"x":0,"y":0},{"x":0,"y":0.6071428571428572},{"x":-0.9321428571428572,"y":0.4035714285714285}]
+                } 
+            }
+        }],
         "floor" : {
             "shapes" : [
                 {
@@ -37,52 +62,105 @@
             },
             "name": "Lilium",
             "innerRotation":0.4,
-            "leaves":{
-                "shape":"double-curve",
-                "number" : 7,
-                "leafModel" : {
-                    "size":{
-                        "min": 30,
-                        "max":120,
-                        "growthPerDay" : 9
-                    },
-                    "angles": [
-                        0.1,
-                        0.9,
-                        1.7,
-                        2.67,
-                        3.55,
-                        4.28,
-                        5.15
-                    ],
-                    "color":"#2F8C5E",
-                    "matrix": [{
-                        "x": 0.49642857142857144,
-                        "y": -0.8749999999999999
-                    }, {
-                        "x": 0,
-                        "y": 0
-                    }, {
-                        "x": 0,
-                        "y": 0.6142857142857144
-                    }, {
-                        "x": 0.9857142857142855,
-                        "y": 0.37142857142857133
-                    }, {
-                        "x": 0.49642857142857144,
-                        "y": -0.8749999999999999
-                    }, {
-                        "x": 0,
-                        "y": 0
-                    }, {
-                        "x": 0,
-                        "y": 0.6071428571428572
-                    }, {
-                        "x": -0.9321428571428572,
-                        "y": 0.4035714285714285
-                    }]
-                } 
-            }
+            "model" : "Lilium-7"
+        },{
+            "birth":"2022-05-01T07:00:00.000Z",
+            "distance":350,
+            "angleToOrigine":0.75,
+            "color":"#efbf11",
+            "shape":"circle",
+            "size":{
+                "min": 3,
+                "max":12,
+                "growthPerDay" : 1
+            },
+            "name": "Lilium",
+            "innerRotation":0.67,
+            "model" : "Lilium-7"
+        },{
+            "birth":"2022-06-01T07:00:00.000Z",
+            "distance":550,
+            "angleToOrigine":2,
+            "color":"#efbf11",
+            "shape":"circle",
+            "size":{
+                "min": 3,
+                "max":13,
+                "growthPerDay" : 1
+            },
+            "name": "Lilium",
+            "innerRotation":0.4,
+            "model" : "Lilium-7"
+        },{
+            "birth":"2022-05-15T07:00:00.000Z",
+            "distance":350,
+            "angleToOrigine":3,
+            "color":"#efbf11",
+            "shape":"circle",
+            "size":{
+                "min": 3,
+                "max":13,
+                "growthPerDay" : 1
+            },
+            "name": "Lilium",
+            "innerRotation":0.4,
+            "model" : "Lilium-7"
+        },{
+            "birth":"2022-03-01T07:00:00.000Z",
+            "distance":350,
+            "angleToOrigine":2.25,
+            "color":"#efbf11",
+            "shape":"circle",
+            "size":{
+                "min": 3,
+                "max":13,
+                "growthPerDay" : 1
+            },
+            "name": "Lilium",
+            "innerRotation":3,
+            "model" : "Lilium-7"
+        },{
+            "birth":"2022-04-01T07:00:00.000Z",
+            "distance":350,
+            "angleToOrigine":0.95,
+            "color":"#efbf11",
+            "shape":"circle",
+            "size":{
+                "min": 3,
+                "max":13,
+                "growthPerDay" : 1
+            },
+            "name": "Lilium",
+            "innerRotation":0.4,
+            "model" : "Lilium-7"
+        },{
+            "birth":"2022-04-01T07:00:00.000Z",
+            "distance":150,
+            "angleToOrigine":0.25,
+            "color":"#efbf11",
+            "shape":"circle",
+            "size":{
+                "min": 3,
+                "max":13,
+                "growthPerDay" : 1
+            },
+            "name": "Lilium",
+            "innerRotation":0.4,
+            "model" : "Lilium-7"
+        },{
+            "birth":"2022-04-01T07:00:00.000Z",
+            "distance":150,
+            "angleToOrigine":0.25,
+            "color":"#efbf11",
+            "shape":"circle",
+            "size":{
+                "min": 3,
+                "max":13,
+                "growthPerDay" : 1
+            },
+            "name": "Lilium",
+            "innerRotation":0.4,
+            "model" : "Lilium-7"
         },{
             "birth":"2022-06-01T07:00:00.000Z",
             "distance":450,
@@ -385,10 +463,10 @@
         [
         {
             "size":250,
-            "distance":390,
-            "angleToOrigine":1.1,
+            "distance":190,
+            "angleToOrigine":5,
             "name": "Everest",
-            "innerRotation":0.8,
+            "innerRotation":2.8,
             "colors":"#C96774",
             "repeat":3,
             "matrix" : [
@@ -433,7 +511,7 @@
         },
         {
             "size":115,
-            "distance":250,
+            "distance":220,
             "angleToOrigine":3,
             "name": "Monumental",
             "innerRotation":0.75,

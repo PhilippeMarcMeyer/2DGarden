@@ -21,7 +21,7 @@ function setup() {
 		setKeyDown();
 		setKeyUp();
 		if(worldModel.floor){
-			if(worldModel.floor.shapes)
+		//	if(worldModel.floor.shapes)
 		}
 		gameLoaded = true;
 	  });
@@ -390,6 +390,7 @@ function Plant(data) {
 	this.hitMiddleAngle = 0;
 	this.color = data.color;
 	this.leaves = data.leaves || null;
+	this.model = data.model ? data.model : null;
 	this.collider = {
 		shape: "circle",
 		data: null
@@ -397,7 +398,15 @@ function Plant(data) {
 	this.init = function () {
 		let self = this;
 		if (self.leaves === null) {
-			throw 'Not implemented plant crown shape : ' + self.geometry.crown.shape;
+			if(self.model){
+				let modelQueryResult = worldModel.data.models.filter((x) => { return x.name === self.model});
+				if(modelQueryResult.length === 1){
+					self.leaves = {...modelQueryResult[0].leaves};
+				}
+			}
+		}
+		if (self.leaves === null) {
+			throw 'Not implemented plant : ' + self.name;
 		}
 		let spikesRadius = Math.min(self.age * self.leaves.leafModel.size.growthPerDay + self.leaves.leafModel.size.min, self.leaves.leafModel.size.max);
 		self.geometry = {};
@@ -447,7 +456,6 @@ function Plant(data) {
 						spike.curveRight[key].y = Math.floor(centralPoint.y + (spike.curveRight[key].y * spikeRadius));
 					}
 			});
-console.log(self.geometry)
 			}else{
 				throw 'Not implemented plant crown shape : ' + self.geometry.crown.shape;
 			}
@@ -483,7 +491,6 @@ console.log(self.geometry)
 					context.restore();
 
 				});
-				//self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size, center: null };
 				if(self.geometry.heart.shape === 'circle'){
 					context.save();
 					context.strokeStyle = self.geometry.heart.color;
@@ -519,6 +526,7 @@ function PolyThing(data) {
     this.hitAngles = [];
     this.hitMiddleAngle = 0;
 	this.colors= data.colors.split(",");
+	this.borderColor = LightenDarkenColor(this.colors[0], -20);
 	this.repeat = data.repeat;
 	this.collider = {
 		shape:"poly",
@@ -595,23 +603,18 @@ function PolyThing(data) {
 		self.geometry.data2D.forEach((arr,index)=>{
 			context.save();
 			context.globalAlpha = 1;
-			context.strokeStyle = self.colors[index];
 			context.fillStyle = self.colors[index];
-			context.beginPath();
-	
+			context.strokeStyle = index === 0 ? self.borderColor : self.colors[index];
+			context.beginPath(); 
 			let drawPos = drawingPositionGet(arr[0]);
 			context.moveTo(drawPos.x, drawPos.y);
-
 			arr.forEach((pt)=>{
-
 				drawPos = drawingPositionGet(pt);
 				context.lineTo(drawPos.x, drawPos.y);
-		
 			})
 			context.closePath();
 			context.stroke();
 			context.fill();
-			context.fillStyle = "black";
 			context.globalAlpha = 1-(index/5);
 			context.restore();
 		});
