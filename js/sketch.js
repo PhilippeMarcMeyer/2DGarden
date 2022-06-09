@@ -2,7 +2,7 @@ let w2,h2,w4,h4,k90degres,k60degres,k45degres,k180degres,k270degres,k360degres,k
 let needUpdate,saveContext,context,_camera,mode,things,debugMode,scribble;
 let worldModel,gameLoaded;
 let keys = { up: false, down: false, left: false, right: false }
-
+const camOverPlantLimit = 40;
 function setup() {
     debugMode = false;
 	gameLoaded = false;
@@ -20,6 +20,9 @@ function setup() {
 		_camera = new Kamera(0.2,10,toradians(90));
 		setKeyDown();
 		setKeyUp();
+		if(worldModel.floor){
+			if(worldModel.floor.shapes)
+		}
 		gameLoaded = true;
 	  });
   }
@@ -33,8 +36,19 @@ function setup() {
 	context.fill();
 	context.fillStyle="black"; 
 	_camera.setDirection();
+	things
+	.filter((t) => {
+		return !(t instanceof Plant) || (t instanceof Plant && t.collider.data < camOverPlantLimit)
+	})
+	.forEach(function(thing){
+		thing.draw();
+	});
 	_camera.draw();
-	things.forEach(function(thing){
+	things
+	.filter((t) => {
+		return (t instanceof Plant && t.collider.data >= camOverPlantLimit);
+	})
+	.forEach(function(thing){
 		thing.draw();
 	});
   }
@@ -418,6 +432,7 @@ function Plant(data) {
 				self.positionAbsolute.y = Math.floor(sin * self.distance);
 				self.geometry.heart.center = { x: self.positionAbsolute.x, y: self.positionAbsolute.y }
 				const spikeRadius = self.geometry.crown.radius;
+				self.collider.data = spikeRadius;
 				self.geometry.crown.spikes.forEach((spike, index) => {
 					for (const key in spike.curveLeft) {
 						let centralPoint = { ...self.positionAbsolute };
