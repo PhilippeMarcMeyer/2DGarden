@@ -29,4 +29,9 @@ greater goals to find, agriculture ? houses to build ? underground passages ?
 
 #Step 1 illustrated
 
-![result for step 1](https://raw.githubusercontent.com/PhilippeMarcMeyer/2DSansBox/master/img/2dstuff.png)
+![result for step 1](https://raw.githubusercontent.com/PhilippeMarcMeyer/2DGarden/master/img/2dstuff.png)
+
+#Step 2illustrated
+
+![result for step 1](https://raw.githubusercontent.com/PhilippeMarcMeyer/2DGarden/master/img/garden_130622.png)
+

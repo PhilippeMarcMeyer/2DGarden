@@ -157,6 +157,16 @@
                     "way" : "up",
                     "size": [300],
                     "opacity":0.1  
+                } ,
+                {
+                    "distance":0,
+                    "angleToOrigine":0,
+                    "color":"#ffffff",
+                    "repeat":3,
+                    "shape":"circle",
+                    "way" : "up",
+                    "size": [2000],
+                    "opacity":0.05 
                 }
             ]
         },
@@ -319,7 +329,7 @@
         },
         {
             "birth":"2022-06-05T07:00:00.000Z",
-            "distance":370,
+            "distance":430,
             "angleToOrigine":2.8,
             "color":"#DDAF00",
             "shape":"circle",
@@ -334,7 +344,7 @@
         },
         {
             "birth":"2022-05-05T07:00:00.000Z",
-            "distance":345,
+            "distance":485,
             "angleToOrigine":2.8,
             "color":"#DDAF00",
             "shape":"circle",
@@ -349,7 +359,7 @@
         },
         {
             "birth":"2022-06-05T07:00:00.000Z",
-            "distance":310,
+            "distance":410,
             "angleToOrigine":2.7,
             "color":"#DDAF00",
             "shape":"circle",

@@ -181,14 +181,17 @@ function Kamera(rotStep,walkStep,rotation) {
 	this.knownThings = [];
 	this.rotation = rotation ? rotation : 0; 
 	this.position = {x:0,y:0};
+	this.distance = 0;
 	this.previousLocation = {x:0,y:0}; 
 	this.antePenultLocation = {x:0,y:0}; 
-
+	this.isMoving = false;
 	this.sightWidth = toradians(90);
 	this.sightLength = 200;
 	this.walkStep = walkStep;
 	this.rotStep = rotStep;
 	this.bodyRadius = 20;
+	this.bodyInMotionDiameter1 = 18
+	this.bodyInMotionDiameter2 = 22
 
 	this.turn = function(amount){ // -1 or +1
 		this.rotation -= this.rotStep*amount;
@@ -198,6 +201,8 @@ function Kamera(rotStep,walkStep,rotation) {
 
 	this.setDirection = function(){
 
+		_camera.isMoving = false;
+
 		if(keys.left){
 			_camera.turn(-1);
 		}
@@ -206,26 +211,27 @@ function Kamera(rotStep,walkStep,rotation) {
 		}
 		if(keys.up){
 			_camera.walk(1);
+			_camera.isMoving = true;
 		}	
 		if(keys.down){
 			_camera.walk(-0.45,true);
+			_camera.isMoving = true;
+
 		}	
 	}
 	this.getDistance = function(ptA,ptB){
 		let w = Math.abs(ptA.x - ptB.x);
 		let h = Math.abs(ptA.y - ptB.y);
-		return Math.sqrt(Math.pow(w + h));
+		return Math.sqrt(Math.pow(w + h,2));
 	}
 
 	this.walk = function(amount,rnd){// -1 or +1
 		var self = this;
 		// Calculate new position considering the amount, the position and the direction	
 		this.savePosition();
-		let distanceToCenter = self.getDistance(self.position,worldModel.currentCenter);
-		if(distanceToCenter > worldModel.radius){
-			self.restorePosition();
-			return;
-		}
+		let drawPos = drawingPositionGet(self.position);
+
+		self.distance = self.getDistance(self.position,drawingPositionGet(worldModel.currentCenter));
 		let randomized = 0;
 		if(rnd){
 			let flipCoin = Math.floor(Math.random() * 2)
@@ -238,7 +244,6 @@ function Kamera(rotStep,walkStep,rotation) {
 		self.position.x = Math.floor(self.position.x + (dirx * amount * self.walkStep)); 
 		self.position.y = Math.floor(self.position.y + (dirz * amount * self.walkStep));
 
-		let drawPos = drawingPositionGet(self.position);
 		if(drawPos.x > (w2 - w4)){
 			worldModel.currentCenter.x += (self.position.x - self.previousLocation.x);
 		}else if(drawPos.x < (w4 - w2)){
@@ -273,6 +278,9 @@ function Kamera(rotStep,walkStep,rotation) {
 				}
 			}
 		});
+		if(self.distance > worldModel.radius){
+			self.restorePosition();
+		}
 	}
 	
 	this.drawCross = function () {
@@ -291,7 +299,7 @@ function Kamera(rotStep,walkStep,rotation) {
 
 		var west = drawingPositionGet(simpleRotate(vectorCam, k90degres));
 		var east = drawingPositionGet(simpleRotate(vectorCam, -k90degres));
-		var north = drawingPositionGet(vectorCam);moveTo
+		var north = drawingPositionGet(vectorCam);
 		var south = drawingPositionGet(simpleRotate(vectorCam, -k180degres));
 
 		context.beginPath();
@@ -316,10 +324,26 @@ function Kamera(rotStep,walkStep,rotation) {
 	}
 	
 	this.drawCamera=function(){
-		var self = this;
+		let self = this;
 		let drawPos = drawingPositionGet(this.position);
 		//self.drawScanner();
+		// Body
 
+		let camCos = Math.cos(_camera.rotation + k90degres);
+		let camSin = -Math.sin(_camera.rotation + k90degres);
+		let ptdot1 = {
+			x: camCos * -9,
+			y: camSin * -9
+		};
+		let ptdot2 = {
+			x: camCos * 9,
+			y: camSin * 9
+		};
+
+		camCos = Math.cos(_camera.rotation);
+		camSin = -Math.sin(_camera.rotation);
+
+		let ptdot3 = {x:camCos* -10,y:camSin* -10};
 		context.save();
 
 		context.globalAlpha=1;	
@@ -329,31 +353,77 @@ function Kamera(rotStep,walkStep,rotation) {
 		context.fillStyle="red"; 
 		
 		context.beginPath();
-		context.arc(drawPos.x, drawPos.y, this.bodyRadius,0, 2*Math.PI,false);
+		if(self.isMoving){
+			if(frameCount % 4 === 0){
+				context.ellipse(drawPos.x, drawPos.y, this.bodyRadius, this.bodyInMotionDiameter2,_camera.rotation*-1, 0, 2 * Math.PI);
+			}else{
+				context.ellipse(drawPos.x, drawPos.y, this.bodyRadius, this.bodyInMotionDiameter1,_camera.rotation*-1, 0, 2 * Math.PI);
+			}
+		}else{
+			context.ellipse(drawPos.x, drawPos.y, this.bodyRadius, this.bodyRadius * 0.9,_camera.rotation*-1, 0, 2 * Math.PI);
+		}
+
+		//if(debugMode) context.strokeText(_camera.rotation,drawPos.x+30, drawPos.y);
+		if(debugMode) context.strokeText(_camera.distance,drawPos.x+30, drawPos.y);
+
+		context.closePath();
+		context.stroke();
+		context.fill();
+		context.stroke();
+
+		context.beginPath();
+		context.strokeStyle="#111"; 
+		context.fillStyle="#111"; 
+		circle(drawPos.x + ptdot1.x,drawPos.y + ptdot1.y,6);
+		circle(drawPos.x + ptdot2.x,drawPos.y + ptdot2.y,6);
+		circle(drawPos.x + ptdot3.x,drawPos.y + ptdot3.y,6);
 		context.closePath();
 		context.stroke();
 		context.fill();
 
-		var camCos = Math.cos(_camera.rotation);
-		var camSin = -Math.sin(_camera.rotation);
-		var vectorCam = {x:camCos*30,y:camSin*30};
-		
+		// right Eye
+		let eyeCos = Math.cos(_camera.rotation-0.4);
+		let eyeSin = -Math.sin(_camera.rotation-0.4);
+		let vectorEye= {x:eyeCos*30,y:eyeSin*30};
+		let pupilCos = Math.cos(_camera.rotation-0.3);
+		let pupilSin = -Math.sin(_camera.rotation-0.3);
+		let vectorPupil= {x:pupilCos*30,y:pupilSin*30};
+
 		context.fillStyle="white"; 
 		context.beginPath();
-		context.arc(drawPos.x+(vectorCam.x*0.4),drawPos.y+(vectorCam.y*0.4), (this.bodyRadius/3),0, 2*Math.PI,false);
+		context.arc(drawPos.x+(vectorEye.x*0.5),drawPos.y+(vectorEye.y*0.5), (this.bodyRadius/4),0, 2*Math.PI,false);
 		context.closePath();
 		context.stroke();
 		context.fill();
 
 		context.fillStyle="black"; 
 		context.beginPath();
-		context.arc(drawPos.x+(vectorCam.x*0.5), drawPos.y+(vectorCam.y*0.5), (this.bodyRadius/4),0, 2*Math.PI,false);
+		context.arc(drawPos.x+(vectorPupil.x*0.6), drawPos.y+(vectorPupil.y*0.6), (this.bodyRadius/8),0, 2*Math.PI,false);
 		context.closePath();
 		context.stroke();
 		context.fill();
 
-		context.strokeStyle="darkred"; 
+		//strokeWeight(10);
+		// left Eye
+		eyeCos = Math.cos(_camera.rotation+0.4);
+		eyeSin = -Math.sin(_camera.rotation+0.4);
+		vectorEye= {x:eyeCos*30,y:eyeSin*30};
+		pupilCos = Math.cos(_camera.rotation+0.3);
+		pupilSin = -Math.sin(_camera.rotation+0.3);
+		vectorPupil= {x:pupilCos*30,y:pupilSin*30};
+		context.fillStyle="white"; 
+		context.beginPath();
+		context.arc(drawPos.x+(vectorEye.x*0.5),drawPos.y+(vectorEye.y*0.5), (this.bodyRadius/4),0, 2*Math.PI,false);
+		context.closePath();
+		context.stroke();
+		context.fill();
+
 		context.fillStyle="black"; 
+		context.beginPath();
+		context.arc(drawPos.x+(vectorPupil.x*0.6), drawPos.y+(vectorPupil.y*0.6), (this.bodyRadius/8),0, 2*Math.PI,false);
+		context.closePath();
+		context.stroke();
+		context.fill();
 
 		context.restore();
 	}
