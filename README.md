@@ -1,4 +1,4 @@
-# 2DSandBox
+# 2DGarden
 Playing with basic 2D in canvas
 
 Step 1 : Let's start with 2D as my school lessons in trigonometry are long forgotten
