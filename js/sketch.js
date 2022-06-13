@@ -278,9 +278,10 @@ function Kamera(rotStep,walkStep,rotation) {
 				}
 			}
 		});
+		/*
 		if(self.distance > worldModel.radius){
 			self.restorePosition();
-		}
+		}*/
 	}
 	
 	this.drawCross = function () {
