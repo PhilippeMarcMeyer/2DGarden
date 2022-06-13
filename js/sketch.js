@@ -583,9 +583,9 @@ function Plant(data) {
 		if (self.leaves === null) {
 			self.geometry.crown = null;
 		} else {
-			self.geometry.crown = { shape: self.leaves.shape, color: self.leaves.leafModel.color, number: self.leaves.number, radius: spikesRadius }
+			self.geometry.crown = { shape: self.leaves.shape, color: self.leaves.leafModel.color,number: self.leaves.number, radius: spikesRadius }
 			self.geometry.crown.spikes = [];
-			if (self.geometry.crown.shape === "double-curve") {
+			if (self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier") {
 				for (let i = 0; i < self.geometry.crown.number; i++) {
 					let matrix = [...self.leaves.leafModel.matrix];
 					self.geometry.crown.spikes.push({
@@ -640,7 +640,7 @@ function Plant(data) {
 		isVisible = true;
 		if(!isVisible) return;
 		if(self.geometry && self.geometry.crown ){
-			if(self.geometry.crown.shape === "double-curve"){
+			if(self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier"){
 				let color = self.geometry.crown.color;
 				self.geometry.crown.spikes.forEach((spike)=>{
 					let leftPts = {...spike.curveLeft};
@@ -661,8 +661,15 @@ function Plant(data) {
 					context.strokeStyle = color;
 					context.fillStyle = color;
 					context.beginPath();
-					curve(leftPts.ctrlPt1.x,leftPts.ctrlPt1.y,leftPts.pt1.x,leftPts.pt1.y,leftPts.pt2.x,leftPts.pt2.y,leftPts.ctrlPt2.x,leftPts.ctrlPt2.y);
-					curve(rightPts.ctrlPt1.x,rightPts.ctrlPt1.y,rightPts.pt1.x,rightPts.pt1.y,rightPts.pt2.x,rightPts.pt2.y,rightPts.ctrlPt2.x,rightPts.ctrlPt2.y);
+					if (self.geometry.crown.shape === "double-curve") {
+						curve(leftPts.ctrlPt1.x, leftPts.ctrlPt1.y, leftPts.pt1.x, leftPts.pt1.y, leftPts.pt2.x, leftPts.pt2.y, leftPts.ctrlPt2.x, leftPts.ctrlPt2.y);
+						curve(rightPts.ctrlPt1.x, rightPts.ctrlPt1.y, rightPts.pt1.x, rightPts.pt1.y, rightPts.pt2.x, rightPts.pt2.y, rightPts.ctrlPt2.x, rightPts.ctrlPt2.y);
+					}
+					if (self.geometry.crown.shape === "double-bezier") {
+						context.strokeStyle = LightenDarkenColor(color,60);
+						bezier(leftPts.ctrlPt1.x, leftPts.ctrlPt1.y, leftPts.pt1.x, leftPts.pt1.y, leftPts.pt2.x, leftPts.pt2.y, leftPts.ctrlPt2.x, leftPts.ctrlPt2.y);
+						bezier(rightPts.ctrlPt1.x, rightPts.ctrlPt1.y, rightPts.pt1.x, rightPts.pt1.y, rightPts.pt2.x, rightPts.pt2.y, rightPts.ctrlPt2.x, rightPts.ctrlPt2.y);
+					}
 					context.closePath();
 					context.stroke();
 					context.fill();
@@ -805,7 +812,15 @@ function simpleRotate(point,angle){
     var sin = -Math.sin(angle);
     rotatedX = point.x * cos - point.y * sin;
     rotatedY = point.y * cos + point.x * sin;
-    return { "x": rotatedX, "y": rotatedY }
+    return { "x": rotatedX, "y": rotatedY };
+}
+
+function simpleTranslate(point,angle,amount){
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+    point.x += Math.floor(cos * amount);
+    point.y += Math.floor(sin * amount);
+    return point;
 }
 
 function calcAngleDegrees(x, y) { // origine : MDN docs

@@ -14,16 +14,49 @@
                 "leafModel": {
                     "size":{
                         "min": 12,
-                        "max":60,
-                        "growthPerDay" : 1
+                        "max":120,
+                        "growthPerDay" : 3
                     },
                     "angles": [
-                        0,
-                        2.1,
-                       4.2
+                        2.01,
+                        4,
+                        6.1
                     ],
                     "color": "#00aa00",
-                    "matrix" : [{"x":-0.623376623376623,"y":-0.201298701298701},{"x":0.376623376623377,"y":-0.642857142857143},{"x":0.811688311688312,"y":-0.051948051948052},{"x":-0.636363636363636,"y":1},{"x":-0.0460251046025105,"y":0.225941422594142},{"x":-0.723849372384937,"y":-0.112970711297071},{"x":-0.723849372384937,"y":0.443514644351464},{"x":-0.0543933054393306,"y":1}]
+                    "matrix": [
+                        {
+                            "x": 0,
+                            "y": 0.6
+                        },
+                        {
+                            "x": -0.3,
+                            "y": 0.4
+                        },
+                        {
+                            "x": -0.35,
+                            "y": 0.4
+                        },
+                        {
+                            "x": 0,
+                            "y": 0
+                        },
+                        {
+                            "x": 0,
+                            "y": 0.6
+                        },
+                        {
+                            "x": 0.3,
+                            "y": 0.4
+                        },
+                        {
+                            "x": 0.35,
+                            "y": 0.4
+                        },
+                        {
+                            "x": 0,
+                            "y": 0
+                        }
+                    ]
                 }
              }
             }
@@ -193,6 +226,48 @@
             ]
         },
         "plants" : [{
+            "birth":"2022-06-08T07:00:00.000Z",
+            "distance":700,
+            "angleToOrigine":0.25,
+            "color":"#44ee44",
+            "shape":"circle",
+            "size":{
+                "min":6,
+                "max":13,
+                "growthPerDay" : 1
+            },
+            "name": "clover-31",
+            "innerRotation":0.4,
+            "model" : "Clover-3"
+        },{
+            "birth":"2022-04-01T07:00:00.000Z",
+            "distance":400,
+            "angleToOrigine":3.25,
+            "color":"#44ee44",
+            "shape":"circle",
+            "size":{
+                "min":6,
+                "max":13,
+                "growthPerDay" : 1
+            },
+            "name": "clover-32",
+            "innerRotation":0.02,
+            "model" : "Clover-3"
+        },{
+            "birth":"2022-06-01T07:00:00.000Z",
+            "distance":400,
+            "angleToOrigine":1.25,
+            "color":"#44ee44",
+            "shape":"circle",
+            "size":{
+                "min":6,
+                "max":13,
+                "growthPerDay" : 1
+            },
+            "name": "clover-33",
+            "innerRotation":2.4,
+            "model" : "Clover-3"
+        },{
             "birth":"2022-04-01T07:00:00.000Z",
             "distance":350,
             "angleToOrigine":0.25,
