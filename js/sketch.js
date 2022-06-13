@@ -1,61 +1,53 @@
-let w2,h2,w4,h4,k90degres,k60degres,k45degres,k180degres,k270degres,k360degres,k80degres,k280degres,camFov,focalW,focalH,zoom,focalAverage;
-let needUpdate,saveContext,context,_camera,mode,things,debugMode,scribble;
-let worldModel,gameLoaded;
+let w2, h2, w4, h4, k90degres, k60degres, k45degres, k180degres, k270degres, k360degres, k80degres, k280degres, camFov, focalW, focalH, zoom, focalAverage;
+let needUpdate, saveContext, context, _camera, mode, things, debugMode, scribble;
+let worldModel, gameLoaded, floor;
 let keys = { up: false, down: false, left: false, right: false }
+
 const camOverPlantLimit = 40;
+
 function setup() {
-    debugMode = false;
+	debugMode = false;
 	gameLoaded = false;
 	frameRate(25);
 	loadJSON('/files/world1.json', result => {
-		worldModel = {...result}
+		worldModel = { ...result }
 		things = setNotMobs(worldModel);
-		things.forEach(function(t){
-			t.init();
-		});
 		createCanvas(windowWidth, windowHeight);
 		setUtilValues();
 		translate(width / 2, height / 2);
 		context = drawingContext;
-		_camera = new Kamera(0.2,10,toradians(90));
+		_camera = new Kamera(0.2, 10, toradians(90));
 		setKeyDown();
 		setKeyUp();
-		if(worldModel.floor){
-		//	if(worldModel.floor.shapes)
-		}
+		floor = new Floor(worldModel);
 		gameLoaded = true;
-	  });
-  }
+	});
+}
 
-  function draw() {
-	if(!gameLoaded) return;
+function draw() {
+	if (!gameLoaded) return;
 	translate(width / 2, height / 2);
 	clear();
-	context.fillStyle=worldModel.baseColor || "rgb(185,183,184)"; 
-	context.rect(-w2 , -h2, width, height);
-	context.fill();
-	context.fillStyle="black"; 
+	floor.draw();
 	_camera.setDirection();
 	things
-	.filter((t) => {
-		return !(t instanceof Plant) || (t instanceof Plant && t.collider.data < camOverPlantLimit)
-	})
-	.forEach(function(thing){
-		thing.draw();
-	});
+		.filter((t) => {
+			return !(t instanceof Plant) || (t instanceof Plant && t.collider.dim2 < camOverPlantLimit)
+		})
+		.forEach(function (thing) {
+			thing.draw();
+		});
 	_camera.draw();
 	things
-	.filter((t) => {
-		return (t instanceof Plant && t.collider.data >= camOverPlantLimit);
-	})
-	.forEach(function(thing){
-		thing.draw();
-	});
-  }
-
+		.filter((t) => {
+			return (t instanceof Plant && t.collider.dim2 >= camOverPlantLimit);
+		})
+		.forEach(function (thing) {
+			thing.draw();
+		});
+}
 
 // Utilities
-
 function drawingPositionGet(truePosition) {
 	return {
 		"x": worldModel && worldModel.currentCenter ? truePosition.x - worldModel.currentCenter.x : truePosition.x,
@@ -63,23 +55,18 @@ function drawingPositionGet(truePosition) {
 	};
 }
 
-function secondaryKey() {
-	if (keyIsDown("KeyW"))
-		_camera.walk(1);
+function windowResized() {
+	resizeCanvas(windowWidth, windowHeight);
+	setUtilValues();
+	translate(width / 2, height / 2);
+	context = drawingContext;
 }
-  
-  function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-    setUtilValues();
-    translate(width / 2, height / 2);
-    context = drawingContext;
-  }
 
-  function setUtilValues(){
-	w2 = width/2;
-	h2 = height/2;
-	w4 = width/4;
-	h4 = height/4;
+function setUtilValues() {
+	w2 = width / 2;
+	h2 = height / 2;
+	w4 = width / 4;
+	h4 = height / 4;
 	k90degres = toradians(90);
 	k60degres = toradians(60);
 	k45degres = toradians(45);
@@ -89,20 +76,105 @@ function secondaryKey() {
 	k80degres = toradians(80);
 	k280degres = toradians(280);
 	camFov = k45degres;
-	focalW = w2 / Math.tan(camFov/2);
-	focalH = h2 / Math.tan(camFov/2);
+	focalW = w2 / Math.tan(camFov / 2);
+	focalH = h2 / Math.tan(camFov / 2);
 	zoom = 4;
-	focalAverage = (focalW + focalH)/2;
-  }
+	focalAverage = (focalW + focalH) / 2;
+}
 
-  // Converts from degrees to radians.
-function  toradians(degrees) {
+// Converts from degrees to radians.
+function toradians(degrees) {
 	return degrees * Math.PI / 180;
 }
 
 // Converts from radians to degrees.
 function todegrees(radians) {
 	return radians * 180 / Math.PI;
+}
+
+function Floor(worldModel){
+	this.name = worldModel.name;
+    this.radius = worldModel.radius;
+    this.backgroundColor = worldModel.baseColor;
+	this.perimeterColor = worldModel.perimeterColor;
+    this.center = worldModel.currentCenter;
+	this.shapes = worldModel.data && worldModel.data.floor && worldModel.data.floor.shapes ? worldModel.data.floor.shapes : [];
+	this.elements = [];
+
+	this.init = function () {
+		let self = this;
+		if (self.shapes.length > 0) {
+			self.shapes.forEach((s) => {
+				if (s.shape === "circle") {
+					let cos = Math.cos(s.angleToOrigine);
+					let sin = -Math.sin(s.angleToOrigine);
+					let element = {};
+					// the real position according to origin point
+					element.center = { x: Math.floor(cos * s.distance), y: Math.floor(sin * s.distance) };
+					element.shape = s.shape;
+					element.color0 = s.color === "baseColor" ? worldModel.baseColor: s.color;
+					let colorAmount = s.way === "up" ? 10 : -10;
+					element.color1 = LightenDarkenColor(element.color0,colorAmount);
+					element.color2 = LightenDarkenColor(element.color1,colorAmount);
+					element.opacity = s.opacity;
+					element.diameter1 = s.size[0];
+					element.diameter2 = Math.floor(element.diameter1 / 2);
+					self.elements.push(element);
+				}
+			});
+		}
+	}
+
+	this.draw = function () {
+		let self = this;
+		context.save();
+		context.beginPath();
+		context.fillStyle = self.backgroundColor;
+		context.strokeStyle = self.perimeterColor;
+		context.rect(-w2, -h2, width, height);
+		context.closePath();
+		context.fill();
+		context.stroke();
+
+		context.beginPath();
+		context.fillStyle = self.backgroundColor;
+		context.strokeStyle = self.perimeterColor;
+		let realCenter = drawingPositionGet({...self.center});
+		context.arc(realCenter.x, realCenter.y, self.radius, 0, 2 * Math.PI);
+		context.closePath();
+		context.fill();
+		context.stroke();
+
+		context.restore();
+
+		self.elements.forEach((elem) => {
+			context.save();
+			context.beginPath();
+			let centralPt = drawingPositionGet({...elem.center});
+			context.fillStyle = elem.color1;
+			context.strokeStyle = elem.color1;
+			context.globalAlpha = elem.opacity;
+			context.arc(centralPt.x, centralPt.y,elem.diameter1, 0, 2 * Math.PI);
+			context.closePath();
+			context.fill();
+			context.stroke();
+
+			context.beginPath();
+			context.fillStyle = elem.color2;
+			context.strokeStyle = elem.color2;
+			context.globalAlpha = elem.opacity;
+			context.arc(centralPt.x, centralPt.y,elem.diameter2, 0, 2 * Math.PI);
+			context.closePath();
+			context.fill();
+			context.stroke();
+
+			context.restore();
+		});
+	}
+
+	this.init();
+
+	return this;
 }
 
 function Kamera(rotStep,walkStep,rotation) {
@@ -139,11 +211,21 @@ function Kamera(rotStep,walkStep,rotation) {
 			_camera.walk(-0.45,true);
 		}	
 	}
+	this.getDistance = function(ptA,ptB){
+		let w = Math.abs(ptA.x - ptB.x);
+		let h = Math.abs(ptA.y - ptB.y);
+		return Math.sqrt(Math.pow(w + h));
+	}
 
 	this.walk = function(amount,rnd){// -1 or +1
 		var self = this;
 		// Calculate new position considering the amount, the position and the direction	
 		this.savePosition();
+		let distanceToCenter = self.getDistance(self.position,worldModel.currentCenter);
+		if(distanceToCenter > worldModel.radius){
+			self.restorePosition();
+			return;
+		}
 		let randomized = 0;
 		if(rnd){
 			let flipCoin = Math.floor(Math.random() * 2)
@@ -185,6 +267,10 @@ function Kamera(rotStep,walkStep,rotation) {
 				if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.data)) {
 					self.restorePosition();
 				}
+			}else if(x.collider.shape === 'circle'){
+				if (collideCircleCircle(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.center.x,x.collider.center.y, x.collider.data)) {
+					x.shake();
+				}
 			}
 		});
 	}
@@ -205,9 +291,8 @@ function Kamera(rotStep,walkStep,rotation) {
 
 		var west = drawingPositionGet(simpleRotate(vectorCam, k90degres));
 		var east = drawingPositionGet(simpleRotate(vectorCam, -k90degres));
-		var north = drawingPositionGet(vectorCam);
+		var north = drawingPositionGet(vectorCam);moveTo
 		var south = drawingPositionGet(simpleRotate(vectorCam, -k180degres));
-
 
 		context.beginPath();
 		context.strokeStyle = "black";
@@ -365,10 +450,20 @@ function setNotMobs(world){
     world.data.rocks.forEach((r)=>{
 		notMobs.push(new PolyThing(r));
 	});
-	world.data.plants.forEach((r)=>{
-		notMobs.push(new Plant(r));
+	notMobs.forEach(function (t) {
+		t.init();
 	});
-
+	let notMobsPlants = [];
+	world.data.plants.forEach((r)=>{
+		notMobsPlants.push(new Plant(r));
+	});
+	notMobsPlants.forEach(function (t) {
+		t.init();
+	});
+	notMobsPlants.sort((a,b) => {
+		return a.collider.dim2 - b.collider.dim2;
+	});
+	notMobs = notMobs.concat(notMobsPlants);
 	return notMobs;
 }
 
@@ -393,7 +488,9 @@ function Plant(data) {
 	this.model = data.model ? data.model : null;
 	this.collider = {
 		shape: "circle",
-		data: null
+		center : null,
+		data: null,
+		dim2 : null
 	}
 	this.init = function () {
 		let self = this;
@@ -411,6 +508,7 @@ function Plant(data) {
 		let spikesRadius = Math.min(self.age * self.leaves.leafModel.size.growthPerDay + self.leaves.leafModel.size.min, self.leaves.leafModel.size.max);
 		self.geometry = {};
 		self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size, center: null };
+		self.collider.data = self.size;
 		if (self.leaves === null) {
 			self.geometry.crown = null;
 		} else {
@@ -439,9 +537,10 @@ function Plant(data) {
 				let sin = -Math.sin(self.angleToOrigine);
 				self.positionAbsolute.x = Math.floor(cos * self.distance);
 				self.positionAbsolute.y = Math.floor(sin * self.distance);
-				self.geometry.heart.center = { x: self.positionAbsolute.x, y: self.positionAbsolute.y }
+				self.geometry.heart.center = { x: self.positionAbsolute.x, y: self.positionAbsolute.y };
+				self.collider.center = { x: self.positionAbsolute.x, y: self.positionAbsolute.y };
 				const spikeRadius = self.geometry.crown.radius;
-				self.collider.data = spikeRadius;
+				self.collider.dim2 = spikeRadius;
 				self.geometry.crown.spikes.forEach((spike, index) => {
 					for (const key in spike.curveLeft) {
 						let centralPoint = { ...self.positionAbsolute };
@@ -461,6 +560,10 @@ function Plant(data) {
 			}
 		}
 	}
+	this.shake = function () {
+		var self = this;
+		self.animation = [-2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2];
+	}
 	this.draw = function () {
 		var self = this;
 		isVisible = true;
@@ -479,12 +582,16 @@ function Plant(data) {
 						rightPts[key] = drawingPositionGet(rightPts[key]);
 					}
 					context.save();
+					if (self.animation && self.animation.length > 0) {
+						translate(self.animation[0], self.animation[0]);
+						self.animation.shift();
+					} 
 					context.globalAlpha = 1;
 					context.strokeStyle = color;
 					context.fillStyle = color;
 					context.beginPath();
-						curve(leftPts.ctrlPt1.x,leftPts.ctrlPt1.y,leftPts.pt1.x,leftPts.pt1.y,leftPts.pt2.x,leftPts.pt2.y,leftPts.ctrlPt2.x,leftPts.ctrlPt2.y);
-						curve(rightPts.ctrlPt1.x,rightPts.ctrlPt1.y,rightPts.pt1.x,rightPts.pt1.y,rightPts.pt2.x,rightPts.pt2.y,rightPts.ctrlPt2.x,rightPts.ctrlPt2.y);
+					curve(leftPts.ctrlPt1.x,leftPts.ctrlPt1.y,leftPts.pt1.x,leftPts.pt1.y,leftPts.pt2.x,leftPts.pt2.y,leftPts.ctrlPt2.x,leftPts.ctrlPt2.y);
+					curve(rightPts.ctrlPt1.x,rightPts.ctrlPt1.y,rightPts.pt1.x,rightPts.pt1.y,rightPts.pt2.x,rightPts.pt2.y,rightPts.ctrlPt2.x,rightPts.ctrlPt2.y);
 					context.closePath();
 					context.stroke();
 					context.fill();
