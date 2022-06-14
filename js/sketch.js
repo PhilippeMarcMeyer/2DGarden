@@ -667,8 +667,8 @@ function Plant(data) {
 					}
 					if (self.geometry.crown.shape === "double-bezier") {
 						context.strokeStyle = LightenDarkenColor(color,60);
-						bezier(leftPts.ctrlPt1.x, leftPts.ctrlPt1.y, leftPts.pt1.x, leftPts.pt1.y, leftPts.pt2.x, leftPts.pt2.y, leftPts.ctrlPt2.x, leftPts.ctrlPt2.y);
-						bezier(rightPts.ctrlPt1.x, rightPts.ctrlPt1.y, rightPts.pt1.x, rightPts.pt1.y, rightPts.pt2.x, rightPts.pt2.y, rightPts.ctrlPt2.x, rightPts.ctrlPt2.y);
+						bezier(leftPts.pt1.x, leftPts.pt1.y,leftPts.ctrlPt1.x, leftPts.ctrlPt1.y,leftPts.ctrlPt2.x, leftPts.ctrlPt2.y,  leftPts.pt2.x, leftPts.pt2.y);
+						bezier( rightPts.pt1.x, rightPts.pt1.y,rightPts.ctrlPt1.x, rightPts.ctrlPt1.y, rightPts.ctrlPt2.x, rightPts.ctrlPt2.y, rightPts.pt2.x, rightPts.pt2.y);
 					}
 					context.closePath();
 					context.stroke();
