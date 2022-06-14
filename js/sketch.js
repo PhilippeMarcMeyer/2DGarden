@@ -190,8 +190,10 @@ function Kamera(rotStep,walkStep,rotation) {
 	this.walkStep = walkStep;
 	this.rotStep = rotStep;
 	this.bodyRadius = 20;
-	this.bodyInMotionDiameter1 = 18
-	this.bodyInMotionDiameter2 = 22
+	this.bodyInMotionDiameter1 = 18;
+	this.bodyInMotionDiameter2 = 22;
+	this.wLimit = w2 - w4;
+	this.hLimit = h2 -h4;
 
 	this.turn = function(amount){ // -1 or +1
 		this.rotation -= this.rotStep*amount;
@@ -244,15 +246,15 @@ function Kamera(rotStep,walkStep,rotation) {
 		self.position.x = Math.floor(self.position.x + (dirx * amount * self.walkStep)); 
 		self.position.y = Math.floor(self.position.y + (dirz * amount * self.walkStep));
 
-		if(drawPos.x > (w2 - w4)){
+		if(drawPos.x > self.wLimit){
 			worldModel.currentCenter.x += (self.position.x - self.previousLocation.x);
-		}else if(drawPos.x < (w4 - w2)){
+		}else if(drawPos.x < self.wLimit){
 			worldModel.currentCenter.x -= (self.previousLocation.x - self.position.x);
 		}
 
-		if(drawPos.y > (h2 -h4)){
+		if(drawPos.y > self.hLimit){
 			worldModel.currentCenter.y += (self.position.y - self.previousLocation.y);
-		}else if(drawPos.y < (h4 - h2)){
+		}else if(drawPos.y < self.hLimit){
 			worldModel.currentCenter.y -= (self.previousLocation.y - self.position.y);
 		}
 	}
@@ -263,6 +265,7 @@ function Kamera(rotStep,walkStep,rotation) {
 	    self.checkCollisions();
 		self.drawCross();
 		self.drawCamera();
+		//self.drawScanner();
 	}
 
 	this.checkCollisions = function () {
@@ -433,8 +436,8 @@ function Kamera(rotStep,walkStep,rotation) {
 		context.save();
 		context.globalAlpha=0.35;
 		context.beginPath();
-		var rotationLeftLimit = camera.rotation-this.sightWidth/2;
-		var rotationRightLimit = camera.rotation+this.sightWidth/2;
+		var rotationLeftLimit = _camera.rotation-this.sightWidth/2;
+		var rotationRightLimit = _camera.rotation+this.sightWidth/2;
 
 		context.strokeStyle="rgb(255,255,0)"; 
 		var ray;
@@ -449,7 +452,7 @@ function Kamera(rotStep,walkStep,rotation) {
 			camCos = Math.cos(i);
 			camSin = -Math.sin(i);
 			
-			var start = {"x":camera.position.x+camCos*this.bodyRadius,"y":camera.position.z+camSin*this.bodyRadius};
+			var start = {"x":_camera.position.x+camCos*this.bodyRadius,"y":_camera.position.y+camSin*this.bodyRadius};
 			context.moveTo(start.x, start.y);
 			
 			ray= {x:camCos*rayLength,y:camSin*rayLength};
@@ -458,11 +461,12 @@ function Kamera(rotStep,walkStep,rotation) {
 			things.forEach(function(x){
 				
 				var poly = x.geometry.data2D;
-			
+			/*
 				if(collideLinePoly(start.x,start.y,end.x,end.y,poly)){
 					x.hit = true;
 					x.hitAngles.push(relativeAngle);
-				}					
+				}	
+				*/				
 			});
 			relativeAngle += step;
 		}
@@ -480,17 +484,17 @@ function Kamera(rotStep,walkStep,rotation) {
 		
 		});
 		
-		context.moveTo(camera.position.x, camera.position.z);
+		context.moveTo(_camera.position.x, _camera.position.y);
 		camCos = Math.cos(rotationRightLimit);
 		camSin = -Math.sin(rotationRightLimit);
 		ray= {x:camCos*this.sightLength,y:camSin*this.sightLength};
-		context.lineTo(camera.position.x+ray.x,camera.position.z+ray.y);
+		context.lineTo(_camera.position.x+ray.x,_camera.position.y+ray.y);
 		context.closePath();
 		context.stroke();
 
 		context.beginPath();
-		context.moveTo(camera.position.x, camera.position.z);
-		context.arc(camera.position.x, camera.position.z, this.sightLength, -rotationRightLimit, -rotationLeftLimit,false);
+		context.moveTo(_camera.position.x, _camera.position.y);
+		context.arc(_camera.position.x, _camera.position.y, this.sightLength, -rotationRightLimit, -rotationLeftLimit,false);
 		
 		context.closePath();
 		context.stroke();
