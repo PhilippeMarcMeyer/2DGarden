@@ -1,0 +1,94 @@
+<html>
+ <head>
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.7/p5.min.js"></script>
+   <script type="text/javascript" src="polygoner.js"></script>
+   <style>
+   	 body{
+		font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; 
+	 }
+	 #container{
+		 margin-top:0px;
+		 padding-top: 0px;
+		 padding-left:50px;
+		 width:90%;
+	 }
+	 
+	h5 {
+		color: #2e44b9;
+		font-weight: bold;
+		font-size: 24px;
+		margin-bottom: 10px;
+	}
+	
+	input[type='radio']{
+		cursor:pointer;
+		margin-top:10px;
+	}
+	
+	input[type='button']{
+		width:100px;
+		height:24px;
+		margin-top:10px;
+		border-radius:6px;
+		border:1px solid grey;
+		cursor:pointer;
+		opacity:0.9;
+	}
+	
+	input[type='button']:hover{
+		opacity:1;
+	}
+	
+	.controls{
+		padding-left:50px;
+		width:500px;
+		position:relative;
+	}
+	
+	.danger{
+		background: linear-gradient(#ee0000, #aa0000);
+		color:white;
+	}
+	
+	.cool{
+		background: linear-gradient(#22ee66, #22aa66);
+		color:black;
+	}
+	
+	#formulas{
+		width:400px;
+		top:38px;
+		border:1px solid grey;
+		height:100px;
+		overflow:auto;
+		font-size:12px;
+		padding-left:5px;
+		padding-top:2px;
+	}
+	#canvasZone{
+		border: 1px solid grey;
+		width:400px;
+		heignt:400px;
+	}
+	
+	  </style>
+ </head>
+ <body>
+	<div id="container">
+		<h5>Tiny polygon designer for p5.js</h5>
+		<div id="canvasZone" >
+		</div>
+	</div>	
+			<div class="controls">
+			<input type="button" id="saveAbsolute" value="Save absolute" class="cool">
+			<input type="button" id="saveRelative" value="Save relative" class="cool">
+			<input type="button" id="close" value="close polygon" class="cool">
+			<br/>
+			<input type="button" id="eraseLast" class="danger" value="Erase last pt">
+			<input type="button" id="eraseAll" class="danger" value="Erase All">
+			<br /><br />
+            <div id="formulas"></div>
+		</div>
+	</div>
+ </body>
+</html>
