@@ -6,7 +6,7 @@ let keys = { up: false, down: false, left: false, right: false }
 const camOverPlantLimit = 40;
 
 function setup() {
-	debugMode = false;
+	debugMode = true;
 	gameLoaded = false;
 	frameRate(25);
 	loadJSON('/files/world1.json', result => {
@@ -45,6 +45,12 @@ function draw() {
 		.forEach(function (thing) {
 			thing.draw();
 		});
+
+		if(debugMode){
+			text(`Center                   : ${worldModel.currentCenter.x},${worldModel.currentCenter.y}`, -w2+20, -h2+20);
+			text(`LadyBug distance : ${_camera.distance}`, -w2+20, -h2+40);
+			text(`world radius          : ${worldModel.radius}`, -w2+20, -h2+60);
+		}
 }
 
 // Utilities
@@ -135,16 +141,6 @@ function Floor(worldModel){
 		context.closePath();
 		context.fill();
 		context.stroke();
-
-		context.beginPath();
-		context.fillStyle = self.backgroundColor;
-		context.strokeStyle = self.perimeterColor;
-		let realCenter = drawingPositionGet({...self.center});
-		context.arc(realCenter.x, realCenter.y, self.radius, 0, 2 * Math.PI);
-		context.closePath();
-		context.fill();
-		context.stroke();
-
 		context.restore();
 
 		self.elements.forEach((elem) => {
@@ -232,19 +228,29 @@ function Kamera(rotStep,walkStep,rotation) {
 		// Calculate new position considering the amount, the position and the direction	
 		this.savePosition();
 		let drawPos = drawingPositionGet(self.position);
+		self.distance = self.getDistance({x:0,y:0},worldModel.currentCenter);
+		let isOut = self.distance > worldModel.radius;
 
-		self.distance = self.getDistance(self.position,drawingPositionGet(worldModel.currentCenter));
-		let randomized = 0;
-		if(rnd){
-			let flipCoin = Math.floor(Math.random() * 2)
-			randomized = Math.random();
-			randomized*= flipCoin == 1 ? -1 : 1;
+		if(isOut){
+			let ratio = Math.floor(100 * (worldModel.radius / self.distance)) / 100;
+			self.position.x = Math.floor(self.position.x * ratio);
+			self.position.y = Math.floor(self.position.y * ratio);
+			drawPos = drawingPositionGet(self.position);
 		}
-		let rotation = this.rotation + randomized;
-		var dirx = Math.cos(rotation);
-		var dirz = - Math.sin(rotation);
-		self.position.x = Math.floor(self.position.x + (dirx * amount * self.walkStep)); 
-		self.position.y = Math.floor(self.position.y + (dirz * amount * self.walkStep));
+
+		if(!isOut){
+			let randomized = 0;
+			if(rnd){
+				let flipCoin = Math.floor(Math.random() * 2)
+				randomized = Math.random();
+				randomized*= flipCoin == 1 ? -1 : 1;
+			}
+			let rotation = this.rotation + randomized;
+			var dirx = Math.cos(rotation);
+			var dirz = - Math.sin(rotation);
+			self.position.x = Math.floor(self.position.x + (dirx * amount * self.walkStep)); 
+			self.position.y = Math.floor(self.position.y + (dirz * amount * self.walkStep));
+		}
 
 		if(drawPos.x > self.wLimit){
 			worldModel.currentCenter.x += (self.position.x - self.previousLocation.x);
@@ -257,6 +263,7 @@ function Kamera(rotStep,walkStep,rotation) {
 		}else if(drawPos.y < self.hLimit){
 			worldModel.currentCenter.y -= (self.previousLocation.y - self.position.y);
 		}
+
 	}
 
 	this.draw = function(){
@@ -281,10 +288,6 @@ function Kamera(rotStep,walkStep,rotation) {
 				}
 			}
 		});
-		/*
-		if(self.distance > worldModel.radius){
-			self.restorePosition();
-		}*/
 	}
 	
 	this.drawCross = function () {
@@ -366,9 +369,6 @@ function Kamera(rotStep,walkStep,rotation) {
 		}else{
 			context.ellipse(drawPos.x, drawPos.y, this.bodyRadius, this.bodyRadius * 0.9,_camera.rotation*-1, 0, 2 * Math.PI);
 		}
-
-		//if(debugMode) context.strokeText(_camera.rotation,drawPos.x+30, drawPos.y);
-		if(debugMode) context.strokeText(_camera.distance,drawPos.x+30, drawPos.y);
 
 		context.closePath();
 		context.stroke();
