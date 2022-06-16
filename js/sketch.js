@@ -6,7 +6,7 @@ let keys = { up: false, down: false, left: false, right: false }
 const camOverPlantLimit = 40;
 
 function setup() {
-	debugMode = true;
+	debugMode = false;
 	gameLoaded = false;
 	frameRate(25);
 	loadJSON('/files/world1.json', result => {
@@ -48,8 +48,9 @@ function draw() {
 
 		if(debugMode){
 			text(`Center                   : ${worldModel.currentCenter.x},${worldModel.currentCenter.y}`, -w2+20, -h2+20);
-			text(`LadyBug distance : ${_camera.distance}`, -w2+20, -h2+40);
-			text(`world radius          : ${worldModel.radius}`, -w2+20, -h2+60);
+			text(`LadyBug position :${_camera.position.x},${_camera.position.y}`, -w2+20, -h2+40);
+			text(`LadyBug distance : ${_camera.distance}`, -w2+20, -h2+60);
+			text(`world radius          : ${worldModel.radius}`, -w2+20, -h2+80);
 		}
 }
 
@@ -126,6 +127,33 @@ function Floor(worldModel){
 					element.diameter1 = s.size[0];
 					element.diameter2 = Math.floor(element.diameter1 / 2);
 					self.elements.push(element);
+				}else if(s.shape === "polygon"){
+					let cos = Math.cos(s.angleToOrigine);
+					let sin = -Math.sin(s.angleToOrigine);
+					let element = {};
+					// the real position according to origin point
+					element.center = { x: Math.floor(cos * s.distance), y: Math.floor(sin * s.distance) };
+					element.shape = s.shape;
+					element.color = s.color === "baseColor" ? worldModel.baseColor: s.color;
+					element.opacity = s.opacity;
+					element.size = s.size[0];
+					element.points = s.matrix.map((pt)=>{
+						return simpleRotate(pt,s.innerRotation);
+					});
+					element.points.forEach((pt)=>{
+						pt.x = element.center.x + (element.size * pt.x);
+						pt.y = element.center.y + (element.size * pt.y);
+					})
+					if(s.collideMode){
+						element.collider = {
+							shape:"poly",
+							way : s.collideMode,
+							center : element.shape.center,
+							data: [...element.points],
+							dim2 : null
+						}
+					}
+					self.elements.push(element);
 				}
 			});
 		}
@@ -144,27 +172,45 @@ function Floor(worldModel){
 		context.restore();
 
 		self.elements.forEach((elem) => {
-			context.save();
-			context.beginPath();
-			let centralPt = drawingPositionGet({...elem.center});
-			context.fillStyle = elem.color1;
-			context.strokeStyle = elem.color1;
-			context.globalAlpha = elem.opacity;
-			context.arc(centralPt.x, centralPt.y,elem.diameter1, 0, 2 * Math.PI);
-			context.closePath();
-			context.fill();
-			context.stroke();
+			if (elem.shape === "circle") {
+				context.save();
+				context.beginPath();
+				let centralPt = drawingPositionGet({ ...elem.center });
+				context.fillStyle = elem.color1;
+				context.strokeStyle = elem.color1;
+				context.globalAlpha = elem.opacity;
+				context.arc(centralPt.x, centralPt.y, elem.diameter1, 0, 2 * Math.PI);
+				context.closePath();
+				context.fill();
+				context.stroke();
 
-			context.beginPath();
-			context.fillStyle = elem.color2;
-			context.strokeStyle = elem.color2;
-			context.globalAlpha = elem.opacity;
-			context.arc(centralPt.x, centralPt.y,elem.diameter2, 0, 2 * Math.PI);
-			context.closePath();
-			context.fill();
-			context.stroke();
-
-			context.restore();
+				context.beginPath();
+				context.fillStyle = elem.color2;
+				context.strokeStyle = elem.color2;
+				context.globalAlpha = elem.opacity;
+				context.arc(centralPt.x, centralPt.y, elem.diameter2, 0, 2 * Math.PI);
+				context.closePath();
+				context.fill();
+				context.stroke();
+				context.restore();
+			}else if(elem.shape === "polygon"){
+				context.save();
+				context.globalAlpha = elem.opacity;
+				context.fillStyle = elem.color;
+				context.strokeStyle =  elem.color;
+				context.beginPath(); 
+				let drawPos = drawingPositionGet(elem.points[0]);
+				context.moveTo(drawPos.x, drawPos.y);
+				elem.points.forEach((pt)=>{
+					drawPos = drawingPositionGet(pt);
+					context.lineTo(drawPos.x, drawPos.y);
+					if (debugMode) text(pt.x + "," + pt.y, drawPos.x + 20, drawPos.y);
+				})
+				context.closePath();
+				context.stroke();
+				context.fill();
+				context.restore();
+			}
 		});
 	}
 
@@ -229,41 +275,44 @@ function Kamera(rotStep,walkStep,rotation) {
 		this.savePosition();
 		let drawPos = drawingPositionGet(self.position);
 		self.distance = self.getDistance({x:0,y:0},worldModel.currentCenter);
-		let isOut = self.distance > worldModel.radius;
-
-		if(isOut){
-			let ratio = Math.floor(100 * (worldModel.radius / self.distance)) / 100;
-			self.position.x = Math.floor(self.position.x * ratio);
-			self.position.y = Math.floor(self.position.y * ratio);
-			drawPos = drawingPositionGet(self.position);
+		let randomized = 0;
+		if(rnd){
+			let flipCoin = Math.floor(Math.random() * 2)
+			randomized = Math.random();
+			randomized*= flipCoin == 1 ? -1 : 1;
 		}
+		let rotation = this.rotation + randomized;
+		var dirx = Math.cos(rotation);
+		var dirz = - Math.sin(rotation);
+		self.position.x = Math.floor(self.position.x + (dirx * amount * self.walkStep)); 
+		self.position.y = Math.floor(self.position.y + (dirz * amount * self.walkStep));
 
-		if(!isOut){
-			let randomized = 0;
-			if(rnd){
-				let flipCoin = Math.floor(Math.random() * 2)
-				randomized = Math.random();
-				randomized*= flipCoin == 1 ? -1 : 1;
+		let didMove = true;
+
+		floor.elements
+			.forEach((x) => {
+				if(x.collider && x.collider.shape === "poly" && x.collider.way === "inverse" ){
+					if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.data)) {
+						self.restorePosition();
+						didMove = false;
+						console.log("STOP");
+					}
+				}
+			});
+
+		if (didMove) {
+			if (drawPos.x > self.wLimit) {
+				worldModel.currentCenter.x += (self.position.x - self.previousLocation.x);
+			} else if (drawPos.x < self.wLimit) {
+				worldModel.currentCenter.x -= (self.previousLocation.x - self.position.x);
 			}
-			let rotation = this.rotation + randomized;
-			var dirx = Math.cos(rotation);
-			var dirz = - Math.sin(rotation);
-			self.position.x = Math.floor(self.position.x + (dirx * amount * self.walkStep)); 
-			self.position.y = Math.floor(self.position.y + (dirz * amount * self.walkStep));
-		}
 
-		if(drawPos.x > self.wLimit){
-			worldModel.currentCenter.x += (self.position.x - self.previousLocation.x);
-		}else if(drawPos.x < self.wLimit){
-			worldModel.currentCenter.x -= (self.previousLocation.x - self.position.x);
+			if (drawPos.y > self.hLimit) {
+				worldModel.currentCenter.y += (self.position.y - self.previousLocation.y);
+			} else if (drawPos.y < self.hLimit) {
+				worldModel.currentCenter.y -= (self.previousLocation.y - self.position.y);
+			}
 		}
-
-		if(drawPos.y > self.hLimit){
-			worldModel.currentCenter.y += (self.position.y - self.previousLocation.y);
-		}else if(drawPos.y < self.hLimit){
-			worldModel.currentCenter.y -= (self.previousLocation.y - self.position.y);
-		}
-
 	}
 
 	this.draw = function(){
