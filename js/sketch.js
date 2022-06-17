@@ -3,12 +3,13 @@ let needUpdate, saveContext, context, _camera, mode, things, debugMode, scribble
 let worldModel, gameLoaded, floor;
 let keys = { up: false, down: false, left: false, right: false }
 
+const framerate = 50;
 const camOverPlantLimit = 40;
 
 function setup() {
 	debugMode = false;
 	gameLoaded = false;
-	frameRate(25);
+	frameRate(framerate);
 	loadJSON('/files/world1.json', result => {
 		worldModel = { ...result }
 		things = setNotMobs(worldModel);
@@ -16,7 +17,7 @@ function setup() {
 		setUtilValues();
 		translate(width / 2, height / 2);
 		context = drawingContext;
-		_camera = new Kamera(0.2, 10, toradians(90));
+		_camera = new Kamera(0.2, 350 / framerate, toradians(90)); 
 		setKeyDown();
 		setKeyUp();
 		floor = new Floor(worldModel);
@@ -273,6 +274,7 @@ function Kamera(rotStep,walkStep,rotation) {
 		var self = this;
 		// Calculate new position considering the amount, the position and the direction	
 		this.savePosition();
+		//amount *= self.walkStep;
 		let drawPos = drawingPositionGet(self.position);
 		self.distance = self.getDistance({x:0,y:0},worldModel.currentCenter);
 		let randomized = 0;
