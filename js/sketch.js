@@ -144,13 +144,13 @@ function Floor(worldModel){
 						pt.x = element.center.x + (element.size * pt.x);
 						pt.y = element.center.y + (element.size * pt.y);
 					})
-					if(s.collideMode){
+					if(s.colliderMode){
 						element.collider = {
 							shape:"poly",
-							way : s.collideMode,
-							center : element.shape.center,
+							center : element.center,
 							data: [...element.points],
-							dim2 : null
+							dim2 : null,
+							mode : s.colliderMode
 						}
 					}
 					self.elements.push(element);
@@ -172,7 +172,7 @@ function Floor(worldModel){
 		context.restore();
 
 		self.elements.forEach((elem) => {
-			if (elem.shape === "circle") {
+			if (elem.shape === "cirxxcle") {
 				context.save();
 				context.beginPath();
 				let centralPt = drawingPositionGet({ ...elem.center });
@@ -195,10 +195,10 @@ function Floor(worldModel){
 				context.restore();
 			}else if(elem.shape === "polygon"){
 				context.save();
+				context.beginPath(); 
 				context.globalAlpha = elem.opacity;
 				context.fillStyle = elem.color;
 				context.strokeStyle =  elem.color;
-				context.beginPath(); 
 				let drawPos = drawingPositionGet(elem.points[0]);
 				context.moveTo(drawPos.x, drawPos.y);
 				elem.points.forEach((pt)=>{
@@ -291,7 +291,7 @@ function Kamera(rotStep,walkStep,rotation) {
 
 		floor.elements
 			.forEach((x) => {
-				if(x.collider && x.collider.shape === "poly" && x.collider.way === "inverse" ){
+				if(x.collider && x.collider.shape === "poly"){
 					if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.data)) {
 						self.restorePosition();
 						didMove = false;
