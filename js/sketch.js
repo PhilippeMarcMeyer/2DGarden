@@ -17,7 +17,7 @@ function setup() {
 		setUtilValues();
 		translate(width / 2, height / 2);
 		context = drawingContext;
-		_camera = new Kamera(0.2, 350 / framerate, toradians(90)); 
+		_camera = new Kamera(framerate / 350, 350 / framerate, toradians(90)); 
 		setKeyDown();
 		setKeyUp();
 		floor = new Floor(worldModel);
@@ -205,7 +205,6 @@ function Floor(worldModel){
 				elem.points.forEach((pt)=>{
 					drawPos = drawingPositionGet(pt);
 					context.lineTo(drawPos.x, drawPos.y);
-					if (debugMode) text(pt.x + "," + pt.y, drawPos.x + 20, drawPos.y);
 				})
 				context.closePath();
 				context.stroke();
@@ -738,6 +737,7 @@ function Plant(data) {
 					context.beginPath();
 					let centralPt = drawingPositionGet({...self.geometry.heart.center});
 					circle(centralPt.x, centralPt.y, self.geometry.heart.diameter);
+					if (debugMode) text(self.name, centralPt.x + 20, centralPt.y);
 					context.closePath();
 					context.stroke();
 					context.fill();
