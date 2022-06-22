@@ -356,7 +356,7 @@
                     "max":13,
                     "growthPerDay" : 1
                 },
-                "name": "spirula-31",
+                "name": "spirula-1",
                 "innerRotation":0.99,
                 "model" : "Spirula-10"
             },
@@ -371,7 +371,7 @@
                     "max":13,
                     "growthPerDay" : 1
                 },
-                "name": "spirula-101",
+                "name": "spirula-2",
                 "innerRotation":2.99,
                 "model" : "Spirula-10"
             },
@@ -386,7 +386,7 @@
                     "max":13,
                     "growthPerDay" : 1
                 },
-                "name": "spirula-31",
+                "name": "spirula-3",
                 "innerRotation":0.99,
                 "model" : "Clover-4"
             },
@@ -401,7 +401,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "clover-31",
+            "name": "clover-1",
             "innerRotation":0.4,
             "model" : "Clover-3"
         },{
@@ -415,7 +415,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "clover-32",
+            "name": "clover-2",
             "innerRotation":0.02,
             "model" : "Clover-3"
         },{
@@ -429,7 +429,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "clover-33",
+            "name": "clover-3",
             "innerRotation":2.4,
             "model" : "Clover-3"
         },{
@@ -443,7 +443,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "Lilium",
+            "name": "Lilium-1",
             "innerRotation":0.4,
             "model" : "Lilium-7"
         },{
@@ -457,7 +457,7 @@
                 "max":12,
                 "growthPerDay" : 1
             },
-            "name": "Lilium",
+            "name": "Lilium-2",
             "innerRotation":0.67,
             "model" : "Lilium-7"
         },{
@@ -471,7 +471,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "Lilium",
+            "name": "Lilium-3",
             "innerRotation":0.4,
             "model" : "Lilium-7"
         },{
@@ -485,7 +485,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "Lilium",
+            "name": "Lilium-4",
             "innerRotation":0.4,
             "model" : "Lilium-7"
         },{
@@ -499,7 +499,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "Lilium",
+            "name": "Lilium-5",
             "innerRotation":3,
             "model" : "Lilium-7"
         },{
@@ -513,7 +513,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "Lilium",
+            "name": "Lilium-6",
             "innerRotation":0.4,
             "model" : "Lilium-7"
         },{
@@ -527,7 +527,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "Lilium",
+            "name": "Lilium-7",
             "innerRotation":0.4,
             "model" : "Lilium-7"
         },{
@@ -541,7 +541,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "Lilium",
+            "name": "Lilium-8",
             "innerRotation":0.4,
             "model" : "Lilium-7"
         },{
@@ -555,7 +555,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "Pelium 1",
+            "name": "Pelium-1",
             "innerRotation":3.4,
             "model" : "Pelium-6"
         },
@@ -600,7 +600,7 @@
                 "max":7,
                 "growthPerDay" : 1
             },
-            "name": "Tiny-2",
+            "name": "Tiny-3",
             "innerRotation":3.4,
             "model" : "Tiny-7"
         },
@@ -615,7 +615,7 @@
                 "max":7,
                 "growthPerDay" : 1
             },
-            "name": "Tiny-2",
+            "name": "Tiny-4",
             "innerRotation":3.4,
             "model" : "Tiny-7"
         },
@@ -630,7 +630,7 @@
                 "max":7,
                 "growthPerDay" : 1
             },
-            "name": "Tiny-2",
+            "name": "Tiny-5",
             "innerRotation":3.4,
             "model" : "Tiny-7"
         },
@@ -645,7 +645,7 @@
                 "max":7,
                 "growthPerDay" :1
             },
-            "name": "Tiny-3",
+            "name": "Tiny-6",
             "innerRotation":3.5,
             "model" : "Tiny-6"
         },
@@ -660,7 +660,7 @@
                 "max":13,
                 "growthPerDay" : 1
             },
-            "name": "Xelium",
+            "name": "Xelium-1",
             "innerRotation":3.4,
             "model" : "Xelium-8"
         }],

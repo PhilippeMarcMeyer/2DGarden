@@ -18,8 +18,8 @@ app.get('/',function(req,res) {
  io.on('connection', (socket) =>{
   console.log(`connected :  ${socket.id}`);
   users.forEach((u) => {
-    u.socket.emit({playerId : u.id,what:"player-connected"});
-  })
+    u.socket.emit({playerId : socket.id,what:"player-connected"});
+  });
   users.push({
     id: socket.id,
     socket: socket,
@@ -32,12 +32,12 @@ app.get('/',function(req,res) {
 
   socket.on('disconnect', () => {
     console.log(`disconnect ${socket.id}`);
-    let idDisconnected = {...socket.id};
+    let idDisconnected = socket.id;
     users = users.filter((u) => {
       return u.id != idDisconnected;
     });
     users.forEach((u) => {
-      u.socket.emit({playerId : u.id,what:"player-disconnected"});
+      u.socket.emit('info',{playerId : idDisconnected,what:"player-disconnected"});
     })
   });
 
@@ -52,6 +52,12 @@ app.get('/',function(req,res) {
             u.socket.emit('info',msg);
         }
       });
+    }else if(msg.what === 'player-collided'){
+      users.forEach((u) => {
+        if(u.id !== socket.id){
+          u.socket.emit('info',{position : msg.position,rotation:msg.rotation,target:msg.target,what:"target-shake"});
+        }
+      })
     }
    // console.log(socket.id + " : " + msg.what );
   });

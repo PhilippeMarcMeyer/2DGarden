@@ -4,7 +4,7 @@ let worldModel, gameLoaded, floor;
 let keys = { up: false, down: false, left: false, right: false }
 const framerate = 50;
 const camOverPlantLimit = 40;
-let playerColors = '#CF0000,#00AD00,#0000AD,#FF4500,#00ADAD,#AD00AD,#582900,#FFCC00,#000000,#33FFCC'.split(',');
+let playerColors = '#00AD00,#0000AD,#FF4500,#00ADAD,#AD00AD,#582900,#FFCC00,#000000,#33FFCC'.split(',');
 let otherPlayersIndex = 0;
 const socket = io();
 
@@ -111,13 +111,13 @@ socket.on("info", (msg) => {
 		worldModel.otherPlayers = worldModel.otherPlayers.filter((u) => {
 			return u.playerId !== msg.playerId;
 		});
-	}else if(msg.what === 'player-moved'){
+	}else if(msg.what === 'player-moved' || msg.what === 'player-connected'){
 		let found = false;
 		msg.isMoving = false;
 		msg.bodyRadius = 20;
 		msg.bodyInMotionDiameter1 = 18;
+		msg.bodyInMotionDiameter2 = 22;
 		msg.opacity = 0.9;
-		msg.color = playerColors[otherPlayersIndex % playerColors.length]
 		worldModel.otherPlayers.forEach((u,index) => {
 			if(u.playerId === msg.playerId){
 				found = true;
@@ -127,17 +127,17 @@ socket.on("info", (msg) => {
 		});
 		if(!found){
 			otherPlayersIndex++;
+			msg.color = playerColors[otherPlayersIndex % playerColors.length]
 			worldModel.otherPlayers.push(msg);
 		}
-	}else if(msg.what === 'player-connected'){
-		otherPlayersIndex++;
-		msg.isMoving = false;
-		msg.bodyRadius = 20;
-		msg.color = playerColors[otherPlayersIndex % playerColors.length]
-		msg.opacity = 0.9;
-		msg.bodyInMotionDiameter1 = 18;
-		msg.bodyInMotionDiameter2 = 22;
-		worldModel.otherPlayers.push(msg);
+	}else if(msg.what === 'target-shake'){
+		console.log(msg);
+		let selectedPlants = things.filter((x)=>{
+			return x.name && x.name === msg.target;
+		});
+		if(selectedPlants.length === 1 && selectedPlants[0] instanceof Plant){
+			selectedPlants[0].shake();
+		}
 	}
   });
 
@@ -400,6 +400,12 @@ function Kamera(rotStep,walkStep,rotation) {
 			}else if(x.collider.shape === 'circle'){
 				if (collideCircleCircle(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.center.x,x.collider.center.y, x.collider.data)) {
 					x.shake();
+					message({
+						what : "player-collided",
+						position: this.position,
+						rotation: this.rotation,
+						target: x.name
+					})
 				}
 			}
 		});
