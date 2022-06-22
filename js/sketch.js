@@ -109,7 +109,7 @@ function todegrees(radians) {
 socket.on("info", (msg) => {
 	if(msg.what === 'player-disconnected'){
 		worldModel.otherPlayers = worldModel.otherPlayers.filter((u) => {
-			return u.id !== msg.playerId;
+			return u.playerId !== msg.playerId;
 		});
 	}else if(msg.what === 'player-moved'){
 		let found = false;
@@ -340,20 +340,24 @@ function Kamera(rotStep,walkStep,rotation) {
 		self.position.x = Math.floor(self.position.x + (dirx * amount * self.walkStep)); 
 		self.position.y = Math.floor(self.position.y + (dirz * amount * self.walkStep));
 
-		let didMove = true;
+		self.isMoving = true;	
 
 		floor.elements
 			.forEach((x) => {
 				if(x.collider && x.collider.shape === "poly"){
 					if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.data)) {
 						self.restorePosition();
-						didMove = false;
+						self.isMoving = false;	
 						console.log("STOP");
 					}
 				}
 			});
 
-		if (didMove) {
+		if (self.isMoving) { 
+			self.checkCollisions(); 
+		}
+
+		if (self.isMoving) {
 			if (drawPos.x > self.wLimit) {
 				worldModel.currentCenter.x += (self.position.x - self.previousLocation.x);
 			} else if (drawPos.x < self.wLimit) {
@@ -375,8 +379,6 @@ function Kamera(rotStep,walkStep,rotation) {
 
 	this.draw = function(){
 		var self = this;
-		
-	    self.checkCollisions();
 		self.drawCross();
 		self.drawCamera();
 		if(worldModel.otherPlayers.length > 0){
@@ -393,6 +395,7 @@ function Kamera(rotStep,walkStep,rotation) {
 			if(x.collider.shape === 'poly'){
 				if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.data)) {
 					self.restorePosition();
+					self.isMoving = false;	
 				}
 			}else if(x.collider.shape === 'circle'){
 				if (collideCircleCircle(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.center.x,x.collider.center.y, x.collider.data)) {
@@ -400,6 +403,14 @@ function Kamera(rotStep,walkStep,rotation) {
 				}
 			}
 		});
+		if(worldModel.otherPlayers.length > 0){
+			worldModel.otherPlayers.forEach(function(u){
+				if (collideCircleCircle(self.position.x, self.position.y, self.bodyRadius * 2, u.position.x, u.position.y, u.bodyRadius * 2)) {
+					self.restorePosition();
+					self.isMoving = false;				
+				}
+			});
+		}
 	}
 	
 	this.drawCross = function () {
