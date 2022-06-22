@@ -2,9 +2,11 @@ let w2, h2, w4, h4, k90degres, k60degres, k45degres, k180degres, k270degres, k36
 let needUpdate, saveContext, context, _camera, mode, things, debugMode, scribble;
 let worldModel, gameLoaded, floor;
 let keys = { up: false, down: false, left: false, right: false }
-
 const framerate = 50;
 const camOverPlantLimit = 40;
+let playerColors = '#CF0000,#00AD00,#0000AD,#FF4500,#00ADAD,#AD00AD,#582900,#FFCC00,#000000,#33FFCC'.split(',');
+let otherPlayersIndex = 0;
+const socket = io();
 
 function setup() {
 	debugMode = false;
@@ -22,6 +24,10 @@ function setup() {
 		setKeyUp();
 		floor = new Floor(worldModel);
 		gameLoaded = true;
+		socket.on('news', function(msg){
+			console.log(msg)
+		 });
+		 worldModel.otherPlayers = [];
 	});
 }
 
@@ -100,6 +106,45 @@ function todegrees(radians) {
 	return radians * 180 / Math.PI;
 }
 
+socket.on("info", (msg) => {
+	if(msg.what === 'player-disconnected'){
+		worldModel.otherPlayers = worldModel.otherPlayers.filter((u) => {
+			return u.id !== msg.playerId;
+		});
+	}else if(msg.what === 'player-moved'){
+		let found = false;
+		msg.isMoving = false;
+		msg.bodyRadius = 20;
+		msg.bodyInMotionDiameter1 = 18;
+		msg.opacity = 0.9;
+		msg.color = playerColors[otherPlayersIndex % playerColors.length]
+		worldModel.otherPlayers.forEach((u,index) => {
+			if(u.playerId === msg.playerId){
+				found = true;
+				u.position = msg.position;
+				u.rotation = msg.rotation;
+			}
+		});
+		if(!found){
+			otherPlayersIndex++;
+			worldModel.otherPlayers.push(msg);
+		}
+	}else if(msg.what === 'player-connected'){
+		otherPlayersIndex++;
+		msg.isMoving = false;
+		msg.bodyRadius = 20;
+		msg.color = playerColors[otherPlayersIndex % playerColors.length]
+		msg.opacity = 0.9;
+		msg.bodyInMotionDiameter1 = 18;
+		msg.bodyInMotionDiameter2 = 22;
+		worldModel.otherPlayers.push(msg);
+	}
+  });
+
+function message(info){
+	socket.emit("info", info);
+}
+
 function Floor(worldModel){
 	this.name = worldModel.name;
     this.radius = worldModel.radius;
@@ -173,7 +218,7 @@ function Floor(worldModel){
 		context.restore();
 
 		self.elements.forEach((elem) => {
-			if (elem.shape === "cirxxcle") {
+			if (elem.shape === "circle") {
 				context.save();
 				context.beginPath();
 				let centralPt = drawingPositionGet({ ...elem.center });
@@ -234,6 +279,8 @@ function Kamera(rotStep,walkStep,rotation) {
 	this.bodyRadius = 20;
 	this.bodyInMotionDiameter1 = 18;
 	this.bodyInMotionDiameter2 = 22;
+	this.color = "#ff0000",
+	this.opacity = 1;
 	this.wLimit = w2 - w4;
 	this.hLimit = h2 -h4;
 
@@ -241,6 +288,11 @@ function Kamera(rotStep,walkStep,rotation) {
 		this.rotation -= this.rotStep*amount;
 		if(this.rotation<0) this.rotation  += k360degres;
 		if(this.rotation > k360degres ) this.rotation = 0;
+		message({
+			what : "player-moved",
+			position: this.position,
+			rotation: this.rotation
+		})
 	}
 
 	this.setDirection = function(){
@@ -313,6 +365,11 @@ function Kamera(rotStep,walkStep,rotation) {
 			} else if (drawPos.y < self.hLimit) {
 				worldModel.currentCenter.y -= (self.previousLocation.y - self.position.y);
 			}
+			message({
+				what : "player-moved",
+				position: self.position,
+				rotation: self.rotation
+			})
 		}
 	}
 
@@ -322,6 +379,11 @@ function Kamera(rotStep,walkStep,rotation) {
 	    self.checkCollisions();
 		self.drawCross();
 		self.drawCamera();
+		if(worldModel.otherPlayers.length > 0){
+			worldModel.otherPlayers.forEach(function(u){
+				_camera.drawCamera.apply(u);
+			});
+		}
 		//self.drawScanner();
 	}
 
@@ -382,12 +444,9 @@ function Kamera(rotStep,walkStep,rotation) {
 	
 	this.drawCamera=function(){
 		let self = this;
-		let drawPos = drawingPositionGet(this.position);
-		//self.drawScanner();
-		// Body
-
-		let camCos = Math.cos(_camera.rotation + k90degres);
-		let camSin = -Math.sin(_camera.rotation + k90degres);
+		let drawPos = drawingPositionGet(self.position);
+		let camCos = Math.cos(self.rotation + k90degres);
+		let camSin = -Math.sin(self.rotation + k90degres);
 		let ptdot1 = {
 			x: camCos * -9,
 			y: camSin * -9
@@ -397,27 +456,27 @@ function Kamera(rotStep,walkStep,rotation) {
 			y: camSin * 9
 		};
 
-		camCos = Math.cos(_camera.rotation);
-		camSin = -Math.sin(_camera.rotation);
+		camCos = Math.cos(self.rotation);
+		camSin = -Math.sin(self.rotation);
 
 		let ptdot3 = {x:camCos* -10,y:camSin* -10};
 		context.save();
 
-		context.globalAlpha=1;	
+		context.globalAlpha=self.opacity;	
 		
 		context.beginPath();
 		context.strokeStyle="black"; 
-		context.fillStyle="red"; 
+		context.fillStyle= self.color; 
 		
 		context.beginPath();
 		if(self.isMoving){
 			if(frameCount % 4 === 0){
-				context.ellipse(drawPos.x, drawPos.y, this.bodyRadius, this.bodyInMotionDiameter2,_camera.rotation*-1, 0, 2 * Math.PI);
+				context.ellipse(drawPos.x, drawPos.y, self.bodyRadius, self.bodyInMotionDiameter2,self.rotation*-1, 0, 2 * Math.PI);
 			}else{
-				context.ellipse(drawPos.x, drawPos.y, this.bodyRadius, this.bodyInMotionDiameter1,_camera.rotation*-1, 0, 2 * Math.PI);
+				context.ellipse(drawPos.x, drawPos.y, self.bodyRadius, self.bodyInMotionDiameter1,self.rotation*-1, 0, 2 * Math.PI);
 			}
 		}else{
-			context.ellipse(drawPos.x, drawPos.y, this.bodyRadius, this.bodyRadius * 0.9,_camera.rotation*-1, 0, 2 * Math.PI);
+			context.ellipse(drawPos.x, drawPos.y, self.bodyRadius, self.bodyRadius * 0.9,self.rotation*-1, 0, 2 * Math.PI);
 		}
 
 		context.closePath();
@@ -436,34 +495,34 @@ function Kamera(rotStep,walkStep,rotation) {
 		context.fill();
 
 		// right Eye
-		let eyeCos = Math.cos(_camera.rotation-0.4);
-		let eyeSin = -Math.sin(_camera.rotation-0.4);
+		let eyeCos = Math.cos(self.rotation-0.4);
+		let eyeSin = -Math.sin(self.rotation-0.4);
 		let vectorEye= {x:eyeCos*30,y:eyeSin*30};
-		let pupilCos = Math.cos(_camera.rotation-0.3);
-		let pupilSin = -Math.sin(_camera.rotation-0.3);
+		let pupilCos = Math.cos(self.rotation-0.3);
+		let pupilSin = -Math.sin(self.rotation-0.3);
 		let vectorPupil= {x:pupilCos*30,y:pupilSin*30};
 
 		context.fillStyle="white"; 
 		context.beginPath();
-		context.arc(drawPos.x+(vectorEye.x*0.5),drawPos.y+(vectorEye.y*0.5), (this.bodyRadius/4),0, 2*Math.PI,false);
+		context.arc(drawPos.x+(vectorEye.x*0.5),drawPos.y+(vectorEye.y*0.5), (self.bodyRadius/4),0, 2*Math.PI,false);
 		context.closePath();
 		context.stroke();
 		context.fill();
 
 		context.fillStyle="black"; 
 		context.beginPath();
-		context.arc(drawPos.x+(vectorPupil.x*0.6), drawPos.y+(vectorPupil.y*0.6), (this.bodyRadius/8),0, 2*Math.PI,false);
+		context.arc(drawPos.x+(vectorPupil.x*0.6), drawPos.y+(vectorPupil.y*0.6), (self.bodyRadius/8),0, 2*Math.PI,false);
 		context.closePath();
 		context.stroke();
 		context.fill();
 
 		//strokeWeight(10);
 		// left Eye
-		eyeCos = Math.cos(_camera.rotation+0.4);
-		eyeSin = -Math.sin(_camera.rotation+0.4);
+		eyeCos = Math.cos(self.rotation+0.4);
+		eyeSin = -Math.sin(self.rotation+0.4);
 		vectorEye= {x:eyeCos*30,y:eyeSin*30};
-		pupilCos = Math.cos(_camera.rotation+0.3);
-		pupilSin = -Math.sin(_camera.rotation+0.3);
+		pupilCos = Math.cos(self.rotation+0.3);
+		pupilSin = -Math.sin(self.rotation+0.3);
 		vectorPupil= {x:pupilCos*30,y:pupilSin*30};
 		context.fillStyle="white"; 
 		context.beginPath();
@@ -483,11 +542,12 @@ function Kamera(rotStep,walkStep,rotation) {
 	}
 
 	this.drawScanner=function(){
+		let self = this;
 		context.save();
 		context.globalAlpha=0.35;
 		context.beginPath();
-		var rotationLeftLimit = _camera.rotation-this.sightWidth/2;
-		var rotationRightLimit = _camera.rotation+this.sightWidth/2;
+		var rotationLeftLimit = self.rotation-this.sightWidth/2;
+		var rotationRightLimit = self.rotation+this.sightWidth/2;
 
 		context.strokeStyle="rgb(255,255,0)"; 
 		var ray;
@@ -502,7 +562,7 @@ function Kamera(rotStep,walkStep,rotation) {
 			camCos = Math.cos(i);
 			camSin = -Math.sin(i);
 			
-			var start = {"x":_camera.position.x+camCos*this.bodyRadius,"y":_camera.position.y+camSin*this.bodyRadius};
+			var start = {"x":self.position.x+camCos*this.bodyRadius,"y":self.position.y+camSin*this.bodyRadius};
 			context.moveTo(start.x, start.y);
 			
 			ray= {x:camCos*rayLength,y:camSin*rayLength};
@@ -534,17 +594,17 @@ function Kamera(rotStep,walkStep,rotation) {
 		
 		});
 		
-		context.moveTo(_camera.position.x, _camera.position.y);
+		context.moveTo(self.position.x, self.position.y);
 		camCos = Math.cos(rotationRightLimit);
 		camSin = -Math.sin(rotationRightLimit);
 		ray= {x:camCos*this.sightLength,y:camSin*this.sightLength};
-		context.lineTo(_camera.position.x+ray.x,_camera.position.y+ray.y);
+		context.lineTo(self.position.x+ray.x,self.position.y+ray.y);
 		context.closePath();
 		context.stroke();
 
 		context.beginPath();
-		context.moveTo(_camera.position.x, _camera.position.y);
-		context.arc(_camera.position.x, _camera.position.y, this.sightLength, -rotationRightLimit, -rotationLeftLimit,false);
+		context.moveTo(self.position.x, self.position.y);
+		context.arc(self.position.x, self.position.y, this.sightLength, -rotationRightLimit, -rotationLeftLimit,false);
 		
 		context.closePath();
 		context.stroke();
