@@ -6,7 +6,7 @@ const framerate = 50;
 const camOverPlantLimit = 40;
 let playerColors = '#00AD00,#0000AD,#FF4500,#00ADAD,#AD00AD,#582900,#FFCC00,#000000,#33FFCC'.split(',');
 let otherPlayersIndex = 0;
-
+let _otherPlayers = [];
 let onLine = true;
 let lastOnline = new Date().getTime();
 const maxLastPing = 2000;
@@ -33,7 +33,7 @@ function setup() {
 		socket.on('news', function(msg){
 			console.log(msg)
 		 });
-		 worldModel.otherPlayers = [];
+		 _otherPlayers = [];
 	});
 }
 
@@ -73,7 +73,9 @@ function draw() {
 			thing.draw();
 		});
 		let lineTop = 20;
-		text(onLine ? "online" : "offline", -w2 + 20, -h2 + lineTop);
+		text(`Day : ${worldModel.gardenDay}`, -w2 + 20, -h2 + lineTop);
+		lineTop += 20;
+		text('Status : ' + (onLine ? "online" : "offline"), -w2 + 20, -h2 + lineTop);
 		lineTop+= 20;
 		if(debugMode){
 			text(`Center                   : ${worldModel.currentCenter.x},${worldModel.currentCenter.y}`, -w2 + 20, -h2 + lineTop);
@@ -140,7 +142,7 @@ function applyConnectionState(state){
 
 	}else{
 		onLine = false;
-		worldModel.otherPlayers = [];	
+		_otherPlayers = [];	
 	}
 }
 
@@ -148,9 +150,8 @@ socket.on("info", (msg) => {
 	applyConnectionState(true)
 	if(msg.what === 'pong'){
 		console.log(msg.what);
-	}
-	if(msg.what === 'player-disconnected'){
-		worldModel.otherPlayers = worldModel.otherPlayers.filter((u) => {
+	}else if(msg.what === 'player-disconnected'){
+		_otherPlayers = _otherPlayers.filter((u) => {
 			return u.playerId !== msg.playerId;
 		});
 	}else if(msg.what === 'player-moved' || msg.what === 'player-connected'){
@@ -160,7 +161,7 @@ socket.on("info", (msg) => {
 		msg.bodyInMotionDiameter1 = 18;
 		msg.bodyInMotionDiameter2 = 22;
 		msg.opacity = 0.9;
-		worldModel.otherPlayers.forEach((u,index) => {
+		_otherPlayers.forEach((u,index) => {
 			if(u.playerId === msg.playerId){
 				found = true;
 				u.position = msg.position;
@@ -170,7 +171,7 @@ socket.on("info", (msg) => {
 		if(!found){
 			otherPlayersIndex++;
 			msg.color = playerColors[otherPlayersIndex % playerColors.length]
-			worldModel.otherPlayers.push(msg);
+			_otherPlayers.push(msg);
 		}
 	}else if(msg.what === 'target-shake'){
 		console.log(msg);
@@ -180,8 +181,15 @@ socket.on("info", (msg) => {
 		if(selectedPlants.length === 1 && selectedPlants[0] instanceof Plant){
 			selectedPlants[0].shake();
 		}
+	}else if(msg.what === 'world-day'){
+		setWorldDay(msg.day)
 	}
   });
+
+  function setWorldDay(day){
+	worldModel.gardenDay = day;
+	things = updatePlants(worldModel);
+  }
 
 function message(info){
 	socket.emit("info", info);
@@ -423,8 +431,8 @@ function Kamera(rotStep,walkStep,rotation) {
 		var self = this;
 		self.drawCross();
 		self.drawCamera();
-		if(worldModel.otherPlayers.length > 0){
-			worldModel.otherPlayers.forEach(function(u){
+		if(_otherPlayers.length > 0){
+			_otherPlayers.forEach(function(u){
 				_camera.drawCamera.apply(u);
 			});
 		}
@@ -451,8 +459,8 @@ function Kamera(rotStep,walkStep,rotation) {
 				}
 			}
 		});
-		if(worldModel.otherPlayers.length > 0){
-			worldModel.otherPlayers.forEach(function(u){
+		if(_otherPlayers.length > 0){
+			_otherPlayers.forEach(function(u){
 				if (collideCircleCircle(self.position.x, self.position.y, self.bodyRadius * 2, u.position.x, u.position.y, u.bodyRadius * 2)) {
 					self.restorePosition();
 					self.isMoving = false;				
@@ -689,6 +697,18 @@ function Kamera(rotStep,walkStep,rotation) {
 
 }
 
+function updatePlants(world){
+	let notMobs = things.filter((t) => {
+		return !(t instanceof Plant)
+	});
+	world.data.plants.forEach((r)=>{
+		let plant = new Plant(r)
+		plant.init();
+		notMobs.push(plant);
+	});
+	return notMobs;
+}
+
 function setNotMobs(world){
 	let notMobs = [];
     world.data.rocks.forEach((r)=>{
@@ -712,9 +732,9 @@ function setNotMobs(world){
 }
 
 function Plant(data) {
-	this.birth = new Date(data.birth);
+	this.birth = data.birth;
 	this.today = new Date();
-	this.age = Math.floor((this.today.getTime() - this.birth.getTime()) / (1000 * 3600 * 24));
+	this.age = worldModel.gardenDay - data.birth + 1;
 	this.size = Math.min(this.age * data.size.growthPerDay + data.size.min, data.size.max);
 	this.distance = data.distance;
 	this.angleToOrigine = data.angleToOrigine;
@@ -976,6 +996,8 @@ function PolyThing(data) {
 			context.fill();
 			context.globalAlpha = 1-(index/5);
 			context.restore();
+			if (debugMode) text(self.name, drawPos.x + 20, drawPos.y);
+
 		});
 
     }

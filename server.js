@@ -4,12 +4,39 @@ const app = express()
 const port = 8080;
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
-
+const fs = require('fs');
 let users = [];
+let worldModel = null;
+const dayLength = 1*60*1000; // 5 minutes
+let interval;
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(express.static(__dirname));
+
+fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
+	if (err) {
+	  console.log("File reading failed:", err);
+	  return;
+	}else{
+		worldModel = JSON.parse(rawdata);
+    interval = setInterval(function(){
+      worldModel.gardenDay++;
+     users.forEach((u) => {
+        u.socket.emit('info',{what:'world-day',day:worldModel.gardenDay});
+    });
+     saveWorld();
+    }, dayLength)
+	}
+});
+
+function saveWorld(){
+  fs.writeFile("./files/world1.json", JSON.stringify(worldModel), err => {
+		if (err) {
+			console.log("Error writing file:", err);
+		}
+	  });
+}
 
 app.get('/',function(req,res) {
     res.sendFile('index.html', { root: __dirname });
@@ -62,7 +89,6 @@ app.get('/',function(req,res) {
         }
       })
     }
-   // console.log(socket.id + " : " + msg.what );
   });
 })
 
