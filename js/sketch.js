@@ -6,7 +6,13 @@ const framerate = 50;
 const camOverPlantLimit = 40;
 let playerColors = '#00AD00,#0000AD,#FF4500,#00ADAD,#AD00AD,#582900,#FFCC00,#000000,#33FFCC'.split(',');
 let otherPlayersIndex = 0;
-const socket = io();
+
+let onLine = true;
+let lastOnline = new Date().getTime();
+const maxLastPing = 2000;
+const maxOffLine = 5000;
+
+let socket = io();
 
 function setup() {
 	debugMode = false;
@@ -33,6 +39,20 @@ function setup() {
 
 function draw() {
 	if (!gameLoaded) return;
+	if(frameCount % (framerate*3) === 0){
+		let now = new Date().getTime();
+		 if(now - lastOnline > maxLastPing){
+			try{
+				socket.emit("info",{what:"ping"});
+			}catch(error){
+				console.log(error);
+				applyConnectionState(false);
+			}
+		 }
+		 if(now - lastOnline > maxOffLine){
+			applyConnectionState(false);
+		 }
+	}
 	translate(width / 2, height / 2);
 	clear();
 	floor.draw();
@@ -52,13 +72,20 @@ function draw() {
 		.forEach(function (thing) {
 			thing.draw();
 		});
-
+		let lineTop = 20;
+		text(onLine ? "online" : "offline", -w2 + 20, -h2 + lineTop);
+		lineTop+= 20;
 		if(debugMode){
-			text(`Center                   : ${worldModel.currentCenter.x},${worldModel.currentCenter.y}`, -w2+20, -h2+20);
-			text(`LadyBug position :${_camera.position.x},${_camera.position.y}`, -w2+20, -h2+40);
-			text(`LadyBug distance : ${_camera.distance}`, -w2+20, -h2+60);
-			text(`world radius          : ${worldModel.radius}`, -w2+20, -h2+80);
+			text(`Center                   : ${worldModel.currentCenter.x},${worldModel.currentCenter.y}`, -w2 + 20, -h2 + lineTop);
+			lineTop += 20;
+			text(`LadyBug position :${_camera.position.x},${_camera.position.y}`, -w2 + 20, -h2 + lineTop);
+			lineTop += 20;
+			text(`LadyBug distance : ${_camera.distance}`, -w2 + 20, -h2 + lineTop);
+			lineTop += 20;
+			text(`world radius          : ${worldModel.radius}`, -w2 + 20, -h2 + lineTop);
+			lineTop += 20;
 		}
+
 }
 
 // Utilities
@@ -106,7 +133,22 @@ function todegrees(radians) {
 	return radians * 180 / Math.PI;
 }
 
+function applyConnectionState(state){
+	if(state){
+		onLine = true;
+		lastOnline = new Date().getTime();
+
+	}else{
+		onLine = false;
+		worldModel.otherPlayers = [];	
+	}
+}
+
 socket.on("info", (msg) => {
+	applyConnectionState(true)
+	if(msg.what === 'pong'){
+		console.log(msg.what);
+	}
 	if(msg.what === 'player-disconnected'){
 		worldModel.otherPlayers = worldModel.otherPlayers.filter((u) => {
 			return u.playerId !== msg.playerId;

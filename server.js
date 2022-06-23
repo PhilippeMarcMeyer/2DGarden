@@ -42,7 +42,10 @@ app.get('/',function(req,res) {
   });
 
   socket.on('info', (msg) => {
-    if(msg.what === 'player-moved'){
+    if(msg.what === 'ping'){
+      socket.emit('info',{what:"pong"});
+    }
+    else if(msg.what === 'player-moved'){
       msg.playerId = socket.id;
       users.forEach((u) => {
         if(u.id === socket.id){
