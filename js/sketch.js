@@ -172,10 +172,10 @@ socket.on("info", (msg) => {
 				let playerDistanceToCenter = _camera.getDistance(msg.position,{x:0,y:0});
 				if(playerDistanceToCenter < wh2){
 					playerPosition = msg.position;
-					_camera.center = {...playerPosition};
+					worldModel.currentCenter = {...playerPosition};
 				}else{
 					playerPosition = {x : Math.floor((msg.position.x/msg.position.x) * wh2), y : Math.floor((msg.position.y/msg.position.y) * wh2)};
-					_camera.center = {...playerPosition};
+					worldModel.currentCenter = {...playerPosition};
 				}
 				
 			}
@@ -484,7 +484,7 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor) {
 				position: self.position,
 				rotation: self.rotation
 			})
-			if(frameCount % (framerate*5) === 0){
+			if(frameCount % framerate === 1){
 				let cookieInfos = {name : self.name, color: self.color,position: self.position,rotation: self.rotation};
 				document.cookie = "garden="+ JSON.stringify(cookieInfos);
 			}

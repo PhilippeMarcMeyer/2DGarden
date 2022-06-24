@@ -13,13 +13,12 @@ const fs = require('fs');
 const { unlink } = require('fs/promises');
 let users = [];
 let worldModel = null;
-const dayLength = 1*60*1000; // 5 minutes
-let interval;
-
+const dayLength = 5*60*1000; // 5 minutes
+let intervalDays;
+let intervalPlants;
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(cookieParser())
-
 app.use(express.static(__dirname));
 
 fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
@@ -28,13 +27,18 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
 	  return;
 	}else{
 		worldModel = JSON.parse(rawdata);
-    interval = setInterval(function(){
+    intervalDays = setInterval(function(){
       worldModel.gardenDay++;
      users.forEach((u) => {
         u.socket.emit('info',{what:'world-day',day:worldModel.gardenDay});
     });
+    // commanded by the server only
+    // check the evolution in the plant models to see if the begin to make seeds and later perish
+    // later add bonuses or maluses according to weather, water, soil, animals attack
+    // it would mean than a little part of the evolution is set in the plant itself and not in its model
+    // some plants could give protection to the ladybug on a radius egal to their size (4 leaves clovers !)
      saveWorld();
-    }, dayLength)
+    }, dayLength);
 	}
 });
 
