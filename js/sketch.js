@@ -1,4 +1,4 @@
-let w2, h2, w4, h4, k90degres, k60degres, k45degres, k180degres, k270degres, k360degres, k80degres, k280degres, camFov, focalW, focalH, zoom, focalAverage;
+let w2, h2, w4, h4,wh2, k90degres, k60degres, k45degres, k180degres, k270degres, k360degres, k80degres, k280degres, camFov, focalW, focalH, zoom, focalAverage;
 let needUpdate, saveContext, context, _camera, mode, things, debugMode, scribble;
 let worldModel, gameLoaded, floor;
 let keys = { up: false, down: false, left: false, right: false }
@@ -11,7 +11,10 @@ let onLine = true;
 let lastOnline = new Date().getTime();
 const maxLastPing = 2000;
 const maxOffLine = 5000;
-
+let playerName = "???";
+let playerColor = "#ff0000";
+let playerPosition = {x:0,y:0};
+let playerRotation = toradians(90);
 let socket = io();
 
 function setup() {
@@ -25,7 +28,7 @@ function setup() {
 		setUtilValues();
 		translate(width / 2, height / 2);
 		context = drawingContext;
-		_camera = new Kamera(framerate / 350, 350 / framerate, toradians(90)); 
+		_camera = new Kamera(framerate / 350, 350 / framerate, playerRotation,playerPosition,playerName,playerColor); 
 		setKeyDown();
 		setKeyUp();
 		floor = new Floor(worldModel);
@@ -33,7 +36,6 @@ function setup() {
 		socket.on('news', function(msg){
 			console.log(msg)
 		 });
-		 _otherPlayers = [];
 	});
 }
 
@@ -73,18 +75,25 @@ function draw() {
 			thing.draw();
 		});
 		let lineTop = 20;
-		text(`Day : ${worldModel.gardenDay}`, -w2 + 20, -h2 + lineTop);
+		let hOffset = 30;
+		text(`Day : ${worldModel.gardenDay}`, -w2 + hOffset, -h2 + lineTop);
 		lineTop += 20;
-		text('Status : ' + (onLine ? "online" : "offline"), -w2 + 20, -h2 + lineTop);
+		text('Status : ' + (onLine ? "online" : "offline"), -w2 + hOffset, -h2 + lineTop);
+		lineTop += 20;
+		text('Player : ' + playerName, -w2 + hOffset, -h2 + lineTop);
+		if(_camera){
+			lineTop += 20;
+			text('Position : (' + _camera.position.x + ',' + _camera.position.y + ')' , -w2 + hOffset, -h2 + lineTop);
+		}
 		lineTop+= 20;
 		if(debugMode){
-			text(`Center                   : ${worldModel.currentCenter.x},${worldModel.currentCenter.y}`, -w2 + 20, -h2 + lineTop);
+			text(`Center                   : ${worldModel.currentCenter.x},${worldModel.currentCenter.y}`, -w2 + 30, -h2 + lineTop);
 			lineTop += 20;
-			text(`LadyBug position :${_camera.position.x},${_camera.position.y}`, -w2 + 20, -h2 + lineTop);
+			text(`LadyBug position :${_camera.position.x},${_camera.position.y}`, -w2 + 30, -h2 + lineTop);
 			lineTop += 20;
-			text(`LadyBug distance : ${_camera.distance}`, -w2 + 20, -h2 + lineTop);
+			text(`LadyBug distance : ${_camera.distance}`, -w2 + 30, -h2 + lineTop);
 			lineTop += 20;
-			text(`world radius          : ${worldModel.radius}`, -w2 + 20, -h2 + lineTop);
+			text(`world radius          : ${worldModel.radius}`, -w2 + 30, -h2 + lineTop);
 			lineTop += 20;
 		}
 
@@ -108,6 +117,7 @@ function windowResized() {
 function setUtilValues() {
 	w2 = width / 2;
 	h2 = height / 2;
+	wh2 = Math.min(w2,h2);
 	w4 = width / 4;
 	h4 = height / 4;
 	k90degres = toradians(90);
@@ -142,7 +152,7 @@ function applyConnectionState(state){
 
 	}else{
 		onLine = false;
-		_otherPlayers = [];	
+		//_otherPlayers = [];	
 	}
 }
 
@@ -150,11 +160,60 @@ socket.on("info", (msg) => {
 	applyConnectionState(true)
 	if(msg.what === 'pong'){
 		console.log(msg.what);
+	}else if(msg.what === 'player-identity'){
+		playerName = msg.name ?? "???";
+		playerColor = msg.color ?? "#FF5555";
+		playerPosition =  {x:0,y:0};
+		playerRotation = msg.rotation ?? toradians(90);
+		if(_camera){
+			_camera.name = playerName;
+			_camera.color = playerColor;
+			if(msg.position.x !==0 && msg.position.y !==0){
+				let playerDistanceToCenter = _camera.getDistance(msg.position,{x:0,y:0});
+				if(playerDistanceToCenter < wh2){
+					playerPosition = msg.position;
+					_camera.center = {...playerPosition};
+				}else{
+					playerPosition = {x : Math.floor((msg.position.x/msg.position.x) * wh2), y : Math.floor((msg.position.y/msg.position.y) * wh2)};
+					_camera.center = {...playerPosition};
+				}
+				
+			}
+		//	_camera.position = playerPosition;
+		//	_camera.rotation = playerRotation;
+		//	worldModel.currentCenter = {...playerPosition};
+		//	_camera.center = {...playerPosition};
+		}
+
+		let cookieInfos = {"name" : playerName,"color" : playerColor,position :playerPosition,rotation : playerRotation };
+		document.cookie = "garden="+ JSON.stringify(cookieInfos);
+
 	}else if(msg.what === 'player-disconnected'){
-		_otherPlayers = _otherPlayers.filter((u) => {
+		/*_otherPlayers = _otherPlayers.filter((u) => {
 			return u.playerId !== msg.playerId;
-		});
-	}else if(msg.what === 'player-moved' || msg.what === 'player-connected'){
+		});*/
+	}else if(msg.what === 'player-connected'){
+		msg.isMoving = false;
+		msg.bodyRadius = 20;
+		msg.bodyInMotionDiameter1 = 18;
+		msg.bodyInMotionDiameter2 = 22;
+		msg.opacity = 0.9;
+
+		if(msg.name){
+			if(msg.name === playerName) return;
+			console.log('name known ' +msg.name)
+			let temp = _otherPlayers.filter((u) => {
+				return u.name !== msg.name;
+			});
+			_otherPlayers = [...temp];
+		}
+
+		otherPlayersIndex++;
+		_otherPlayers.push(msg);
+
+	}else if(msg.what === 'player-moved'){
+		if(msg.name === playerName) return;
+
 		let found = false;
 		msg.isMoving = false;
 		msg.bodyRadius = 20;
@@ -162,19 +221,20 @@ socket.on("info", (msg) => {
 		msg.bodyInMotionDiameter2 = 22;
 		msg.opacity = 0.9;
 		_otherPlayers.forEach((u,index) => {
-			if(u.playerId === msg.playerId){
+			if(u.name === msg.name){
 				found = true;
 				u.position = msg.position;
 				u.rotation = msg.rotation;
+				u.name = msg.name ?? "";
+				u.color = msg.color ?? "#ccc";
 			}
 		});
 		if(!found){
+
 			otherPlayersIndex++;
-			msg.color = playerColors[otherPlayersIndex % playerColors.length]
 			_otherPlayers.push(msg);
 		}
 	}else if(msg.what === 'target-shake'){
-		console.log(msg);
 		let selectedPlants = things.filter((x)=>{
 			return x.name && x.name === msg.target;
 		});
@@ -314,10 +374,10 @@ function Floor(worldModel){
 	return this;
 }
 
-function Kamera(rotStep,walkStep,rotation) {
+function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor) {
 	this.knownThings = [];
 	this.rotation = rotation ? rotation : 0; 
-	this.position = {x:0,y:0};
+	this.position = position;
 	this.distance = 0;
 	this.previousLocation = {x:0,y:0}; 
 	this.antePenultLocation = {x:0,y:0}; 
@@ -329,7 +389,8 @@ function Kamera(rotStep,walkStep,rotation) {
 	this.bodyRadius = 20;
 	this.bodyInMotionDiameter1 = 18;
 	this.bodyInMotionDiameter2 = 22;
-	this.color = "#ff0000",
+	this.name =playerName;
+	this.color =playerColor,
 	this.opacity = 1;
 	this.wLimit = w2 - w4;
 	this.hLimit = h2 -h4;
@@ -398,7 +459,6 @@ function Kamera(rotStep,walkStep,rotation) {
 					if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.data)) {
 						self.restorePosition();
 						self.isMoving = false;	
-						console.log("STOP");
 					}
 				}
 			});
@@ -424,6 +484,10 @@ function Kamera(rotStep,walkStep,rotation) {
 				position: self.position,
 				rotation: self.rotation
 			})
+			if(frameCount % (framerate*5) === 0){
+				let cookieInfos = {name : self.name, color: self.color,position: self.position,rotation: self.rotation};
+				document.cookie = "garden="+ JSON.stringify(cookieInfos);
+			}
 		}
 	}
 
@@ -560,6 +624,7 @@ function Kamera(rotStep,walkStep,rotation) {
 		context.closePath();
 		context.stroke();
 		context.fill();
+		text(self.name, drawPos.x + 30, drawPos.y);
 
 		// right Eye
 		let eyeCos = Math.cos(self.rotation-0.4);
@@ -604,6 +669,7 @@ function Kamera(rotStep,walkStep,rotation) {
 		context.closePath();
 		context.stroke();
 		context.fill();
+
 
 		context.restore();
 	}
