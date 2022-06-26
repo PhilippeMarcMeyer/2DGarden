@@ -193,6 +193,7 @@ socket.on("info", (msg) => {
 			return u.playerId !== msg.playerId;
 		});*/
 	}else if(msg.what === 'player-connected'){
+		console.log(msg);
 		msg.isMoving = false;
 		msg.bodyRadius = 20;
 		msg.bodyInMotionDiameter1 = 18;

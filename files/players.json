@@ -1,0 +1,38 @@
+[
+  {
+    "name": "???",
+    "color": "#ff0000",
+    "id": 0,
+    "socket": null,
+    "position": {
+      "x": 484,
+      "y": 484
+    },
+    "rotation": 2.4279391839377533,
+    "connected": false
+  },
+  {
+    "name": "Elrond",
+    "color": "#FF0000",
+    "id": 0,
+    "socket": null,
+    "position": {
+      "x": 0,
+      "y": 0
+    },
+    "rotation": 0,
+    "connected": false
+  },
+  {
+    "name": "Boromir",
+    "color": "#DDDD00",
+    "id": 0,
+    "socket": null,
+    "position": {
+      "x": 0,
+      "y": 0
+    },
+    "rotation": 0,
+    "connected": false
+  }
+]
