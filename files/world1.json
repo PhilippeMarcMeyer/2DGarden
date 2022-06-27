@@ -3,7 +3,7 @@
   "radius": 2000,
   "baseColor": "#1144ff",
   "perimeterColor": "#a0522d",
-  "gardenDay": 360,
+  "gardenDay": 361,
   "currentCenter": {
     "x": 0,
     "y": 0
@@ -12,13 +12,19 @@
     "models": [
       {
         "name": "Spirula-10",
-        "evolution":{
-          "maxAge" : 300,
-          "seedsDay" :280,
-          "seeds" : {"min" : 3,"max" : 7},
-          "seedCountDown" : -6,
-          "seedSuccesRate" : 0.7,
-          "seedDistance" : {"min" : 50,"max" : 120}
+        "evolution": {
+          "maxAge": 300,
+          "seedsDay": 280,
+          "seeds": {
+            "min": 3,
+            "max": 7
+          },
+          "seedCountDown": -6,
+          "seedSuccesRate": 0.7,
+          "seedDistance": {
+            "min": 50,
+            "max": 120
+          }
         },
         "leaves": {
           "shape": "double-curve",
@@ -81,13 +87,19 @@
       },
       {
         "name": "Clover-4",
-        "evolution":{
-          "maxAge" : 120,
-          "seedsDay" :110,
-          "seeds" : {"min" : 3,"max" : 7},
-          "seedCountDown" : -6,
-          "seedSuccesRate" : 0.6,
-          "seedDistance" : {"min" : 10,"max" : 70}
+        "evolution": {
+          "maxAge": 120,
+          "seedsDay": 110,
+          "seeds": {
+            "min": 3,
+            "max": 7
+          },
+          "seedCountDown": -6,
+          "seedSuccesRate": 0.6,
+          "seedDistance": {
+            "min": 10,
+            "max": 70
+          }
         },
         "leaves": {
           "shape": "double-bezier",
@@ -144,13 +156,19 @@
       },
       {
         "name": "Clover-3",
-        "evolution":{
-          "maxAge" : 120,
-          "seedsDay" :110,
-          "seeds" : {"min" : 7,"max" : 12},
-          "seedCountDown" : -6,
-          "seedSuccesRate" : 0.75,
-          "seedDistance" : {"min" : 10,"max" : 50}
+        "evolution": {
+          "maxAge": 120,
+          "seedsDay": 110,
+          "seeds": {
+            "min": 7,
+            "max": 12
+          },
+          "seedCountDown": -6,
+          "seedSuccesRate": 0.75,
+          "seedDistance": {
+            "min": 10,
+            "max": 50
+          }
         },
         "leaves": {
           "shape": "double-bezier",
@@ -206,13 +224,19 @@
       },
       {
         "name": "Lilium-7",
-        "evolution":{
-          "maxAge" : 170,
-          "seedsDay" :155,
-          "seeds" : {"min" : 3,"max" : 6},
-          "seedCountDown" : -7,
-          "seedSuccesRate" : 0.7,
-          "seedDistance" : {"min" : 25,"max" : 70}
+        "evolution": {
+          "maxAge": 170,
+          "seedsDay": 155,
+          "seeds": {
+            "min": 3,
+            "max": 6
+          },
+          "seedCountDown": -7,
+          "seedSuccesRate": 0.7,
+          "seedDistance": {
+            "min": 25,
+            "max": 70
+          }
         },
         "leaves": {
           "shape": "double-curve",
@@ -272,13 +296,19 @@
       },
       {
         "name": "Tiny-6",
-        "evolution":{
-          "maxAge" : 45,
-          "seedsDay" :39,
-          "seeds" : {"min" : 12,"max" : 36},
-          "seedCountDown" : -3,
-          "seedSuccesRate" : 0.4,
-          "seedDistance" : {"min" : 15,"max" : 52}
+        "evolution": {
+          "maxAge": 45,
+          "seedsDay": 39,
+          "seeds": {
+            "min": 12,
+            "max": 36
+          },
+          "seedCountDown": -3,
+          "seedSuccesRate": 0.4,
+          "seedDistance": {
+            "min": 15,
+            "max": 52
+          }
         },
         "leaves": {
           "shape": "double-curve",
@@ -337,13 +367,19 @@
       },
       {
         "name": "Tiny-7",
-        "evolution":{
-          "maxAge" : 85,
-          "seedsDay" :79,
-          "seeds" : {"min" : 12,"max" : 24},
-          "seedCountDown" : -5,
-          "seedSuccesRate" : 0.4,
-          "seedDistance" : {"min" : 15,"max" : 75}
+        "evolution": {
+          "maxAge": 85,
+          "seedsDay": 79,
+          "seeds": {
+            "min": 12,
+            "max": 24
+          },
+          "seedCountDown": -5,
+          "seedSuccesRate": 0.4,
+          "seedDistance": {
+            "min": 15,
+            "max": 75
+          }
         },
         "leaves": {
           "shape": "double-curve",
@@ -403,13 +439,19 @@
       },
       {
         "name": "Xelium-8",
-        "evolution":{
-          "maxAge" : 200,
-          "seedsDay" :189,
-          "seeds" : {"min" : 6,"max" : 9},
-          "seedCountDown" : -7,
-          "seedSuccesRate" : 0.7,
-          "seedDistance" : {"min" : 65,"max" : 145}
+        "evolution": {
+          "maxAge": 200,
+          "seedsDay": 189,
+          "seeds": {
+            "min": 6,
+            "max": 9
+          },
+          "seedCountDown": -7,
+          "seedSuccesRate": 0.7,
+          "seedDistance": {
+            "min": 65,
+            "max": 145
+          }
         },
         "leaves": {
           "shape": "double-curve",
@@ -470,13 +512,19 @@
       },
       {
         "name": "Pelium-6",
-        "evolution":{
-          "maxAge" : 170,
-          "seedsDay" :159,
-          "seeds" : {"min" : 6,"max" : 9},
-          "seedCountDown" : -7,
-          "seedSuccesRate" : 0.7,
-          "seedDistance" : {"min" : 39,"max" : 89}
+        "evolution": {
+          "maxAge": 170,
+          "seedsDay": 159,
+          "seeds": {
+            "min": 6,
+            "max": 9
+          },
+          "seedCountDown": -7,
+          "seedSuccesRate": 0.7,
+          "seedDistance": {
+            "min": 39,
+            "max": 89
+          }
         },
         "leaves": {
           "shape": "double-curve",

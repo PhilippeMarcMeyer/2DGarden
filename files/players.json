@@ -1,38 +1,75 @@
-[
-  {
-    "name": "???",
-    "color": "#ff0000",
-    "id": 0,
-    "socket": null,
+{
+  "Elrond": {
     "position": {
-      "x": 484,
-      "y": 484
+      "x": 31,
+      "y": -895
     },
-    "rotation": 2.4279391839377533,
-    "connected": false
-  },
-  {
-    "name": "Elrond",
+    "rotation": 3.137799185787735,
     "color": "#FF0000",
-    "id": 0,
-    "socket": null,
-    "position": {
-      "x": 0,
-      "y": 0
-    },
-    "rotation": 0,
-    "connected": false
+    "birth": 361,
+    "dotsNumber": 3,
+    "dotsColor": "#000000",
+    "maxAge": 450,
+    "generation": 1
   },
-  {
-    "name": "Boromir",
+  "Boromir": {
     "color": "#DDDD00",
-    "id": 0,
-    "socket": null,
+    "birth": 361,
+    "dotsNumber": 3,
+    "dotsColor": "#000000",
+    "maxAge": 450,
+    "generation": 1
+  },
+  "Frodo": {
     "position": {
-      "x": 0,
-      "y": 0
+      "x": 71,
+      "y": -204
     },
-    "rotation": 0,
-    "connected": false
+    "rotation": 1.4285714285714282,
+    "color": "#6600AD",
+    "birth": 361,
+    "dotsNumber": 3,
+    "dotsColor": "#000000",
+    "maxAge": 450,
+    "generation": 1
+  },
+  "Sam": {
+    "position": {
+      "x": -599,
+      "y": -252
+    },
+    "rotation": 0.570796326794897,
+    "color": "#FF4500",
+    "birth": 361,
+    "dotsNumber": 3,
+    "dotsColor": "#000000",
+    "maxAge": 450,
+    "generation": 1
+  },
+  "Aragorn": {
+    "position": {
+      "x": 424,
+      "y": 424
+    },
+    "rotation": 0.14285714285714285,
+    "color": "#00ADAD",
+    "birth": 361,
+    "dotsNumber": 3,
+    "dotsColor": "#000000",
+    "maxAge": 450,
+    "generation": 1
+  },
+  "Galadriel": {
+    "position": {
+      "x": -245,
+      "y": -835
+    },
+    "rotation": 1.9999999999999996,
+    "color": "#AD00AD",
+    "birth": 361,
+    "dotsNumber": 3,
+    "dotsColor": "#000000",
+    "maxAge": 450,
+    "generation": 1
   }
-]
+}

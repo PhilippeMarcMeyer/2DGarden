@@ -12,6 +12,7 @@ let lastOnline = new Date().getTime();
 const maxLastPing = 2000;
 const maxOffLine = 5000;
 let playerName = "???";
+let playerGeneration = 1;
 let playerColor = "#ff0000";
 let playerPosition = {x:0,y:0};
 let playerRotation = toradians(90);
@@ -28,7 +29,7 @@ function setup() {
 		setUtilValues();
 		translate(width / 2, height / 2);
 		context = drawingContext;
-		_camera = new Kamera(framerate / 350, 350 / framerate, playerRotation,playerPosition,playerName,playerColor); 
+		_camera = new Kamera(framerate / 350, 350 / framerate, playerRotation,playerPosition,playerName,playerColor,playerGeneration); 
 		setKeyDown();
 		setKeyUp();
 		floor = new Floor(worldModel);
@@ -163,9 +164,11 @@ socket.on("info", (msg) => {
 	}else if(msg.what === 'player-identity'){
 		playerName = msg.name ?? "???";
 		playerColor = msg.color ?? "#FF5555";
+		playerGeneration = msg.generation ?? 1;
 		playerPosition =  {x:0,y:0};
 		playerRotation = msg.rotation ?? toradians(90);
 		if(_camera){
+			_camera.generation = playerGeneration;
 			_camera.name = playerName;
 			_camera.color = playerColor;
 			if(msg.position.x !==0 && msg.position.y !==0){
@@ -375,7 +378,7 @@ function Floor(worldModel){
 	return this;
 }
 
-function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor) {
+function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,playerGeneration) {
 	this.knownThings = [];
 	this.rotation = rotation ? rotation : 0; 
 	this.position = position;
@@ -391,6 +394,7 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor) {
 	this.bodyInMotionDiameter1 = 18;
 	this.bodyInMotionDiameter2 = 22;
 	this.name =playerName;
+	this.generation = playerGeneration;
 	this.color =playerColor,
 	this.opacity = 1;
 	this.wLimit = w2 - w4;
@@ -486,7 +490,7 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor) {
 				rotation: self.rotation
 			})
 			if(frameCount % framerate === 1){
-				let cookieInfos = {name : self.name, color: self.color,position: self.position,rotation: self.rotation};
+				let cookieInfos = { name: self.name, color: self.color, position: self.position, rotation: self.rotation, generation : self.generation };
 				document.cookie = "garden="+ JSON.stringify(cookieInfos);
 			}
 		}
@@ -625,7 +629,9 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor) {
 		context.closePath();
 		context.stroke();
 		context.fill();
-		text(self.name, drawPos.x + 30, drawPos.y);
+
+		let completeName = self.generation > 1 ? self.name + " " + self.generation : self.name ;
+		text(completeName, drawPos.x + 30, drawPos.y);
 
 		// right Eye
 		let eyeCos = Math.cos(self.rotation-0.4);
@@ -1127,8 +1133,7 @@ function LightenDarkenColor(col, amt) {
     if (g > 255) g = 255;
     else if (g < 0) g = 0;
  
-    return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
-  
+	return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
 }
 
 function setKeyDown(){
@@ -1209,4 +1214,33 @@ function setKeyDown(){
 				break;
 		};
 	}); 
+  }
+
+  function shuffleColor(hexaColor,amount){
+    if(hexaColor.substring(0,1) != "#"){
+      return hexaColor;
+    }
+    let r =  parseInt(hexaColor.substring(1,3),16);
+    let g =  parseInt(hexaColor.substring(3,5),16);
+    let b =  parseInt(hexaColor.substring(5,7),16);
+
+    let whatColor = Math.random();
+    let upOrDown = Math.random() <= 0.5 ? 1 : -1;
+    if (whatColor <= 0.5){
+      r += (amount * upOrDown);
+      if(r > 255) r = 255;
+      if(r < 0) r = 0;
+    }else if(whatColor <= 0.8){
+      b += (amount * upOrDown);
+      if(b > 255) b = 255;
+      if(b < 0) b = 0;
+    }else{
+      g += (amount * upOrDown);
+      if(g > 255) g = 255;
+      if(g < 0) g = 0;
+    }
+    let rHex =  r < 16 ? '0' + r.toString(16) : r.toString(16);
+    let gHex =   g < 16 ? '0' + g.toString(16) : g.toString(16);
+    let bHex =   b < 16 ? '0' + b.toString(16) : b.toString(16);
+    return '#' + rHex + gHex + bHex;
   }
