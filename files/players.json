@@ -1,10 +1,10 @@
 {
   "Elrond": {
     "position": {
-      "x": -68,
-      "y": -231
+      "x": -211,
+      "y": -180
     },
-    "rotation": 1.7142857142857137,
+    "rotation": 3.854613878608153,
     "color": "#FF0000",
     "birth": 363,
     "dotsNumber": 3,
@@ -13,8 +13,13 @@
     "generation": 1
   },
   "Boromir": {
+    "position": {
+      "x": -374,
+      "y": -683
+    },
+    "rotation": 0.5714285714285716,
     "color": "#DDDD00",
-    "birth": 361,
+    "birth": 363,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
@@ -100,8 +105,8 @@
   },
   "Legolas": {
     "position": {
-      "x": -240,
-      "y": 240
+      "x": 0,
+      "y": 0
     },
     "rotation": 3.9999999999999987,
     "color": "#F0E0D0",
@@ -118,6 +123,32 @@
     },
     "rotation": 4.714285714285714,
     "color": "#33FFCC",
+    "birth": 363,
+    "dotsNumber": 3,
+    "dotsColor": "#000000",
+    "maxAge": 450,
+    "generation": 1
+  },
+  "Meriadoc": {
+    "position": {
+      "x": -68,
+      "y": -215
+    },
+    "rotation": 0.5714285714285716,
+    "color": "#CC6600",
+    "birth": 363,
+    "dotsNumber": 3,
+    "dotsColor": "#000000",
+    "maxAge": 450,
+    "generation": 1
+  },
+  "Peregrin": {
+    "position": {
+      "x": 0,
+      "y": 0
+    },
+    "rotation": 0,
+    "color": "#CC0066",
     "birth": 363,
     "dotsNumber": 3,
     "dotsColor": "#000000",

@@ -261,9 +261,10 @@ io.on('connection', (socket) => {
 
     if (!hasIdentity) {
         let givenNames =[];
-        for (const n in usersMemory) {
-          givenNames.push(n);
-        }
+        users.forEach((x)=> {
+          givenNames.push(x.name);
+        });
+       
         let availableIdentities = identities.filter((x) => {
           return givenNames.indexOf(x.name) === -1;
         })

@@ -68,7 +68,7 @@ function draw() {
 		.forEach(function (thing) {
 			thing.draw();
 		});
-	_camera.draw();
+	if(_camera) _camera.draw();
 	things
 		.filter((t) => {
 			return (t instanceof Plant && t.collider.dim2 >= camOverPlantLimit);
