@@ -16,6 +16,8 @@ let playerGeneration = 1;
 let playerColor = "#ff0000";
 let playerPosition = {x:0,y:0};
 let playerRotation = toradians(90);
+let playerDotsNumber = 3;
+let playerDotsColor =  '#ffffff'
 let socket = io();
 
 function setup() {
@@ -29,7 +31,6 @@ function setup() {
 		setUtilValues();
 		translate(width / 2, height / 2);
 		context = drawingContext;
-		_camera = new Kamera(framerate / 350, 350 / framerate, playerRotation,playerPosition,playerName,playerColor,playerGeneration); 
 		setKeyDown();
 		setKeyUp();
 		floor = new Floor(worldModel);
@@ -59,7 +60,7 @@ function draw() {
 	translate(width / 2, height / 2);
 	clear();
 	floor.draw();
-	_camera.setDirection();
+	if(_camera) _camera.setDirection();
 	things
 		.filter((t) => {
 			return !(t instanceof Plant) || (t instanceof Plant && t.collider.dim2 < camOverPlantLimit)
@@ -75,29 +76,7 @@ function draw() {
 		.forEach(function (thing) {
 			thing.draw();
 		});
-		let lineTop = 20;
-		let hOffset = 30;
-		text(`Day : ${worldModel.gardenDay}`, -w2 + hOffset, -h2 + lineTop);
-		lineTop += 20;
-		text('Status : ' + (onLine ? "online" : "offline"), -w2 + hOffset, -h2 + lineTop);
-		lineTop += 20;
-		text('Player : ' + playerName, -w2 + hOffset, -h2 + lineTop);
-		if(_camera){
-			lineTop += 20;
-			text('Position : (' + _camera.position.x + ',' + _camera.position.y + ')' , -w2 + hOffset, -h2 + lineTop);
-		}
-		lineTop+= 20;
-		if(debugMode){
-			text(`Center                   : ${worldModel.currentCenter.x},${worldModel.currentCenter.y}`, -w2 + 30, -h2 + lineTop);
-			lineTop += 20;
-			text(`LadyBug position :${_camera.position.x},${_camera.position.y}`, -w2 + 30, -h2 + lineTop);
-			lineTop += 20;
-			text(`LadyBug distance : ${_camera.distance}`, -w2 + 30, -h2 + lineTop);
-			lineTop += 20;
-			text(`world radius          : ${worldModel.radius}`, -w2 + 30, -h2 + lineTop);
-			lineTop += 20;
-		}
-
+		drawInformations();
 }
 
 // Utilities
@@ -167,77 +146,20 @@ socket.on("info", (msg) => {
 		playerGeneration = msg.generation ?? 1;
 		playerPosition =  {x:0,y:0};
 		playerRotation = msg.rotation ?? toradians(90);
-		if(_camera){
-			_camera.generation = playerGeneration;
-			_camera.name = playerName;
-			_camera.color = playerColor;
-			if(msg.position.x !==0 && msg.position.y !==0){
-				let playerDistanceToCenter = _camera.getDistance(msg.position,{x:0,y:0});
-				if(playerDistanceToCenter < wh2){
-					playerPosition = msg.position;
-					worldModel.currentCenter = {...playerPosition};
-				}else{
-					playerPosition = {x : Math.floor((msg.position.x/msg.position.x) * wh2), y : Math.floor((msg.position.y/msg.position.y) * wh2)};
-					worldModel.currentCenter = {...playerPosition};
-				}
-				
-			}
-		//	_camera.position = playerPosition;
-		//	_camera.rotation = playerRotation;
-		//	worldModel.currentCenter = {...playerPosition};
-		//	_camera.center = {...playerPosition};
-		}
-
+		playerDotsNumber = msg.dotsNumber ?? 3;
+		playerDotsColor = msg.dotsColor ?? '#ffffff'
+		_camera = new Kamera(framerate / 350, 350 / framerate, playerRotation,playerPosition,playerName,playerColor,playerGeneration,playerDotsNumber,playerDotsColor); 
 		let cookieInfos = {"name" : playerName,"color" : playerColor,position :playerPosition,rotation : playerRotation };
 		document.cookie = "garden="+ JSON.stringify(cookieInfos);
 
 	}else if(msg.what === 'player-disconnected'){
-		/*_otherPlayers = _otherPlayers.filter((u) => {
+		_otherPlayers = _otherPlayers.filter((u) => {
 			return u.playerId !== msg.playerId;
-		});*/
-	}else if(msg.what === 'player-connected'){
-		console.log(msg);
-		msg.isMoving = false;
-		msg.bodyRadius = 20;
-		msg.bodyInMotionDiameter1 = 18;
-		msg.bodyInMotionDiameter2 = 22;
-		msg.opacity = 0.9;
-
-		if(msg.name){
-			if(msg.name === playerName) return;
-			console.log('name known ' +msg.name)
-			let temp = _otherPlayers.filter((u) => {
-				return u.name !== msg.name;
-			});
-			_otherPlayers = [...temp];
-		}
-
-		otherPlayersIndex++;
-		_otherPlayers.push(msg);
-
-	}else if(msg.what === 'player-moved'){
-		if(msg.name === playerName) return;
-
-		let found = false;
-		msg.isMoving = false;
-		msg.bodyRadius = 20;
-		msg.bodyInMotionDiameter1 = 18;
-		msg.bodyInMotionDiameter2 = 22;
-		msg.opacity = 0.9;
-		_otherPlayers.forEach((u,index) => {
-			if(u.name === msg.name){
-				found = true;
-				u.position = msg.position;
-				u.rotation = msg.rotation;
-				u.name = msg.name ?? "";
-				u.color = msg.color ?? "#ccc";
-			}
 		});
-		if(!found){
-
-			otherPlayersIndex++;
-			_otherPlayers.push(msg);
-		}
+	}else if(msg.what === 'player-connected'){
+		addUpdatePlayer(msg);
+	}else if(msg.what === 'player-moved'){
+		addUpdatePlayer(msg);
 	}else if(msg.what === 'target-shake'){
 		let selectedPlants = things.filter((x)=>{
 			return x.name && x.name === msg.target;
@@ -378,7 +300,14 @@ function Floor(worldModel){
 	return this;
 }
 
-function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,playerGeneration) {
+function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,playerGeneration,playerDotsNumber,playerDotsColor) {
+
+	let w2 = width / 2;
+	let h2 = height / 2;
+	let wh2 = Math.min(w2,h2);
+	let w4 = width / 4;
+	let h4 = height / 4;
+
 	this.knownThings = [];
 	this.rotation = rotation ? rotation : 0; 
 	this.position = position;
@@ -395,10 +324,14 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 	this.bodyInMotionDiameter2 = 22;
 	this.name =playerName;
 	this.generation = playerGeneration;
-	this.color =playerColor,
+	this.color = playerColor,
 	this.opacity = 1;
 	this.wLimit = w2 - w4;
 	this.hLimit = h2 -h4;
+	this.dotsNumber = playerDotsNumber;
+	this.dotsColor = playerDotsColor;
+
+
 
 	this.turn = function(amount){ // -1 or +1
 		this.rotation -= this.rotStep*amount;
@@ -431,11 +364,6 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 
 		}	
 	}
-	this.getDistance = function(ptA,ptB){
-		let w = Math.abs(ptA.x - ptB.x);
-		let h = Math.abs(ptA.y - ptB.y);
-		return Math.sqrt(Math.pow(w + h,2));
-	}
 
 	this.walk = function(amount,rnd){// -1 or +1
 		var self = this;
@@ -443,7 +371,7 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 		this.savePosition();
 		//amount *= self.walkStep;
 		let drawPos = drawingPositionGet(self.position);
-		self.distance = self.getDistance({x:0,y:0},worldModel.currentCenter);
+		self.distance = getDistance({x:0,y:0},worldModel.currentCenter);
 		let randomized = 0;
 		if(rnd){
 			let flipCoin = Math.floor(Math.random() * 2)
@@ -530,6 +458,7 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 		});
 		if(_otherPlayers.length > 0){
 			_otherPlayers.forEach(function(u){
+				if(getDistance({x:0,y:0},u.position) < 100) return;
 				if (collideCircleCircle(self.position.x, self.position.y, self.bodyRadius * 2, u.position.x, u.position.y, u.bodyRadius * 2)) {
 					self.restorePosition();
 					self.isMoving = false;				
@@ -583,19 +512,35 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 		let drawPos = drawingPositionGet(self.position);
 		let camCos = Math.cos(self.rotation + k90degres);
 		let camSin = -Math.sin(self.rotation + k90degres);
-		let ptdot1 = {
-			x: camCos * -9,
-			y: camSin * -9
-		};
-		let ptdot2 = {
-			x: camCos * 9,
-			y: camSin * 9
-		};
+		let camCos2 = Math.cos(self.rotation);
+		let camSin2 = -Math.sin(self.rotation);
+
+		let dotsPositions = [];
+
+		if (self.dotsNumber === 2){
+			dotsPositions = [
+				{ x: camCos * -9, y: camSin * -9 },
+				{ x: camCos * 9, y: camSin * 9 }
+			];
+		}else if (self.dotsNumber === 3) {
+			dotsPositions = [
+				{ x: camCos * -9, y: camSin * -9 },
+				{ x: camCos * 9, y: camSin * 9 },
+				{ x: camCos2 * -10, y: camSin2 * -10 }
+			];
+		} else if (self.dotsNumber === 4) {
+			dotsPositions = [
+				{ x: camCos * -9, y: camSin * -9 },
+				{ x: camCos * 9, y: camSin * 9 },
+				{ x: camCos * -9, y: camSin * 9 },
+				{ x: camCos * -9, y: camSin * 9 }
+			];
+		}
+
 
 		camCos = Math.cos(self.rotation);
 		camSin = -Math.sin(self.rotation);
 
-		let ptdot3 = {x:camCos* -10,y:camSin* -10};
 		context.save();
 
 		context.globalAlpha=self.opacity;	
@@ -619,13 +564,14 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 		context.stroke();
 		context.fill();
 		context.stroke();
-
+		//self.dotsNumber
 		context.beginPath();
-		context.strokeStyle="#111"; 
-		context.fillStyle="#111"; 
-		circle(drawPos.x + ptdot1.x,drawPos.y + ptdot1.y,6);
-		circle(drawPos.x + ptdot2.x,drawPos.y + ptdot2.y,6);
-		circle(drawPos.x + ptdot3.x,drawPos.y + ptdot3.y,6);
+		context.strokeStyle=self.dotsColor; 
+		context.fillStyle=self.dotsColor; 
+
+		dotsPositions.forEach((d) => {
+			circle(drawPos.x + d.x,drawPos.y + d.y,6);
+		});
 		context.closePath();
 		context.stroke();
 		context.fill();
@@ -664,6 +610,7 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 		pupilSin = -Math.sin(self.rotation+0.3);
 		vectorPupil= {x:pupilCos*30,y:pupilSin*30};
 		context.fillStyle="white"; 
+		
 		context.beginPath();
 		context.arc(drawPos.x+(vectorEye.x*0.5),drawPos.y+(vectorEye.y*0.5), (this.bodyRadius/4),0, 2*Math.PI,false);
 		context.closePath();
@@ -1106,6 +1053,12 @@ function keepWithInCircle(rotation){
 	return rotation;
 }
 
+function getDistance(ptA,ptB){
+	let w = Math.abs(ptA.x - ptB.x);
+	let h = Math.abs(ptA.y - ptB.y);
+	return Math.sqrt(Math.pow(w + h,2));
+}
+
 //Chris Coyier 
 function LightenDarkenColor(col, amt) {
   
@@ -1243,4 +1196,59 @@ function setKeyDown(){
     let gHex =   g < 16 ? '0' + g.toString(16) : g.toString(16);
     let bHex =   b < 16 ? '0' + b.toString(16) : b.toString(16);
     return '#' + rHex + gHex + bHex;
+  }
+
+  function drawInformations(){
+	context.save();
+	context.beginPath();
+	context.fillStyle = '#000000';
+	context.strokeStyle = '#000000';
+	let lineTop = 20;
+	let hOffset = 30;
+	text(`Day : ${worldModel.gardenDay}`, -w2 + hOffset, -h2 + lineTop);
+	lineTop += 20;
+	text('Status : ' + (onLine ? "online" : "offline"), -w2 + hOffset, -h2 + lineTop);
+	lineTop += 20;
+	text('Player : ' + playerName, -w2 + hOffset, -h2 + lineTop);
+	if(_camera){
+		lineTop += 20;
+		text('Position : (' + _camera.position.x + ',' + _camera.position.y + ')' , -w2 + hOffset, -h2 + lineTop);
+	}
+	lineTop+= 20;
+	if(debugMode){
+		text(`Center                   : ${worldModel.currentCenter.x},${worldModel.currentCenter.y}`, -w2 + 30, -h2 + lineTop);
+		lineTop += 20;
+		text(`LadyBug position :${_camera.position.x},${_camera.position.y}`, -w2 + 30, -h2 + lineTop);
+		lineTop += 20;
+		text(`LadyBug distance : ${_camera.distance}`, -w2 + 30, -h2 + lineTop);
+		lineTop += 20;
+		text(`world radius          : ${worldModel.radius}`, -w2 + 30, -h2 + lineTop);
+		lineTop += 20;
+	}
+	context.closePath();
+	context.fill();
+	context.stroke();
+	context.restore();
+  }
+
+  function addUpdatePlayer(msg){
+	if(msg.name === playerName) return;
+	let found = false;
+	msg.isMoving = false;
+	msg.bodyRadius = 20;
+	msg.bodyInMotionDiameter1 = 18;
+	msg.bodyInMotionDiameter2 = 22;
+	msg.opacity = 1;
+	_otherPlayers.forEach((u) => {
+		if(u.name === msg.name){
+			found = true;
+			for (const key in msg) {
+				u[key] = msg[key];
+			}
+		}
+	});
+	if(!found){
+		otherPlayersIndex++;
+		_otherPlayers.push(msg);
+	}
   }

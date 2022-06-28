@@ -81,7 +81,8 @@ app.get('/', function (req, res) {
 });
 
 io.on('connection', (socket) => {
-  console.log(`connected :  ${socket.id}`);
+  let idconnected = socket.id;
+  console.log(`connected :  ${idconnected}`);
   let cookies = socket.handshake.headers.cookie;
   let identity = getIdentity(cookies);
   let found = false;
@@ -89,10 +90,13 @@ io.on('connection', (socket) => {
     if (u.name === identity.name) {
       found = true;
       u.color = identity.color;
-      u.id = socket.id;
+      u.id = idconnected;
       u.socket = socket;
       u.position = identity.position ? identity.position : { x: 0, y: 0 };
-      u.rotation = identity.rotation ? identity.rotation : 0
+      u.rotation = identity.rotation ? identity.rotation : 0;
+      u.generation = identity.generation ?? 1;
+      u.dotsColor = identity.dotsColor ?? '#000000';
+      u.dotsNumber = identity.dotsNumber ?? 3;
     }
   });
 
@@ -100,23 +104,45 @@ io.on('connection', (socket) => {
     users.push({
       name: identity.name,
       color: identity.color,
-      id: socket.id,
+      id: idconnected,
       socket: socket,
       position: identity.position ? identity.position : { x: 0, y: 0 },
-      rotation: identity.rotation ? identity.rotation : 0
+      rotation: identity.rotation ? identity.rotation : 0,
+      generation : identity.generation ?? 1,
+      dotsColor : identity.dotsColor ?? '#000000',
+      dotsNumber : identity.dotsNumber ?? 3
     });
   }
+
+  let newPlayer = users.filter((u) => {
+    return idconnected === u.id ;
+  });
+
+  let otherPlayers = users.filter((u) => {
+    return idconnected !== u.id ;
+  });
+
+  if(newPlayer.length === 1){
+    p = newPlayer[0];
+    // tell client's new player about it's player identity and show it
+    console.log('player-identity')
+    let data = { playerId: idconnected, what: "player-identity", name: p.name, color: p.color, position: p.position, rotation: p.rotation ,generation : p.generation ,dotsColor : p.dotsColor,dotsNumber : p.dotsNumber};
+    p.socket.emit('info',data);
+    if(otherPlayers.length > 0){
+      data.what = "player-connected";
+      // Tell other players, there's a new kid in town !
+      otherPlayers.forEach((u) => {
+        u.socket.emit('info',data);
+      });
+      // Tell the new player, other players are already in the game
+      otherPlayers.forEach((u) => {
+        data = { playerId: u.id, what: "player-connected", name: u.name, color: u.color, position: u.position, rotation: u.rotation ,generation : u.generation ,dotsColor : u.dotsColor,dotsNumber : u.dotsNumber};
+        newPlayer[0].socket.emit('info',data);
+      });
+    }
+  }
+
   savePlayers();
-  users
-    .forEach((u) => {
-      if (socket.id === u.socket.id) {
-        console.log('player-identity')
-        u.socket.emit('info', { playerId: socket.id, what: "player-identity", name: u.name, color: u.color, position: u.position, rotation: u.rotation ,generation : u.generation });
-      } else {
-        console.log('player-connected')
-        u.socket.emit('info', { playerId: socket.id, what: "player-connected", name: u.name, color: u.color, position: u.position, rotation: u.rotation ,generation : u.generation  });
-      }
-    });
 
   socket.on('disconnect', () => {
     console.log(`disconnect ${socket.id}`);
@@ -200,34 +226,40 @@ io.on('connection', (socket) => {
     if (cookieName in cookies) {
       identity = JSON.parse(cookies[cookieName]);
       if (identity.name && identity.color) {
+        // got a cookie
         console.log(identity.name)
-
         if (identity.name !== '???') {
           let findInConnected = users.filter((u) => {
             return u.name === identity.name;
           });
           if (findInConnected.length === 0) { // not already connected
-            hasIdentity = true;
             if (usersMemory[identity.name]) {
-              if (!identity.dotsColor) identity.dotsColor = usersMemory[identity.name].dotsColor;
-              if (!identity.dotsNumber) identity.dotsNumber = usersMemory[identity.name].dotsNumber;
-              if (!identity.birth) identity.birth = usersMemory[identity.name].birth;
-              if (!identity.maxAge) identity.maxAge = usersMemory[identity.name].maxAge;
-            } else {
-              if (!identity.dotsColor) identity.dotsColor = "#000000";
-              if (!identity.dotsNumber) identity.dotsNumber = 3;
-              if (!identity.birth) identity.birth = worldModel.gardenDay;
-              if (!identity.maxAge) identity.maxAge = 450;
-            }
+              hasIdentity = true;
+              if(identity.forceByCookie){
+                identity.color = identity.color ?? usersMemory[identity.name].color;
+                identity.dotsColor = identity.dotsColor ?? usersMemory[identity.name].dotsColor;
+                identity.dotsNumber = identity.dotsNumber ?? usersMemory[identity.name].dotsNumber;
+                identity.birth = identity.birth ?? usersMemory[identity.name].birth;
+                identity.maxAge = identity.maxAge ?? usersMemory[identity.name].maxAge;
+                identity.generation = identity.generation ?? usersMemory[identity.name].generation;
+              }else{
+                // take the informations from the server
+                identity.color = usersMemory[identity.name].color;
+                identity.dotsColor = usersMemory[identity.name].dotsColor;
+                identity.dotsNumber = usersMemory[identity.name].dotsNumber;
+                identity.birth = usersMemory[identity.name].birth;
+                identity.maxAge = usersMemory[identity.name].maxAge;
+                identity.generation = usersMemory[identity.name].generation;
+              }
+            } 
+          }else{
+            console.log("bug : " + identity.name + "is already connected !")
           }
         }
       }
     }
 
     if (!hasIdentity) {
-      if (users.length === 0) {
-        identity = identities[0];
-      } else {
         let givenNames =[];
         for (const n in usersMemory) {
           givenNames.push(n);
@@ -236,7 +268,6 @@ io.on('connection', (socket) => {
           return givenNames.indexOf(x.name) === -1;
         })
         identity = availableIdentities.length > 0 ? availableIdentities[0] :  { "name": "nobody", "color": "#cccccc", "dotsColor": "#000000", "dotsNumber": 3, "birth": null, "maxAge": 450, "generation" :1 };
-      }
     }
     if (!identity.birth) {
       identity.birth = worldModel.gardenDay;
