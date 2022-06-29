@@ -770,6 +770,7 @@ function Plant(data) {
 	this.color = data.color;
 	this.leaves = data.leaves || null;
 	this.model = data.model ? data.model : null;
+	this.protectRadius = null;
 	this.collider = {
 		shape: "circle",
 		center : null,
@@ -778,21 +779,42 @@ function Plant(data) {
 	}
 	this.init = function () {
 		let self = this;
+		let modelQueryResult = null;
+
+		if(self.model === 'Clover-4'){
+			console.log(self.model);
+		}
+
+		if(self.model){
+			modelQueryResult = worldModel.data.models.filter((x) => { return x.name === self.model});
+		}
+
 		if (self.leaves === null) {
-			if(self.model){
-				let modelQueryResult = worldModel.data.models.filter((x) => { return x.name === self.model});
-				if(modelQueryResult.length === 1){
-					self.leaves = {...modelQueryResult[0].leaves};
-				}
+			if(modelQueryResult.length === 1){
+				self.leaves = {...modelQueryResult[0].leaves};
 			}
 		}
+
 		if (self.leaves === null) {
 			throw 'Not implemented plant : ' + self.name;
 		}
+
+		if(modelQueryResult.length === 1){
+			if(modelQueryResult[0].protectRadius){
+				self.protectRadius = {...modelQueryResult[0].protectRadius};
+			}
+		}
+	
 		let spikesRadius = Math.min(self.age * self.leaves.leafModel.size.growthPerDay + self.leaves.leafModel.size.min, self.leaves.leafModel.size.max);
+		if(self.protectRadius !== null){
+			self.protectRadius.radius =  Math.min((self.age * self.protectRadius.growthPerDay) + self.protectRadius.min, self.protectRadius.max);
+		}else{
+			self.protectRadius = {radius : 0};
+		}
 		self.geometry = {};
 		self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size, center: null };
 		self.collider.data = self.size;
+
 		if (self.leaves === null) {
 			self.geometry.crown = null;
 		} else {
@@ -852,6 +874,19 @@ function Plant(data) {
 		var self = this;
 		isVisible = true;
 		if(!isVisible) return;
+		if(self.protectRadius && self.protectRadius.radius > 0){
+			context.save();
+			context.strokeStyle = self.protectRadius.color;
+			context.fillStyle = self.protectRadius.color;
+			context.globalAlpha = 0.04;
+			context.beginPath();
+			let centralPt = drawingPositionGet(self.positionAbsolute);
+			circle(centralPt.x, centralPt.y, self.protectRadius.radius);
+			context.closePath();
+			context.stroke();
+			context.fill();
+			context.restore();
+		}
 		if(self.geometry && self.geometry.crown ){
 			if(self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier"){
 				let color = self.geometry.crown.color;

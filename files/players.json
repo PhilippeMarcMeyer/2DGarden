@@ -1,10 +1,10 @@
 {
   "Elrond": {
     "position": {
-      "x": -211,
-      "y": -180
+      "x": 0,
+      "y": 0
     },
-    "rotation": 3.854613878608153,
+    "rotation": 0,
     "color": "#FF0000",
     "birth": 363,
     "dotsNumber": 3,
@@ -14,10 +14,10 @@
   },
   "Boromir": {
     "position": {
-      "x": -374,
-      "y": -683
+      "x": 0,
+      "y": 0
     },
-    "rotation": 0.5714285714285716,
+    "rotation": 2.285714285714285,
     "color": "#DDDD00",
     "birth": 363,
     "dotsNumber": 3,

@@ -87,6 +87,13 @@
       },
       {
         "name": "Clover-4",
+        "protectRadius":{
+          "min": 20,
+          "max": 140,
+          "growthPerDay": 2,
+          "color" :  "#1100aa",
+          "radius" : null
+        },
         "evolution": {
           "maxAge": 120,
           "seedsDay": 110,
