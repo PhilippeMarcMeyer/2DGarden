@@ -4,9 +4,9 @@
       "x": 0,
       "y": 0
     },
-    "rotation": 0,
+    "rotation": 3.852084900073449,
     "color": "#FF0000",
-    "birth": 363,
+    "birth": 388,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
@@ -14,12 +14,12 @@
   },
   "Boromir": {
     "position": {
-      "x": 0,
-      "y": 0
+      "x": 54,
+      "y": -553
     },
-    "rotation": 2.285714285714285,
+    "rotation": 1.1428571428571426,
     "color": "#DDDD00",
-    "birth": 363,
+    "birth": 437,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
@@ -27,12 +27,12 @@
   },
   "Frodo": {
     "position": {
-      "x": 71,
-      "y": -204
+      "x": 0,
+      "y": 0
     },
-    "rotation": 1.4285714285714282,
-    "color": "#6600AD",
-    "birth": 361,
+    "rotation": 1.9999999999999993,
+    "color": "#0000AD",
+    "birth": 437,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,

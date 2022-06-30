@@ -8,13 +8,14 @@ const cookieParser = require('cookie-parser')
 const cookieName = "garden";
 const fs = require('fs');
 const { waitForDebugger } = require('inspector');
+const { isContext } = require('vm');
 let users = [];
 let worldModel = null;
-let playersFileLock = false;
+let worldOnHold = false;
 const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 10 * 60 * 1000; // 10 minutes
+const dayLengthConnection = 3 * 60 * 1000; // 10 minutes
 
-let dayLength = dayLengthNoConnection;
+let dayLength = dayLengthConnection;
 let intervalDays;
 let serverLoaded = false;
 app.use(bodyParser.json())
@@ -33,6 +34,7 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
       return;
     }
     worldModel = JSON.parse(rawdata);
+
     if (rawplayers === null || rawplayers === '') {
       usersMemory = {};
     } else {
@@ -46,10 +48,13 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
     },3*60*1000)
 
     intervalDays = setInterval(function () {
+      worldOnHold = true;
       worldModel.gardenDay++;
+      /*
       users.forEach((u) => {
         u.socket.emit('info', { what: 'world-day', day: worldModel.gardenDay });
       });
+      */
       // commanded by the server only
       // check the evolution in the plant models to see if the begin to make seeds and later perish
       // later add bonuses or maluses according to weather, water, soil, animals attack
@@ -57,7 +62,10 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
       // some plants could give protection to the ladybug on a radius egal to their size (4 leaves clovers !)
       // check if a lady bug is too old, then add 1 to the generation in the players.json aka usersMemory
       checkGenerations();
+      checkPlants();
       saveWorld();
+      worldOnHold = false;
+      io.emit('info', { what: 'world-day', day: worldModel.gardenDay }); // call also to reload ?
     }, dayLength);
   });
 
@@ -302,6 +310,95 @@ io.on('connection', (socket) => {
     });
   }
 
+  function checkPlants(){
+    // removing dead plants :-(
+
+    console.log("Check plants");
+    console.log("plants before : " + worldModel.data.plants.length);
+/*
+    worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
+      return x.stage < 3;
+    });
+    */
+/*
+    worldModel.data.models.forEach((x)=>{
+      x.evolution.seedsDay = Math.floor((0.6 * x.evolution.maxAge)+0.5);
+  });
+  */
+/*
+    worldModel.data.plants.forEach((x)=>{
+        if(!x.stage) x.stage = 1;
+
+    });
+    */
+   // console.log("plants after removing stage 3 : " + worldModel.data.plants.length);
+
+    //
+    let newPlants = [];
+     worldModel.data.plants.forEach((x)=>{
+      let model;
+       if(x.model){
+        model = worldModel.data.models.filter((y) => {
+            return y.name === x.model;
+        })[0];
+       }else{
+        console.log("not implemented yet");
+       }
+       let age = worldModel.gardenDay - x.birth + 1;
+       console.log(x.name + " age : " +   age );
+
+       if(x.stage === 0){ // seed
+        age += model.evolution.seedCountDown;
+        if(age >= 1){
+          x.stage++; // flower
+          x.birth = worldModel.gardenDay -1;
+        }
+       }else if(x.stage >= 1){// flower
+          if(age >= model.evolution.seedsDay){
+            if (Math.random() <= 0.1){
+              console.log("seeds ?")
+              seedsNr = Math.floor(((model.evolution.seeds.max - model.evolution.seeds.min) * Math.random()) + 0.5) + model.evolution.seeds.min;
+              console.log("seedsNr " + seedsNr)
+              let n = 0
+              while (n < seedsNr) {
+                n++;
+                if (Math.random() <= model.evolution.seedSuccesRate){
+                  // todo : cacl true distance and angle !!!
+                  let seedAngle = (Math.random() * Math.PI * 2);
+                  let seedDistance =  model.evolution.seedDistance.min + Math.floor(((model.evolution.seedDistance.max - model.evolution.seedDistance.min) * Math.random()) + 0.5);
+                  let seedPosInfos = getSeedPositionToOrigine(x.distance,x.angleToOrigine,seedAngle,seedDistance)
+                  newPlants.push({
+                    birth: worldModel.gardenDay,
+                    distance: seedPosInfos.distance,
+                    angleToOrigine: seedPosInfos.angleToOrigine,
+                    color: x.color,
+                    shape: x.shape,
+                    size: {... x.size},
+                    name : x.name.split("-")[0] + "-" + worldModel.gardenDay + "*" + (n + 1),
+                    innerRotation : (Math.random() * 3.14159 * 2),
+                    model:x.model,
+                    stage: 0
+                  });
+                }
+              }
+            }
+          }else if(age >= model.evolution.maxAge * 5){
+            x.stage++; // giving back to garden :-(
+          } 
+       }else if(x.stage === 2){// dying
+        if (Math.random() > 0.5){
+          x.stage++; // to remove on next day
+        }
+     }
+    });
+    if(newPlants.length > 0){
+      worldModel.data.plants = [... worldModel.data.plants,...newPlants];
+    }
+    worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
+      return x.stage < 4;
+    });
+  }
+
   function checkGenerations(){
     for (const bug in usersMemory) {
        let bugAge =  worldModel.gardenDay - bug.birth;
@@ -353,3 +450,40 @@ io.on('connection', (socket) => {
     let bHex =   b < 16 ? '0' + b.toString(16) : b.toString(16);
     return '#' + rHex + gHex + bHex;
   }
+
+  function getSeedPositionToOrigine(parentDistance,parentAngleToOrigine,seedAngle,seedDistance){
+
+    let cos = Math.cos(parentAngleToOrigine);
+		let sin = -Math.sin(parentAngleToOrigine);
+
+    let parentPosition = {
+      x : Math.floor(cos * parentDistance),
+      y :  Math.floor(sin * parentDistance)
+    }
+
+    cos = Math.cos(seedAngle);
+		sin = -Math.sin(seedAngle);
+	
+	let SeedPosition = {
+      x : Math.floor(cos * seedDistance) + parentPosition.x,
+      y : Math.floor(sin * seedDistance) + parentPosition.y
+  }
+
+  let divider = Math.max(SeedPosition.x,SeedPosition.y);
+  if(divider === 0){
+    divider = 1;
+  }
+  let x = SeedPosition.x / divider;
+  let y = SeedPosition.y / divider;
+    return {
+      distance : getDistance({x:0,y:0},SeedPosition),
+      angleToOrigine : Math.atan2(y, x)
+    }
+  }
+
+  function getDistance(ptA,ptB){
+    let w = Math.abs(ptA.x - ptB.x);
+    let h = Math.abs(ptA.y - ptB.y);
+    return Math.sqrt(Math.pow(w + h,2));
+  }
+  

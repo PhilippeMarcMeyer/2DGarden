@@ -2,7 +2,7 @@ let w2, h2, w4, h4,wh2, k90degres, k60degres, k45degres, k180degres, k270degres,
 let needUpdate, saveContext, context, _camera, mode, things, debugMode, scribble;
 let worldModel, gameLoaded, floor;
 let keys = { up: false, down: false, left: false, right: false }
-const framerate = 50;
+let framerate = 50;
 const camOverPlantLimit = 40;
 let playerColors = '#00AD00,#0000AD,#FF4500,#00ADAD,#AD00AD,#582900,#FFCC00,#000000,#33FFCC'.split(',');
 let otherPlayersIndex = 0;
@@ -43,6 +43,15 @@ function setup() {
 
 function draw() {
 	if (!gameLoaded) return;
+	if(things.length > 300){
+		framerate = 20;
+	}else if(things.length > 200){
+		framerate = 30;
+	}else if(things.length > 100){
+		framerate = 40;
+	}else{
+		framerate = 50;
+	}
 	if(frameCount % (framerate*3) === 0){
 		let now = new Date().getTime();
 		 if(now - lastOnline > maxLastPing){
@@ -771,6 +780,7 @@ function Plant(data) {
 	this.leaves = data.leaves || null;
 	this.model = data.model ? data.model : null;
 	this.protectRadius = null;
+	this.stage = data.stage ?? 1;
 	this.collider = {
 		shape: "circle",
 		center : null,
@@ -874,6 +884,20 @@ function Plant(data) {
 		var self = this;
 		isVisible = true;
 		if(!isVisible) return;
+		if(self.stage === 0){
+			context.save();
+			context.strokeStyle = "#CA6A0B";
+			context.fillStyle = "#CA6A0B";
+			context.beginPath();
+			let centralPt = drawingPositionGet(self.positionAbsolute);
+			circle(centralPt.x, centralPt.y, self.geometry.heart.diameter);
+			if (debugMode) text(`${self.name} (seed)`, centralPt.x + 20, centralPt.y);
+			context.closePath();
+			context.stroke();
+			context.fill();
+			context.restore();
+			return;
+		}
 		if(self.protectRadius && self.protectRadius.radius > 0){
 			context.save();
 			context.strokeStyle = self.protectRadius.color;
@@ -1248,6 +1272,8 @@ function setKeyDown(){
 	if(_camera){
 		lineTop += 20;
 		text('Position : (' + _camera.position.x + ',' + _camera.position.y + ')' , -w2 + hOffset, -h2 + lineTop);
+		lineTop += 20;
+		text(`framerate : ${framerate}` , -w2 + hOffset, -h2 + lineTop);
 	}
 	lineTop+= 20;
 	if(debugMode){
