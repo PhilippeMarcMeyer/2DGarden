@@ -7,13 +7,11 @@ const io = require('socket.io')(server, { cookie: true })
 const cookieParser = require('cookie-parser')
 const cookieName = "garden";
 const fs = require('fs');
-const { waitForDebugger } = require('inspector');
-const { isContext } = require('vm');
 let users = [];
 let worldModel = null;
 let worldOnHold = false;
-const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 3 * 60 * 1000; // 10 minutes
+//const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
+const dayLengthConnection = 10 * 60 * 1000; // 10 minutes
 
 let dayLength = dayLengthConnection;
 let intervalDays;
@@ -42,7 +40,7 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
     }
 
     serverLoaded = true;
-
+    
     intervalPlayersSaving = setInterval(function(){
       savePlayers();
     },3*60*1000)
@@ -50,17 +48,14 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
     intervalDays = setInterval(function () {
       worldOnHold = true;
       worldModel.gardenDay++;
-      /*
-      users.forEach((u) => {
-        u.socket.emit('info', { what: 'world-day', day: worldModel.gardenDay });
-      });
-      */
+
       // commanded by the server only
       // check the evolution in the plant models to see if the begin to make seeds and later perish
       // later add bonuses or maluses according to weather, water, soil, animals attack
       // it would mean than a little part of the evolution is set in the plant itself and not in its model
       // some plants could give protection to the ladybug on a radius egal to their size (4 leaves clovers !)
       // check if a lady bug is too old, then add 1 to the generation in the players.json aka usersMemory
+      checkLakeAndRocks();
       checkGenerations();
       checkPlants();
       saveWorld();
@@ -68,8 +63,6 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
       io.emit('info', { what: 'world-day', day: worldModel.gardenDay }); // call also to reload ?
     }, dayLength);
   });
-
-
 });
 
 function saveWorld() {
@@ -310,32 +303,25 @@ io.on('connection', (socket) => {
     });
   }
 
+  function destroy(){
+    worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
+      let test = Math.random();
+      return test < 0.8;
+    });
+    saveWorld();
+  }
+
   function checkPlants(){
     // removing dead plants :-(
 
-    console.log("Check plants");
+    console.log("Beginning Checking plants");
     console.log("plants before : " + worldModel.data.plants.length);
-/*
-    worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
-      return x.stage < 3;
-    });
-    */
-/*
-    worldModel.data.models.forEach((x)=>{
-      x.evolution.seedsDay = Math.floor((0.6 * x.evolution.maxAge)+0.5);
-  });
-  */
-/*
-    worldModel.data.plants.forEach((x)=>{
-        if(!x.stage) x.stage = 1;
 
-    });
-    */
-   // console.log("plants after removing stage 3 : " + worldModel.data.plants.length);
-
-    //
     let newPlants = [];
      worldModel.data.plants.forEach((x)=>{
+      if(!x.position){
+        x.position = getPosition(x.distance,x.angleToOrigine);
+      }
       let model;
        if(x.model){
         model = worldModel.data.models.filter((y) => {
@@ -371,6 +357,7 @@ io.on('connection', (socket) => {
                     birth: worldModel.gardenDay,
                     distance: seedPosInfos.distance,
                     angleToOrigine: seedPosInfos.angleToOrigine,
+                    position : getPosition(seedPosInfos.distance,seedPosInfos.angleToOrigine),
                     color: x.color,
                     shape: x.shape,
                     size: {... x.size},
@@ -391,12 +378,102 @@ io.on('connection', (socket) => {
         }
      }
     });
-    if(newPlants.length > 0){
-      worldModel.data.plants = [... worldModel.data.plants,...newPlants];
-    }
+    
+    let beforeNr = worldModel.data.plants.length;
+
     worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
       return x.stage < 4;
     });
+    /*
+    worldModel.data.rocks.forEach((rock) => {
+      console.log(`Rock ${rock.name} has a size of ${rock.size}`)
+      let radius = (rock.size/2)+20;
+      worldModel.data.plants = worldModel.data.plants.filter((plant) => {
+        return getDistance(rock.position, plant.position) > radius;
+      });
+    });
+    */
+
+    let afterNr = worldModel.data.plants.length;
+
+    console.log(`Removing ${beforeNr - afterNr} old plants from the garden...`);
+
+    if(newPlants.length > 0){
+      let seedsBefore = newPlants.length;
+      let findLake = worldModel.data.floor.shapes.filter((x)=>{
+          return x.name && x.name === "south-lake";
+      });
+      if(findLake.length === 1){
+        let lakePosition = findLake[0].position;
+        let lakeRadius = Math.floor(findLake[0].size[0] / 2);
+        newPlants = newPlants.filter((seed) => {
+            return getDistance(lakePosition,seed.position) > lakeRadius;
+        });
+        let seedsAfter = newPlants.length;
+        console.log(`${seedsBefore - seedsAfter} seed(s) have fallen into the lake...`);
+      }
+    }
+
+    if (newPlants.length > 0) {
+      let seedsBefore = newPlants.length;
+      worldModel.data.rocks.forEach((rock) => {
+        let radius = Math.floor(rock.size / 2) + 20;
+        newPlants = newPlants.filter((seed) => {
+          return getDistance(rock.position, seed.position) > radius;
+        });
+      });
+
+      let seedsAfter = newPlants.length;
+      console.log(`${seedsBefore - seedsAfter} seed(s) have fallen onto a rock...`);
+    }
+
+    console.log(`Adding ${newPlants.length} seeds to the garden...`);
+
+    if(newPlants.length > 0){
+      worldModel.data.plants = [... worldModel.data.plants,...newPlants];
+    }
+    
+    let criticalDistance = 30;
+    let criticalAge = 30;
+
+    let youngPlants = worldModel.data.plants.filter((x)=>{
+      return x.stage === 1 && (worldModel.gardenDay - x.birth <= criticalAge);
+    });
+
+    console.log(`Checking ${youngPlants.length} new growing plants vicinity for vital space...`);
+
+    if (youngPlants.length > 0) {
+      let notGrowingNr = 0;
+    
+      worldModel.data.plants = worldModel.data.plants.filter((x) => {
+        return x.stage !== 1 || (worldModel.gardenDay - x.birth > criticalAge);
+      });
+      youngPlants.forEach((youth) => {
+        let oldPlantsInVicinity = worldModel.data.plants.filter((oldOne) => {
+          return (Math.abs(youth.position.x - oldOne.position.x) <= criticalDistance) || (Math.abs(youth.position.y - oldOne.position.y) <= criticalDistance)
+        });
+        if (oldPlantsInVicinity.length > 0) {
+          oldPlantsInVicinity = oldPlantsInVicinity.filter((oldOne) => {
+            return (getDistance(youth.position, oldOne.position) <= criticalDistance);
+          });
+        }
+        if (oldPlantsInVicinity.length > 0){
+          youth.stage = 4;
+          notGrowingNr++;
+        }
+      });
+      // get survivors
+      youngPlants =  youngPlants.filter((x)=>{
+        return x.stage === 1;
+      });
+      console.log(`Removing ${notGrowingNr} young plants from the garden...`);
+
+      if (youngPlants.length > 0) {
+        worldModel.data.plants = [...worldModel.data.plants,...youngPlants];
+      }
+    }
+    console.log("stopping Checking plants");
+    console.log("plants after : " + worldModel.data.plants.length);
   }
 
   function checkGenerations(){
@@ -487,3 +564,22 @@ io.on('connection', (socket) => {
     return Math.sqrt(Math.pow(w + h,2));
   }
   
+  function getPosition(distance,angleToOrigine){
+    let cos = Math.cos(angleToOrigine);
+    let sin = -Math.sin(angleToOrigine);
+    return {x:Math.floor(cos * distance),y:Math.floor(sin * distance)}
+  }
+
+  function checkLakeAndRocks(){
+    worldModel.data.floor.shapes.forEach((x)=>{
+      if(!x.position){
+        x.position = getPosition(x.distance,x.angleToOrigine);
+      }
+    });
+
+    worldModel.data.rocks.forEach((x)=>{
+      if(!x.position){
+        x.position = getPosition(x.distance,x.angleToOrigine);
+      }
+    });
+  }
