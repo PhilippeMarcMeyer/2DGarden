@@ -5,7 +5,7 @@ let keys = { up: false, down: false, left: false, right: false }
 let framerate = 50;
 let emiteveryNframe = 12;
 
-const camOverPlantLimit = 40;
+const camOverPlantLimit = 32;
 let playerColors = '#00AD00,#0000AD,#FF4500,#00ADAD,#AD00AD,#582900,#FFCC00,#000000,#33FFCC'.split(',');
 let otherPlayersIndex = 0;
 let _otherPlayers = [];
@@ -881,7 +881,7 @@ function Plant(data) {
 			}else if (self.geometry.crown.shape === "double-bezier"){
 				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 40)
 			}else{
-				self.geometry.crown.borderColor = self.geometry.crown.color;
+				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 100)
 			}
 			self.geometry.crown.spikes = [];
 			if (self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier") {
@@ -947,7 +947,7 @@ function Plant(data) {
 	}
 	this.shake = function () {
 		var self = this;
-		self.animation = [-2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2];
+		self.animation = [-2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -1, 1, -3, -2, 2];
 	}
 	this.draw = function () {
 		var self = this;
@@ -1006,7 +1006,7 @@ function Plant(data) {
 						self.animation.shift();
 					} 
 
-					context.globalAlpha = self.geometry.crown.shape === "lines" ? 0.5 : 1;
+					context.globalAlpha =  1;
 					context.strokeStyle = borderColor;
 					context.fillStyle = color;
 
@@ -1020,6 +1020,22 @@ function Plant(data) {
 						bezier( rightPts.pt1.x, rightPts.pt1.y,rightPts.ctrlPt1.x, rightPts.ctrlPt1.y, rightPts.ctrlPt2.x, rightPts.ctrlPt2.y, rightPts.pt2.x, rightPts.pt2.y);
 					}
 					if (self.geometry.crown.shape === "lines") {
+						strokeWeight(3);
+						let centerPos = drawingPositionGet(self.geometry.heart.center);
+						self.geometry.crown.spikes.forEach((pt) => {
+							context.moveTo(centerPos.x, centerPos.y);
+							let drawPos = drawingPositionGet(pt);
+							context.lineTo(drawPos.x, drawPos.y);
+						});
+					}
+					context.closePath();
+
+					context.stroke();
+					context.fill();
+					if (self.geometry.crown.shape === "lines") {
+						context.strokeStyle = "white";
+						context.fillStyle = borderColor;
+						context.beginPath();
 						strokeWeight(1);
 						let centerPos = drawingPositionGet(self.geometry.heart.center);
 						self.geometry.crown.spikes.forEach((pt) => {
@@ -1027,11 +1043,12 @@ function Plant(data) {
 							let drawPos = drawingPositionGet(pt);
 							context.lineTo(drawPos.x, drawPos.y);
 						})
-					}
-					context.closePath();
+						context.closePath();
 
-					context.stroke();
-					context.fill();
+						context.stroke();
+						context.fill();
+					}
+
 					context.restore();
 
 				});
@@ -1050,6 +1067,19 @@ function Plant(data) {
 				}
 			}
 		}
+		if (self.animation && self.animation.length > 0 && !debugMode) {
+			context.save();
+			context.beginPath();
+			context.strokeStyle = "#000";
+			context.fillStyle = "#000";
+
+			let centralPt = drawingPositionGet(self.positionAbsolute);
+			text(self.name, centralPt.x + 50, centralPt.y -50);
+			context.closePath();
+			context.stroke();
+			context.fill();
+			context.restore();
+		} 
 	}
 }
 

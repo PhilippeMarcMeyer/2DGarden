@@ -11,7 +11,7 @@ let users = [];
 let worldModel = null;
 let worldOnHold = false;
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 15 * 60 * 1000; // 10 minutes
+const dayLengthConnection = 5 * 60 * 1000; // 10 minutes
 
 let maxPlants = 99;
 let dayLength = dayLengthConnection;
