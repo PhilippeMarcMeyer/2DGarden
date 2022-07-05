@@ -3,7 +3,7 @@
   "radius": 2000,
   "baseColor": "#1144ff",
   "perimeterColor": "#a0522d",
-  "gardenDay": 437,
+  "gardenDay": 101,
   "currentCenter": {
     "x": 0,
     "y": 0
@@ -11,19 +11,49 @@
   "data": {
     "models": [
       {
-        "name": "Spirula-10",
+        "name": "Dandelion-36",
         "evolution": {
-          "maxAge": 300,
-          "seedsDay": 180,
+          "maxAge": 120,
+          "seedsDay": 33,
           "seeds": {
-            "min": 3,
-            "max": 7
+            "min": 5,
+            "max": 9
           },
-          "seedCountDown": -6,
+          "seedCountDown": -5,
           "seedSuccesRate": 0.7,
           "seedDistance": {
-            "min": 50,
-            "max": 120
+            "min": 150,
+            "max": 370
+          }
+        },
+        "leaves": {
+          "shape": "lines",
+          "number": 36,
+          "leafModel": {
+            "size": {
+              "min": 9,
+              "max": 36,
+              "growthPerDay": 2
+            },
+            "angles": [0,0.1745,0.349,0.5235,0.698,0.8725,1.047,1.2215,1.396,1.5705,1.745,1.9195,2.094,2.2685,2.443,2.6175,2.792,2.9665,3.141,3.3155,3.49,3.6645,3.839,4.0135,4.188,4.3625,4.537,4.7115,4.886,5.0605,5.235,5.4095,5.584,5.7585,5.933,6.1075],
+            "color": "#F74531"
+          }
+        }
+      },
+      {
+        "name": "Spirula-10",
+        "evolution": {
+          "maxAge": 150,
+          "seedsDay": 22,
+          "seeds": {
+            "min": 5,
+            "max": 12
+          },
+          "seedCountDown": -4,
+          "seedSuccesRate": 0.7,
+          "seedDistance": {
+            "min": 250,
+            "max": 520
           }
         },
         "leaves": {
@@ -31,8 +61,8 @@
           "number": 10,
           "leafModel": {
             "size": {
-              "min": 60,
-              "max": 500,
+              "min": 15,
+              "max": 121,
               "growthPerDay": 5
             },
             "angles": [
@@ -95,17 +125,17 @@
           "radius": null
         },
         "evolution": {
-          "maxAge": 120,
-          "seedsDay": 72,
+          "maxAge": 99,
+          "seedsDay": 33,
           "seeds": {
             "min": 6,
             "max": 13
           },
           "seedCountDown": -6,
-          "seedSuccesRate": 0.6,
+          "seedSuccesRate": 0.68,
           "seedDistance": {
-            "min": 50,
-            "max": 120
+            "min": 250,
+            "max": 320
           }
         },
         "leaves": {
@@ -164,17 +194,17 @@
       {
         "name": "Clover-3",
         "evolution": {
-          "maxAge": 120,
-          "seedsDay": 72,
+          "maxAge": 99,
+          "seedsDay": 35,
           "seeds": {
-            "min": 7,
-            "max": 12
+            "min": 4,
+            "max": 7
           },
           "seedCountDown": -6,
           "seedSuccesRate": 0.75,
           "seedDistance": {
-            "min": 70,
-            "max": 140
+            "min": 170,
+            "max": 340
           }
         },
         "leaves": {
@@ -233,7 +263,7 @@
         "name": "Lilium-7",
         "evolution": {
           "maxAge": 170,
-          "seedsDay": 102,
+          "seedsDay": 42,
           "seeds": {
             "min": 3,
             "max": 6
@@ -241,8 +271,8 @@
           "seedCountDown": -7,
           "seedSuccesRate": 0.7,
           "seedDistance": {
-            "min": 25,
-            "max": 70
+            "min": 75,
+            "max": 370
           }
         },
         "leaves": {
@@ -304,17 +334,17 @@
       {
         "name": "Tiny-6",
         "evolution": {
-          "maxAge": 45,
+          "maxAge": 35,
           "seedsDay": 27,
           "seeds": {
-            "min": 12,
-            "max": 36
+            "min": 3,
+            "max": 6
           },
           "seedCountDown": -3,
           "seedSuccesRate": 0.4,
           "seedDistance": {
-            "min": 15,
-            "max": 52
+            "min": 120,
+            "max": 450
           }
         },
         "leaves": {
@@ -376,16 +406,16 @@
         "name": "Tiny-7",
         "evolution": {
           "maxAge": 85,
-          "seedsDay": 51,
+          "seedsDay": 41,
           "seeds": {
-            "min": 12,
-            "max": 24
+            "min": 2,
+            "max": 5
           },
           "seedCountDown": -5,
           "seedSuccesRate": 0.4,
           "seedDistance": {
-            "min": 15,
-            "max": 75
+            "min": 160,
+            "max": 415
           }
         },
         "leaves": {
@@ -447,8 +477,8 @@
       {
         "name": "Xelium-8",
         "evolution": {
-          "maxAge": 200,
-          "seedsDay": 120,
+          "maxAge": 120,
+          "seedsDay": 37,
           "seeds": {
             "min": 6,
             "max": 9
@@ -456,8 +486,8 @@
           "seedCountDown": -7,
           "seedSuccesRate": 0.7,
           "seedDistance": {
-            "min": 65,
-            "max": 145
+            "min": 165,
+            "max": 345
           }
         },
         "leaves": {
@@ -520,8 +550,8 @@
       {
         "name": "Pelium-6",
         "evolution": {
-          "maxAge": 170,
-          "seedsDay": 102,
+          "maxAge": 110,
+          "seedsDay": 43,
           "seeds": {
             "min": 6,
             "max": 9
@@ -529,8 +559,8 @@
           "seedCountDown": -7,
           "seedSuccesRate": 0.7,
           "seedDistance": {
-            "min": 39,
-            "max": 89
+            "min": 139,
+            "max": 289
           }
         },
         "leaves": {
@@ -1633,749 +1663,9 @@
     },
     "plants": [
       {
-        "birth": 390,
-        "distance": 533,
-        "angleToOrigine": 0.379212068449851,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "clover-385*4",
-        "innerRotation": 3.5465650439501064,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 495,
-          "y": -198
-        }
-      },
-      {
-        "birth": 390,
-        "distance": 521,
-        "angleToOrigine": 0.48193960600393604,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "clover-385*6",
-        "innerRotation": 3.609824389587032,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 461,
-          "y": -242
-        }
-      },
-      {
-        "birth": 390,
-        "distance": 535,
-        "angleToOrigine": 0.6226305629030924,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "clover-385*9",
-        "innerRotation": 2.135468889402997,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 434,
-          "y": -312
-        }
-      },
-      {
-        "birth": 391,
-        "distance": 384,
-        "angleToOrigine": 0.3161471556336739,
-        "color": "#efbf11",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Lilium-385*5",
-        "innerRotation": 0.3606092530518543,
-        "model": "Lilium-7",
-        "stage": 1,
-        "position": {
-          "x": 364,
-          "y": -120
-        }
-      },
-      {
-        "birth": 391,
-        "distance": 306,
-        "angleToOrigine": 0.9934141164728443,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Xelium-385*3",
-        "innerRotation": 4.851825116459246,
-        "model": "Xelium-8",
-        "stage": 1,
-        "position": {
-          "x": 167,
-          "y": -257
-        }
-      },
-      {
-        "birth": 391,
-        "distance": 304,
-        "angleToOrigine": 1.0264747900782887,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Xelium-385*4",
-        "innerRotation": 3.307516137292781,
-        "model": "Xelium-8",
-        "stage": 1,
-        "position": {
-          "x": 157,
-          "y": -261
-        }
-      },
-      {
-        "birth": 391,
-        "distance": 350,
-        "angleToOrigine": 0.9934081436188558,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Xelium-385*5",
-        "innerRotation": 0.12386384537495335,
-        "model": "Xelium-8",
-        "stage": 1,
-        "position": {
-          "x": 191,
-          "y": -294
-        }
-      },
-      {
-        "birth": 391,
-        "distance": 307,
-        "angleToOrigine": 1.4666627065940148,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Xelium-385*6",
-        "innerRotation": 4.933595740728426,
-        "model": "Xelium-8",
-        "stage": 1,
-        "position": {
-          "x": 31,
-          "y": -306
-        }
-      },
-      {
-        "birth": 389,
-        "distance": 190,
-        "angleToOrigine": 3.3081500610609664,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-387*8",
-        "innerRotation": 1.700349693007917,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -188,
-          "y": 31
-        }
-      },
-      {
-        "birth": 389,
-        "distance": 201,
-        "angleToOrigine": 2.6068607809941944,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-387*22",
-        "innerRotation": 6.207080594960242,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -173,
-          "y": -103
-        }
-      },
-      {
-        "birth": 391,
-        "distance": 129,
-        "angleToOrigine": 3.4982422300185045,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-387*2",
-        "innerRotation": 4.437989705605762,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": -121,
-          "y": 45
-        }
-      },
-      {
-        "birth": 391,
-        "distance": 182,
-        "angleToOrigine": 3.6887193808272105,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-387*7",
-        "innerRotation": 5.078459696563087,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": -156,
-          "y": 94
-        }
-      },
-      {
-        "birth": 391,
-        "distance": 179,
-        "angleToOrigine": 3.0459683491287217,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-387*14",
-        "innerRotation": 1.6835985074816622,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": -179,
-          "y": -18
-        }
-      },
-      {
-        "birth": 393,
-        "distance": 318,
-        "angleToOrigine": 1.2312811439047318,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "spirula-388*2",
-        "innerRotation": 5.705408993843339,
-        "model": "Clover-4",
-        "stage": 1,
-        "position": {
-          "x": 105,
-          "y": -300
-        }
-      },
-      {
-        "birth": 393,
-        "distance": 376,
-        "angleToOrigine": 1.562753604772528,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "clover-388*3",
-        "innerRotation": 5.335230044002681,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 3,
-          "y": -376
-        }
-      },
-      {
-        "birth": 393,
-        "distance": 442,
-        "angleToOrigine": -1.538097705194467,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "clover-388*5",
-        "innerRotation": 5.665289342979813,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 14,
-          "y": 441
-        }
-      },
-      {
-        "birth": 393,
-        "distance": 439,
-        "angleToOrigine": -1.5155640976712317,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "clover-388*9",
-        "innerRotation": 4.753405896524963,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 24,
-          "y": 438
-        }
-      },
-      {
-        "birth": 395,
-        "distance": 651,
-        "angleToOrigine": -0.7439472653392571,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Pelium-389*4",
-        "innerRotation": 5.241259743195014,
-        "model": "Pelium-6",
-        "stage": 1,
-        "position": {
-          "x": 479,
-          "y": 440
-        }
-      },
-      {
-        "birth": 395,
-        "distance": 666,
-        "angleToOrigine": -0.5214344397717438,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Pelium-389*9",
-        "innerRotation": 0.30681974656018174,
-        "model": "Pelium-6",
-        "stage": 1,
-        "position": {
-          "x": 577,
-          "y": 331
-        }
-      },
-      {
-        "birth": 396,
-        "distance": 570,
-        "angleToOrigine": 0.8064476855344948,
-        "color": "#efbf11",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Lilium-390*3",
-        "innerRotation": 4.341254877836366,
-        "model": "Lilium-7",
-        "stage": 1,
-        "position": {
-          "x": 394,
-          "y": -412
-        }
-      },
-      {
-        "birth": 396,
-        "distance": 452,
-        "angleToOrigine": 0.9303911833421618,
-        "color": "#efbf11",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Lilium-390*5",
-        "innerRotation": 2.34611719614875,
-        "model": "Lilium-7",
-        "stage": 1,
-        "position": {
-          "x": 270,
-          "y": -363
-        }
-      },
-      {
-        "birth": 396,
-        "distance": 515,
-        "angleToOrigine": 0.806754139444447,
-        "color": "#efbf11",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Lilium-390*6",
-        "innerRotation": 1.9153980495327005,
-        "model": "Lilium-7",
-        "stage": 1,
-        "position": {
-          "x": 356,
-          "y": -372
-        }
-      },
-      {
-        "birth": 396,
-        "distance": 427,
-        "angleToOrigine": -0.9638086627484886,
-        "color": "#efbf11",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Lilium-390*3",
-        "innerRotation": 3.4529139048063806,
-        "model": "Lilium-7",
-        "stage": 1,
-        "position": {
-          "x": 243,
-          "y": 350
-        }
-      },
-      {
-        "birth": 396,
-        "distance": 524,
-        "angleToOrigine": -0.918199695688914,
-        "color": "#efbf11",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Lilium-390*5",
-        "innerRotation": 4.096934236261513,
-        "model": "Lilium-7",
-        "stage": 1,
-        "position": {
-          "x": 318,
-          "y": 416
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 161,
-        "angleToOrigine": 0.3192691699113415,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*2",
-        "innerRotation": 0.5215417522961362,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 152,
-          "y": -51
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 140,
-        "angleToOrigine": 2.9669204545815537,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*4",
-        "innerRotation": 6.049377450231234,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -138,
-          "y": -25
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 222,
-        "angleToOrigine": 0.33261969157391236,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*9",
-        "innerRotation": 0.6884801537506613,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 209,
-          "y": -73
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 176,
-        "angleToOrigine": 0.33088272061605306,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*10",
-        "innerRotation": 2.2413131620912004,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 166,
-          "y": -58
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 201,
-        "angleToOrigine": 0.04142706186054587,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*11",
-        "innerRotation": 4.873889888509204,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 200,
-          "y": -9
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 164,
-        "angleToOrigine": 3.08359326038184,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*18",
-        "innerRotation": 2.206906548040844,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -164,
-          "y": -10
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 150,
-        "angleToOrigine": 3.0926806474405986,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*27",
-        "innerRotation": 1.6114661177026572,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -150,
-          "y": -8
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 203,
-        "angleToOrigine": 3.089825474310735,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*33",
-        "innerRotation": 2.3474021054831407,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -203,
-          "y": -11
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 194,
-        "angleToOrigine": 1.202665555469733,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*8",
-        "innerRotation": 0.7501643951281288,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 69,
-          "y": -182
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 160,
-        "angleToOrigine": 0.6857295109062862,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*14",
-        "innerRotation": 1.128042928257364,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 123,
-          "y": -102
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 171,
-        "angleToOrigine": 0.9190986802516996,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*18",
-        "innerRotation": 0.63785915884384,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 103,
-          "y": -136
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 201,
-        "angleToOrigine": 0.938421323551,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*19",
-        "innerRotation": 3.814876005023214,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 118,
-          "y": -163
-        }
-      },
-      {
-        "birth": 392,
-        "distance": 173,
-        "angleToOrigine": 0.8373744289663596,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-390*21",
-        "innerRotation": 5.028673122865716,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 115,
-          "y": -129
-        }
-      },
-      {
-        "birth": 396,
-        "distance": 673,
-        "angleToOrigine": 0.23498768366953718,
+        "birth": 1,
+        "distance": 530,
+        "angleToOrigine": 3.05,
         "color": "#B24DBD",
         "shape": "circle",
         "size": {
@@ -2383,19 +1673,39 @@
           "max": 13,
           "growthPerDay": 1
         },
-        "name": "spirula-391*5",
-        "innerRotation": 1.1416066416942714,
+        "name": "spirula-1",
+        "innerRotation": 0.99,
         "model": "Spirula-10",
         "stage": 1,
         "position": {
-          "x": 654,
-          "y": -157
+          "x": -528,
+          "y": -49
         }
       },
       {
-        "birth": 397,
-        "distance": 355,
-        "angleToOrigine": -0.12983868419387282,
+        "birth": 1,
+        "distance": 500,
+        "angleToOrigine": 0.25,
+        "color": "#44ee44",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "clover-1",
+        "innerRotation": 0.4,
+        "model": "Clover-3",
+        "stage": 1,
+        "position": {
+          "x": 484,
+          "y": -124
+        }
+      },
+      {
+        "birth": 1,
+        "distance": 550,
+        "angleToOrigine": 2,
         "color": "#efbf11",
         "shape": "circle",
         "size": {
@@ -2403,19 +1713,59 @@
           "max": 13,
           "growthPerDay": 1
         },
-        "name": "Lilium-391*5",
-        "innerRotation": 6.282280284492752,
+        "name": "Lilium-3",
+        "innerRotation": 0.4,
         "model": "Lilium-7",
         "stage": 1,
         "position": {
-          "x": 352,
-          "y": 45
+          "x": -229,
+          "y": -501
         }
       },
       {
-        "birth": 398,
-        "distance": 115,
-        "angleToOrigine": -0.04542327942157701,
+        "birth": 1,
+        "distance": 485,
+        "angleToOrigine": 2.8,
+        "color": "#DDAF00",
+        "shape": "circle",
+        "size": {
+          "min": 3,
+          "max": 7,
+          "growthPerDay": 1
+        },
+        "name": "Tiny-4",
+        "innerRotation": 3.4,
+        "model": "Tiny-7",
+        "stage": 1,
+        "position": {
+          "x": -457,
+          "y": -163
+        }
+      },
+      {
+        "birth": 2,
+        "distance": 530,
+        "angleToOrigine": 4.05,
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-2",
+        "innerRotation": 2.99,
+        "model": "Spirula-10",
+        "stage": 1,
+        "position": {
+          "x": -326,
+          "y": 417
+        }
+      },
+      {
+        "birth": 2,
+        "distance": 350,
+        "angleToOrigine": 3,
         "color": "#efbf11",
         "shape": "circle",
         "size": {
@@ -2423,19 +1773,219 @@
           "max": 13,
           "growthPerDay": 1
         },
-        "name": "Lilium-392*2",
-        "innerRotation": 5.328088093364375,
+        "name": "Lilium-4",
+        "innerRotation": 0.4,
         "model": "Lilium-7",
         "stage": 1,
         "position": {
-          "x": 114,
-          "y": 5
+          "x": -347,
+          "y": -50
         }
       },
       {
-        "birth": 398,
-        "distance": 198,
-        "angleToOrigine": -0.13067957641511882,
+        "birth": 2,
+        "distance": 480,
+        "angleToOrigine": 0.6,
+        "color": "#DDAF00",
+        "shape": "circle",
+        "size": {
+          "min": 3,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "Pelium-1",
+        "innerRotation": 3.4,
+        "model": "Pelium-6",
+        "stage": 1,
+        "position": {
+          "x": 396,
+          "y": -272
+        }
+      },
+      {
+        "birth": 25,
+        "distance": 504,
+        "angleToOrigine": 2.1186993169243404,
+        "position": {
+          "x": -263,
+          "y": -431
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-22*3",
+        "innerRotation": 5.7361304605813075,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 25,
+        "distance": 1110,
+        "angleToOrigine": 2.9541100280086954,
+        "position": {
+          "x": -1091,
+          "y": -207
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-22*4",
+        "innerRotation": 0.9618803960420821,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 25,
+        "distance": 968,
+        "angleToOrigine": 2.868191485845054,
+        "position": {
+          "x": -933,
+          "y": -262
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-22*6",
+        "innerRotation": 2.110852898310757,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 25,
+        "distance": 757,
+        "angleToOrigine": 2.768397017176331,
+        "position": {
+          "x": -705,
+          "y": -276
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-22*7",
+        "innerRotation": 5.932429934617274,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 25,
+        "distance": 1242,
+        "angleToOrigine": 0.4811385364714556,
+        "position": {
+          "x": 1100,
+          "y": -575
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-22*9",
+        "innerRotation": 3.1173998190854024,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 15,
+        "distance": 577,
+        "angleToOrigine": 0.38385785178641496,
+        "position": {
+          "x": 535,
+          "y": -217
+        },
+        "color": "#DDAF00",
+        "shape": "circle",
+        "size": {
+          "min": 3,
+          "max": 7,
+          "growthPerDay": 1
+        },
+        "name": "Tiny-51*3",
+        "innerRotation": 2.3936615436392437,
+        "model": "Tiny-6",
+        "stage": 1
+      },
+      {
+        "birth": 3,
+        "distance": 245,
+        "angleToOrigine": 1.95,
+        "color": "#44ee44",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-3",
+        "innerRotation": 0.99,
+        "model": "Clover-4",
+        "stage": 1,
+        "position": {
+          "x": -91,
+          "y": -228
+        }
+      },
+      {
+        "birth": 4,
+        "distance": 450,
+        "angleToOrigine": 3.65,
+        "color": "#44ee44",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "clover-2",
+        "innerRotation": 0.02,
+        "model": "Clover-3",
+        "stage": 1,
+        "position": {
+          "x": -394,
+          "y": 219
+        }
+      },
+      {
+        "birth": 3,
+        "distance": 400,
+        "angleToOrigine": 1.55,
+        "color": "#44ee44",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "clover-3",
+        "innerRotation": 2.4,
+        "model": "Clover-3",
+        "stage": 1,
+        "position": {
+          "x": 8,
+          "y": -400
+        }
+      },
+      {
+        "birth": 8,
+        "distance": 350,
+        "angleToOrigine": 0.25,
         "color": "#efbf11",
         "shape": "circle",
         "size": {
@@ -2443,19 +1993,19 @@
           "max": 13,
           "growthPerDay": 1
         },
-        "name": "Lilium-392*5",
-        "innerRotation": 4.629578110069687,
+        "name": "Lilium-1",
+        "innerRotation": 0.4,
         "model": "Lilium-7",
         "stage": 1,
         "position": {
-          "x": 196,
-          "y": 25
+          "x": 339,
+          "y": -87
         }
       },
       {
-        "birth": 399,
-        "distance": 487,
-        "angleToOrigine": -0.869389012753505,
+        "birth": 7,
+        "distance": 350,
+        "angleToOrigine": 0.75,
         "color": "#efbf11",
         "shape": "circle",
         "size": {
@@ -2463,19 +2013,19 @@
           "max": 12,
           "growthPerDay": 1
         },
-        "name": "Lilium-393*2",
-        "innerRotation": 5.5403518316164195,
+        "name": "Lilium-2",
+        "innerRotation": 0.67,
         "model": "Lilium-7",
         "stage": 1,
         "position": {
-          "x": 314,
-          "y": 372
+          "x": 256,
+          "y": -239
         }
       },
       {
-        "birth": 399,
-        "distance": 228,
-        "angleToOrigine": -0.4715630109695396,
+        "birth": 3,
+        "distance": 350,
+        "angleToOrigine": 2.25,
         "color": "#efbf11",
         "shape": "circle",
         "size": {
@@ -2483,59 +2033,39 @@
           "max": 13,
           "growthPerDay": 1
         },
-        "name": "Lilium-393*2",
-        "innerRotation": 4.185852429147243,
+        "name": "Lilium-5",
+        "innerRotation": 3,
+        "model": "Lilium-7",
+        "stage": 1,
+        "position": {
+          "x": -220,
+          "y": -273
+        }
+      },
+      {
+        "birth": 5,
+        "distance": 350,
+        "angleToOrigine": 0.95,
+        "color": "#efbf11",
+        "shape": "circle",
+        "size": {
+          "min": 3,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "Lilium-6",
+        "innerRotation": 0.4,
         "model": "Lilium-7",
         "stage": 1,
         "position": {
           "x": 203,
-          "y": 103
+          "y": -285
         }
       },
       {
-        "birth": 395,
-        "distance": 85,
-        "angleToOrigine": 1.423228255480902,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-393*5",
-        "innerRotation": 1.712375859700261,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 12,
-          "y": -85
-        }
-      },
-      {
-        "birth": 395,
-        "distance": 203,
-        "angleToOrigine": 1.0035454609097343,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-393*11",
-        "innerRotation": 4.394928571445185,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 109,
-          "y": -172
-        }
-      },
-      {
-        "birth": 400,
-        "distance": 499,
-        "angleToOrigine": 1.0496142465796994,
+        "birth": 4,
+        "distance": 150,
+        "angleToOrigine": 0.25,
         "color": "#efbf11",
         "shape": "circle",
         "size": {
@@ -2543,19 +2073,19 @@
           "max": 13,
           "growthPerDay": 1
         },
-        "name": "Lilium-394*3",
-        "innerRotation": 1.1338405763183452,
+        "name": "Lilium-7",
+        "innerRotation": 0.4,
         "model": "Lilium-7",
         "stage": 1,
         "position": {
-          "x": 248,
-          "y": -433
+          "x": 145,
+          "y": -38
         }
       },
       {
-        "birth": 400,
-        "distance": 469,
-        "angleToOrigine": 1.0577740553045882,
+        "birth": 7,
+        "distance": 150,
+        "angleToOrigine": 0.25,
         "color": "#efbf11",
         "shape": "circle",
         "size": {
@@ -2563,39 +2093,19 @@
           "max": 13,
           "growthPerDay": 1
         },
-        "name": "Lilium-394*5",
-        "innerRotation": 3.088544745460366,
+        "name": "Lilium-8",
+        "innerRotation": 0.4,
         "model": "Lilium-7",
         "stage": 1,
         "position": {
-          "x": 230,
-          "y": -409
+          "x": 145,
+          "y": -38
         }
       },
       {
-        "birth": 400,
-        "distance": 176,
-        "angleToOrigine": 0.023251622810462915,
-        "color": "#efbf11",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Lilium-394*4",
-        "innerRotation": 5.230120741304321,
-        "model": "Lilium-7",
-        "stage": 1,
-        "position": {
-          "x": 175,
-          "y": -5
-        }
-      },
-      {
-        "birth": 398,
-        "distance": 553,
-        "angleToOrigine": 0.5907861732545828,
+        "birth": 3,
+        "distance": 150,
+        "angleToOrigine": 3.1,
         "color": "#DDAF00",
         "shape": "circle",
         "size": {
@@ -2603,879 +2113,19 @@
           "max": 7,
           "growthPerDay": 1
         },
-        "name": "Tiny-394*5",
-        "innerRotation": 1.1965061145925713,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": 459,
-          "y": -309
-        }
-      },
-      {
-        "birth": 398,
-        "distance": 533,
-        "angleToOrigine": 0.39234014421551583,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-394*12",
-        "innerRotation": 0.822396182729173,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": 492,
-          "y": -204
-        }
-      },
-      {
-        "birth": 398,
-        "distance": 504,
-        "angleToOrigine": 0.4353532751523024,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-394*14",
-        "innerRotation": 1.7971437939246482,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": 456,
-          "y": -213
-        }
-      },
-      {
-        "birth": 398,
-        "distance": 534,
-        "angleToOrigine": 0.33229233255458884,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-394*20",
-        "innerRotation": 5.907287478654104,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": 504,
-          "y": -175
-        }
-      },
-      {
-        "birth": 401,
-        "distance": 707,
-        "angleToOrigine": 1.1088450690083353,
-        "color": "#efbf11",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Lilium-395*2",
-        "innerRotation": 6.238462646549894,
-        "model": "Lilium-7",
-        "stage": 1,
-        "position": {
-          "x": 315,
-          "y": -633
-        }
-      },
-      {
-        "birth": 401,
-        "distance": 685,
-        "angleToOrigine": 1.1771794323003584,
-        "color": "#efbf11",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Lilium-395*4",
-        "innerRotation": 3.1287553953352596,
-        "model": "Lilium-7",
-        "stage": 1,
-        "position": {
-          "x": 262,
-          "y": -633
-        }
-      },
-      {
-        "birth": 399,
-        "distance": 527,
-        "angleToOrigine": 0.4889005633620835,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-395*9",
-        "innerRotation": 1.0659869940891802,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": 465,
-          "y": -248
-        }
-      },
-      {
-        "birth": 399,
-        "distance": 484,
-        "angleToOrigine": 0.5423650231077696,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-395*12",
-        "innerRotation": 5.692769465486556,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": 414,
-          "y": -250
-        }
-      },
-      {
-        "birth": 399,
-        "distance": 612,
-        "angleToOrigine": 0.4345296274937673,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-395*18",
-        "innerRotation": 2.6727941419190486,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": 555,
-          "y": -258
-        }
-      },
-      {
-        "birth": 398,
-        "distance": 123,
-        "angleToOrigine": 1.3677511095414314,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-396*5",
-        "innerRotation": 4.409818686856019,
+        "name": "Tiny-1",
+        "innerRotation": 3.4,
         "model": "Tiny-6",
         "stage": 1,
         "position": {
-          "x": 24,
-          "y": -121
-        }
-      },
-      {
-        "birth": 398,
-        "distance": 73,
-        "angleToOrigine": 1.254510198882742,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-396*8",
-        "innerRotation": 4.60321229442429,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 22,
-          "y": -70
-        }
-      },
-      {
-        "birth": 402,
-        "distance": 425,
-        "angleToOrigine": 1.541748809174999,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "jolyClover-397*2",
-        "innerRotation": 1.8361468330243094,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 12,
-          "y": -425
-        }
-      },
-      {
-        "birth": 402,
-        "distance": 435,
-        "angleToOrigine": 1.532628713852021,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "jolyClover-397*3",
-        "innerRotation": 1.3127342719690145,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 16,
-          "y": -435
-        }
-      },
-      {
-        "birth": 402,
-        "distance": 433,
-        "angleToOrigine": -1.532445834765712,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "jolyClover-397*6",
-        "innerRotation": 3.1045336099890077,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 16,
-          "y": 432
-        }
-      },
-      {
-        "birth": 402,
-        "distance": 450,
-        "angleToOrigine": -1.5095522592835129,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "jolyClover-397*10",
-        "innerRotation": 4.423152668672201,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 27,
-          "y": 449
-        }
-      },
-      {
-        "birth": 403,
-        "distance": 418,
-        "angleToOrigine": 1.556234249402158,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "jolyClover-398*3",
-        "innerRotation": 1.1604199061151381,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 6,
-          "y": -418
-        }
-      },
-      {
-        "birth": 403,
-        "distance": 425,
-        "angleToOrigine": -1.5342272708813551,
-        "color": "#44ee44",
-        "shape": "circle",
-        "size": {
-          "min": 6,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "jolyClover-398*6",
-        "innerRotation": 1.0480488147430436,
-        "model": "Clover-3",
-        "stage": 1,
-        "position": {
-          "x": 15,
-          "y": 424
-        }
-      },
-      {
-        "birth": 404,
-        "distance": 138,
-        "angleToOrigine": -0.12135200057076367,
-        "color": "#efbf11",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 13,
-          "growthPerDay": 1
-        },
-        "name": "Lilium-398*3",
-        "innerRotation": 3.5240490178468913,
-        "model": "Lilium-7",
-        "stage": 1,
-        "position": {
-          "x": 136,
-          "y": 16
-        }
-      },
-      {
-        "birth": 400,
-        "distance": 184,
-        "angleToOrigine": 3.1306040849070595,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-398*8",
-        "innerRotation": 5.386993059518269,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -184,
-          "y": -3
-        }
-      },
-      {
-        "birth": 402,
-        "distance": 568,
-        "angleToOrigine": 0.5873255555806062,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-398*3",
-        "innerRotation": 4.007736546108041,
-        "model": "Tiny-7",
-        "stage": 1,
-        "position": {
-          "x": 472,
-          "y": -315
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 299,
-        "angleToOrigine": 2.4595043050095775,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*3",
-        "innerRotation": 5.790545937680988,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": -233,
-          "y": -189
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 284,
-        "angleToOrigine": 2.5845357534755133,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*5",
-        "innerRotation": 0.1027811332983774,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": -242,
-          "y": -151
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 336,
-        "angleToOrigine": 2.4334215475663292,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*8",
-        "innerRotation": 0.9515661464533536,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": -256,
-          "y": -219
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 249,
-        "angleToOrigine": 2.519388772701213,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*16",
-        "innerRotation": 5.0040664173107,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": -203,
-          "y": -146
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 246,
-        "angleToOrigine": 0.39929743905298315,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*12",
-        "innerRotation": 3.9839612673384,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 226,
-          "y": -96
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 259,
-        "angleToOrigine": 0.7198551145880141,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*14",
-        "innerRotation": 4.845838489816321,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 194,
-          "y": -171
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 236,
-        "angleToOrigine": 0.6589576661390586,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*15",
-        "innerRotation": 5.028047245394602,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 186,
-          "y": -145
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 298,
-        "angleToOrigine": 0.5231256270652129,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*19",
-        "innerRotation": 4.244284345218885,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 258,
-          "y": -149
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 210,
-        "angleToOrigine": 0.2520108960090434,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*21",
-        "innerRotation": 3.159834431150401,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 203,
-          "y": -53
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 52,
-        "angleToOrigine": -1.0121970114513341,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*2",
-        "innerRotation": 4.146660391529639,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 27,
-          "y": 44
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 81,
-        "angleToOrigine": -0.7977432152416728,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*6",
-        "innerRotation": 0.4584615758743176,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 56,
-          "y": 57
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 30,
-        "angleToOrigine": -0.851966327173272,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*8",
-        "innerRotation": 6.1411324872253195,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 19,
-          "y": 22
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 78,
-        "angleToOrigine": 1.2793395323170296,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*21",
-        "innerRotation": 3.449097694703563,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 22,
-          "y": -75
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 87,
-        "angleToOrigine": -1.5707963267948966,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*27",
-        "innerRotation": 0.5253288939231432,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 0,
-          "y": 87
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 33,
-        "angleToOrigine": -1.4711276743037347,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*29",
-        "innerRotation": 1.4725626437323083,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 3,
-          "y": 32
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 85,
-        "angleToOrigine": 0.2624593998262764,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*5",
-        "innerRotation": 3.170875505823165,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 82,
-          "y": -23
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 106,
-        "angleToOrigine": 0.2284966392918623,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*10",
-        "innerRotation": 3.3681413540661853,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 103,
-          "y": -25
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 174,
-        "angleToOrigine": 0.151156049266287,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*21",
-        "innerRotation": 0.8303766855579104,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 172,
-          "y": -27
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 152,
-        "angleToOrigine": -0.22208190190548016,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*22",
-        "innerRotation": 2.453777172642811,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 148,
-          "y": 33
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 168,
-        "angleToOrigine": -0.005987952383913253,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*28",
-        "innerRotation": 4.558459648849022,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 167,
-          "y": 1
-        }
-      },
-      {
-        "birth": 435,
-        "distance": 206,
-        "angleToOrigine": -0.34135588525384686,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-435*30",
-        "innerRotation": 0.0640184062378162,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 194,
-          "y": 68
-        }
-      },
-      {
-        "birth": 436,
-        "distance": 115,
-        "angleToOrigine": 0.026779311019766,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-436*2",
-        "innerRotation": 4.6108673403284675,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 114,
-          "y": -4
-        }
-      },
-      {
-        "birth": 436,
-        "distance": 170,
-        "angleToOrigine": 3.0015752960199262,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-436*8",
-        "innerRotation": 1.3129279353841645,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": -169,
-          "y": -24
-        }
-      },
-      {
-        "birth": 436,
-        "distance": 127,
-        "angleToOrigine": 3.0920464589986683,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-436*13",
-        "innerRotation": 3.444925299890766,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": -127,
+          "x": -150,
           "y": -7
         }
       },
       {
-        "birth": 436,
-        "distance": 158,
-        "angleToOrigine": 1.4585935117976423,
+        "birth": 4,
+        "distance": 110,
+        "angleToOrigine": 3.5,
         "color": "#DDAF00",
         "shape": "circle",
         "size": {
@@ -3483,579 +2133,19 @@
           "max": 7,
           "growthPerDay": 1
         },
-        "name": "Tiny-436*9",
-        "innerRotation": 5.319970891742262,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 17,
-          "y": -158
-        }
-      },
-      {
-        "birth": 436,
-        "distance": 152,
-        "angleToOrigine": 1.5841288700890424,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-436*10",
-        "innerRotation": 1.900066752323947,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": -3,
-          "y": -152
-        }
-      },
-      {
-        "birth": 436,
-        "distance": 96,
-        "angleToOrigine": 1.5920697128189578,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-436*14",
-        "innerRotation": 4.631818049769029,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": -3,
-          "y": -96
-        }
-      },
-      {
-        "birth": 436,
-        "distance": 119,
-        "angleToOrigine": 1.3714590218125726,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-436*20",
-        "innerRotation": 4.28333939445995,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 23,
-          "y": -117
-        }
-      },
-      {
-        "birth": 436,
-        "distance": 238,
-        "angleToOrigine": -0.24127954313118133,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-436*20",
-        "innerRotation": 5.955841216748522,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 231,
-          "y": 56
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 246,
-        "angleToOrigine": -0.0787839609891438,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*11",
-        "innerRotation": 0.3985848433142167,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 245,
-          "y": 19
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 251,
-        "angleToOrigine": -0.1298951040705355,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*13",
-        "innerRotation": 0.16842574482650952,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 248,
-          "y": 32
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 214,
-        "angleToOrigine": -0.009433682406000812,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*15",
-        "innerRotation": 1.389250485729722,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 213,
-          "y": 2
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 223,
-        "angleToOrigine": -0.24103131520787965,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*20",
-        "innerRotation": 2.092289366945427,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 216,
-          "y": 53
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 195,
-        "angleToOrigine": 0.09521681768331093,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*29",
-        "innerRotation": 4.039075491674285,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 194,
-          "y": -19
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 187,
-        "angleToOrigine": 0.07457409261067219,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*30",
-        "innerRotation": 2.4657225855637783,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 186,
-          "y": -14
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 195,
-        "angleToOrigine": 0.06548002492346482,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*4",
-        "innerRotation": 3.1134326005245723,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 194,
-          "y": -13
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 252,
-        "angleToOrigine": 0.24264766501773763,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*6",
-        "innerRotation": 4.094798894315786,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 244,
-          "y": -61
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 267,
-        "angleToOrigine": 0.17442087958653923,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*8",
-        "innerRotation": 5.856894847666985,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 262,
-          "y": -47
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 242,
-        "angleToOrigine": 0.09473816801587175,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*16",
-        "innerRotation": 4.501575910022978,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 240,
-          "y": -23
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 233,
-        "angleToOrigine": 3.119666343490993,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*24",
-        "innerRotation": 4.324705614134713,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": -233,
-          "y": -6
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 256,
-        "angleToOrigine": 3.125720970598003,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*28",
-        "innerRotation": 1.8637425352648358,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": -256,
-          "y": -5
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 156,
-        "angleToOrigine": 0.17123873610543772,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*12",
-        "innerRotation": 0.4494150426962461,
-        "model": "Tiny-6",
-        "stage": 0,
-        "position": {
-          "x": 153,
-          "y": -27
-        }
-      },
-      {
-        "birth": 437,
-        "distance": 275,
-        "angleToOrigine": 2.2944548741150417,
-        "position": {
-          "x": -183,
-          "y": -207
-        },
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*4",
-        "innerRotation": 3.9293439886482995,
-        "model": "Tiny-6",
-        "stage": 0
-      },
-      {
-        "birth": 437,
-        "distance": 318,
-        "angleToOrigine": 2.3184765377254806,
-        "position": {
-          "x": -217,
-          "y": -234
-        },
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*6",
-        "innerRotation": 3.139069874577893,
-        "model": "Tiny-6",
-        "stage": 0
-      },
-      {
-        "birth": 437,
-        "distance": 307,
-        "angleToOrigine": 2.2684723148696295,
-        "position": {
-          "x": -198,
-          "y": -236
-        },
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*8",
-        "innerRotation": 3.7578434696688916,
-        "model": "Tiny-6",
-        "stage": 0
-      },
-      {
-        "birth": 437,
-        "distance": 266,
-        "angleToOrigine": 2.695880340961158,
-        "position": {
-          "x": -241,
-          "y": -115
-        },
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*12",
-        "innerRotation": 0.7626984336413285,
-        "model": "Tiny-6",
-        "stage": 0
-      },
-      {
-        "birth": 437,
-        "distance": 267,
-        "angleToOrigine": 2.537695434952382,
-        "position": {
-          "x": -220,
-          "y": -152
-        },
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*15",
-        "innerRotation": 2.8304694621614,
-        "model": "Tiny-6",
-        "stage": 0
-      },
-      {
-        "birth": 437,
-        "distance": 187,
-        "angleToOrigine": 2.995403779843618,
-        "position": {
-          "x": -186,
-          "y": -28
-        },
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*8",
-        "innerRotation": 1.2073882301387158,
-        "model": "Tiny-6",
-        "stage": 0
-      },
-      {
-        "birth": 437,
-        "distance": 165,
-        "angleToOrigine": 2.981015372902485,
-        "position": {
-          "x": -163,
-          "y": -27
-        },
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*21",
-        "innerRotation": 5.448650225736526,
-        "model": "Tiny-6",
-        "stage": 0
-      },
-      {
-        "birth": 437,
-        "distance": 208,
-        "angleToOrigine": -0.08314123188844122,
-        "position": {
-          "x": 207,
-          "y": 17
-        },
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*8",
-        "innerRotation": 2.4750466705950656,
-        "model": "Tiny-6",
-        "stage": 0
-      },
-      {
-        "birth": 437,
-        "distance": 215,
-        "angleToOrigine": 0.1367080722664081,
-        "position": {
-          "x": 212,
-          "y": -30
-        },
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*4",
-        "innerRotation": 4.179811721903209,
-        "model": "Tiny-6",
-        "stage": 0
-      },
-      {
-        "birth": 437,
-        "distance": 266,
-        "angleToOrigine": -0.4932517138565063,
-        "position": {
-          "x": 234,
-          "y": 125
-        },
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-437*20",
-        "innerRotation": 4.553429728811324,
-        "model": "Tiny-6",
-        "stage": 0
-      },
-      {
-        "birth": 420,
-        "distance": 236,
-        "angleToOrigine": 2.951979037815404,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-418*21",
-        "innerRotation": 3.288051094230029,
-        "model": "Tiny-6",
+        "name": "Tiny-2",
+        "innerRotation": 3.4,
+        "model": "Tiny-7",
         "stage": 1,
         "position": {
-          "x": -232,
-          "y": -45
+          "x": -104,
+          "y": 38
         }
       },
       {
-        "birth": 421,
-        "distance": 280,
-        "angleToOrigine": 2.8083483524781205,
+        "birth": 9,
+        "distance": 430,
+        "angleToOrigine": 2.8,
         "color": "#DDAF00",
         "shape": "circle",
         "size": {
@@ -4063,159 +2153,19 @@
           "max": 7,
           "growthPerDay": 1
         },
-        "name": "Tiny-419*28",
-        "innerRotation": 5.776145527787209,
-        "model": "Tiny-6",
+        "name": "Tiny-3",
+        "innerRotation": 3.4,
+        "model": "Tiny-7",
         "stage": 1,
         "position": {
-          "x": -265,
-          "y": -92
-        }
-      },
-      {
-        "birth": 421,
-        "distance": 221,
-        "angleToOrigine": 2.930499320367047,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-419*13",
-        "innerRotation": 3.7591536904962273,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -217,
-          "y": -47
-        }
-      },
-      {
-        "birth": 423,
-        "distance": 274,
-        "angleToOrigine": 0.3188351107618671,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-421*7",
-        "innerRotation": 3.6443022354841275,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 260,
-          "y": -86
-        }
-      },
-      {
-        "birth": 423,
-        "distance": 291,
-        "angleToOrigine": 0.6928795422778014,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-421*19",
-        "innerRotation": 1.3502606366056598,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 223,
-          "y": -186
-        }
-      },
-      {
-        "birth": 425,
-        "distance": 306,
-        "angleToOrigine": 0.6107259643892086,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-423*13",
-        "innerRotation": 3.5883918501028287,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 250,
-          "y": -176
-        }
-      },
-      {
-        "birth": 425,
-        "distance": 287,
-        "angleToOrigine": 0.3571966946553569,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-423*18",
-        "innerRotation": 1.0416278342952894,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 268,
-          "y": -101
-        }
-      },
-      {
-        "birth": 425,
-        "distance": 207,
-        "angleToOrigine": 2.4572978619286436,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-423*17",
-        "innerRotation": 3.804209119512693,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -161,
-          "y": -131
-        }
-      },
-      {
-        "birth": 425,
-        "distance": 202,
-        "angleToOrigine": 2.3462938236043565,
-        "color": "#DDAF00",
-        "shape": "circle",
-        "size": {
-          "min": 3,
-          "max": 7,
-          "growthPerDay": 1
-        },
-        "name": "Tiny-423*23",
-        "innerRotation": 4.765300801842872,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -142,
+          "x": -406,
           "y": -145
         }
       },
       {
-        "birth": 426,
-        "distance": 145,
-        "angleToOrigine": 1.1599451354931112,
+        "birth": 12,
+        "distance": 410,
+        "angleToOrigine": 2.7,
         "color": "#DDAF00",
         "shape": "circle",
         "size": {
@@ -4223,19 +2173,19 @@
           "max": 7,
           "growthPerDay": 1
         },
-        "name": "Tiny-424*11",
-        "innerRotation": 2.113323258566918,
-        "model": "Tiny-6",
+        "name": "Tiny-5",
+        "innerRotation": 3.4,
+        "model": "Tiny-7",
         "stage": 1,
         "position": {
-          "x": 57,
-          "y": -133
+          "x": -371,
+          "y": -176
         }
       },
       {
-        "birth": 427,
-        "distance": 286,
-        "angleToOrigine": 2.907849472720892,
+        "birth": 3,
+        "distance": 100,
+        "angleToOrigine": 2,
         "color": "#DDAF00",
         "shape": "circle",
         "size": {
@@ -4243,19 +2193,59 @@
           "max": 7,
           "growthPerDay": 1
         },
-        "name": "Tiny-425*18",
-        "innerRotation": 4.069063253860596,
+        "name": "Tiny-6",
+        "innerRotation": 3.5,
         "model": "Tiny-6",
         "stage": 1,
         "position": {
-          "x": -279,
-          "y": -67
+          "x": -42,
+          "y": -91
         }
       },
       {
-        "birth": 428,
-        "distance": 224,
-        "angleToOrigine": 0.5404195002705842,
+        "birth": 88,
+        "distance": 320,
+        "angleToOrigine": 3.5,
+        "color": "#5E7AFF",
+        "shape": "circle",
+        "size": {
+          "min": 8,
+          "max": 17,
+          "growthPerDay": 1
+        },
+        "name": "petals",
+        "innerRotation": 3.5,
+        "model": "Dandelion-36",
+        "stage": 1
+      },
+      {
+        "birth": 9,
+        "distance": 215,
+        "angleToOrigine": 0.8,
+        "color": "#DDAF00",
+        "shape": "circle",
+        "size": {
+          "min": 3,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "Xelium-1",
+        "innerRotation": 3.4,
+        "model": "Xelium-8",
+        "stage": 1,
+        "position": {
+          "x": 149,
+          "y": -155
+        }
+      },
+      {
+        "birth": 42,
+        "distance": 334,
+        "angleToOrigine": 1.435572195070865,
+        "position": {
+          "x": 45,
+          "y": -331
+        },
         "color": "#DDAF00",
         "shape": "circle",
         "size": {
@@ -4263,19 +2253,19 @@
           "max": 7,
           "growthPerDay": 1
         },
-        "name": "Tiny-426*18",
-        "innerRotation": 1.879264913560651,
+        "name": "Tiny-40*2",
+        "innerRotation": 3.4985764958909784,
         "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 192,
-          "y": -116
-        }
+        "stage": 1
       },
       {
-        "birth": 429,
-        "distance": 240,
-        "angleToOrigine": 0.4863137517844905,
+        "birth": 42,
+        "distance": 486,
+        "angleToOrigine": 2.531336172734166,
+        "position": {
+          "x": -399,
+          "y": -279
+        },
         "color": "#DDAF00",
         "shape": "circle",
         "size": {
@@ -4283,19 +2273,119 @@
           "max": 7,
           "growthPerDay": 1
         },
-        "name": "Tiny-427*12",
-        "innerRotation": 4.436534051590722,
+        "name": "Tiny-40*4",
+        "innerRotation": 0.5734442957244476,
         "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 212,
-          "y": -113
-        }
+        "stage": 1
       },
       {
-        "birth": 429,
-        "distance": 281,
-        "angleToOrigine": 2.881831540387671,
+        "birth": 47,
+        "distance": 801,
+        "angleToOrigine": 0.0075470265211934826,
+        "position": {
+          "x": 800,
+          "y": -7
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-44*2",
+        "innerRotation": 5.845987962963978,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 47,
+        "distance": 1042,
+        "angleToOrigine": 2.5789243274492217,
+        "position": {
+          "x": -882,
+          "y": -556
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-44*6",
+        "innerRotation": 3.792599418284688,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 52,
+        "distance": 1274,
+        "angleToOrigine": 0.05024621282677849,
+        "position": {
+          "x": 1272,
+          "y": -64
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-49*3",
+        "innerRotation": 2.800844837402689,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 52,
+        "distance": 1481,
+        "angleToOrigine": 0.7294135133188578,
+        "position": {
+          "x": 1104,
+          "y": -987
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-49*4",
+        "innerRotation": 2.075783356113073,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 52,
+        "distance": 1601,
+        "angleToOrigine": 0.45170342152775406,
+        "position": {
+          "x": 1440,
+          "y": -699
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-49*5",
+        "innerRotation": 3.9665210605131067,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 53,
+        "distance": 526,
+        "angleToOrigine": 0.7892004264427991,
+        "position": {
+          "x": 370,
+          "y": -374
+        },
         "color": "#DDAF00",
         "shape": "circle",
         "size": {
@@ -4303,59 +2393,539 @@
           "max": 7,
           "growthPerDay": 1
         },
-        "name": "Tiny-427*21",
-        "innerRotation": 4.809623207632208,
+        "name": "Tiny-51*2",
+        "innerRotation": 5.01848044185244,
         "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": -272,
-          "y": -73
-        }
+        "stage": 1
       },
       {
-        "birth": 429,
+        "birth": 56,
+        "distance": 522,
+        "angleToOrigine": -0.8313428192055681,
+        "position": {
+          "x": 351,
+          "y": 385
+        },
+        "color": "#44ee44",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "clover-51*2",
+        "innerRotation": 5.562324671504399,
+        "model": "Clover-3",
+        "stage": 1
+      },
+      {
+        "birth": 56,
+        "distance": 435,
+        "angleToOrigine": 0.7051113481144319,
+        "position": {
+          "x": 331,
+          "y": -282
+        },
+        "color": "#44ee44",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "clover-51*4",
+        "innerRotation": 2.7092146284247582,
+        "model": "Clover-3",
+        "stage": 1
+      },
+      {
+        "birth": 56,
+        "distance": 996,
+        "angleToOrigine": -0.29951434709614094,
+        "position": {
+          "x": 951,
+          "y": 293
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-53*4",
+        "innerRotation": 5.100238166209233,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 56,
+        "distance": 1280,
+        "angleToOrigine": -0.641095690296779,
+        "position": {
+          "x": 1025,
+          "y": 765
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-53*5",
+        "innerRotation": 4.155344669338463,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 56,
+        "distance": 1344,
+        "angleToOrigine": -0.6727814411390625,
+        "position": {
+          "x": 1051,
+          "y": 837
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-53*6",
+        "innerRotation": 2.173010980531997,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 56,
+        "distance": 1045,
+        "angleToOrigine": -0.37635606660984755,
+        "position": {
+          "x": 971,
+          "y": 384
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-53*7",
+        "innerRotation": 0.0584576099473004,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 57,
+        "distance": 911,
+        "angleToOrigine": 0.7338522067384816,
+        "position": {
+          "x": 676,
+          "y": -611
+        },
+        "color": "#efbf11",
+        "shape": "circle",
+        "size": {
+          "min": 3,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "Lilium-51*4",
+        "innerRotation": 0.3312741284061892,
+        "model": "Lilium-7",
+        "stage": 1
+      },
+      {
+        "birth": 57,
+        "distance": 262,
+        "angleToOrigine": 0.7168036599431737,
+        "position": {
+          "x": 197,
+          "y": -173
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-54*2",
+        "innerRotation": 4.332564930745404,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 57,
         "distance": 333,
-        "angleToOrigine": 0.5868478696497271,
-        "color": "#DDAF00",
+        "angleToOrigine": 0.3448327239778187,
+        "position": {
+          "x": 313,
+          "y": -113
+        },
+        "color": "#B24DBD",
         "shape": "circle",
         "size": {
-          "min": 3,
-          "max": 7,
+          "min": 6,
+          "max": 13,
           "growthPerDay": 1
         },
-        "name": "Tiny-427*23",
-        "innerRotation": 3.8418534500107824,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 277,
-          "y": -185
-        }
+        "name": "spirula-54*5",
+        "innerRotation": 6.0614446033777165,
+        "model": "Spirula-10",
+        "stage": 1
       },
       {
-        "birth": 429,
-        "distance": 325,
-        "angleToOrigine": 0.6417784576118476,
-        "color": "#DDAF00",
+        "birth": 57,
+        "distance": 280,
+        "angleToOrigine": 2.92246138689812,
+        "position": {
+          "x": -274,
+          "y": -61
+        },
+        "color": "#B24DBD",
         "shape": "circle",
         "size": {
-          "min": 3,
-          "max": 7,
+          "min": 6,
+          "max": 13,
           "growthPerDay": 1
         },
-        "name": "Tiny-427*24",
-        "innerRotation": 3.633463570344828,
-        "model": "Tiny-6",
-        "stage": 1,
-        "position": {
-          "x": 260,
-          "y": -195
-        }
+        "name": "spirula-54*7",
+        "innerRotation": 3.6537987342702682,
+        "model": "Spirula-10",
+        "stage": 1
       },
       {
-        "birth": 431,
-        "distance": 309,
-        "angleToOrigine": -0.35196474716090664,
+        "birth": 57,
+        "distance": 1308,
+        "angleToOrigine": 1.0497084674159303,
+        "position": {
+          "x": 651,
+          "y": -1135
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-54*9",
+        "innerRotation": 0.07110427133612661,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 57,
+        "distance": 980,
+        "angleToOrigine": 0.6736211218629695,
+        "position": {
+          "x": 765,
+          "y": -612
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-54*12",
+        "innerRotation": 1.129039848257356,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 57,
+        "distance": 1484,
+        "angleToOrigine": 0.5898174835876219,
+        "position": {
+          "x": 1233,
+          "y": -826
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-54*2",
+        "innerRotation": 5.063341947156816,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 57,
+        "distance": 955,
+        "angleToOrigine": 0.7383125725172279,
+        "position": {
+          "x": 706,
+          "y": -643
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-54*3",
+        "innerRotation": 2.7384577928800513,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 57,
+        "distance": 607,
+        "angleToOrigine": 0.4304242566582465,
+        "position": {
+          "x": 551,
+          "y": -254
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-54*4",
+        "innerRotation": 1.7151399990922374,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 57,
+        "distance": 1061,
+        "angleToOrigine": 3.1204216112354186,
+        "position": {
+          "x": -1061,
+          "y": -23
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-54*8",
+        "innerRotation": 1.6845786701485899,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 57,
+        "distance": 638,
+        "angleToOrigine": 0.08482994404619563,
+        "position": {
+          "x": 635,
+          "y": -55
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-54*9",
+        "innerRotation": 0.09496953527685754,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 57,
+        "distance": 858,
+        "angleToOrigine": 0.012986282920172485,
+        "position": {
+          "x": 857,
+          "y": -12
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-54*12",
+        "innerRotation": 2.3613830815162995,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 57,
+        "distance": 1516,
+        "angleToOrigine": 0.36595044318804415,
+        "position": {
+          "x": 1415,
+          "y": -543
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-54*13",
+        "innerRotation": 5.863149009480844,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 63,
+        "distance": 563,
+        "angleToOrigine": 0.7374775073906693,
+        "position": {
+          "x": 416,
+          "y": -379
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-60*3",
+        "innerRotation": 2.95682047835345,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 63,
+        "distance": 1109,
+        "angleToOrigine": 2.8173141161348756,
+        "position": {
+          "x": -1052,
+          "y": -354
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-60*4",
+        "innerRotation": 1.887445174525551,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 63,
+        "distance": 929,
+        "angleToOrigine": 2.713666919719368,
+        "position": {
+          "x": -846,
+          "y": -386
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-60*5",
+        "innerRotation": 3.2046407083218664,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 63,
+        "distance": 914,
+        "angleToOrigine": 2.8684800543995603,
+        "position": {
+          "x": -881,
+          "y": -247
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-60*9",
+        "innerRotation": 1.7130610009071245,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 63,
+        "distance": 954,
+        "angleToOrigine": 2.7549980716399443,
+        "position": {
+          "x": -884,
+          "y": -360
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-60*10",
+        "innerRotation": 5.035601534471954,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 63,
+        "distance": 542,
+        "angleToOrigine": 3.130399091264734,
+        "position": {
+          "x": -542,
+          "y": -7
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-60*3",
+        "innerRotation": 1.5188101988360425,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 63,
+        "distance": 1510,
+        "angleToOrigine": 0.6071769345116459,
+        "position": {
+          "x": 1240,
+          "y": -862
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-60*6",
+        "innerRotation": 4.154261747102784,
+        "model": "Spirula-10",
+        "stage": 1
+      },
+      {
+        "birth": 64,
+        "distance": 520,
+        "angleToOrigine": 1.2793395323170296,
+        "position": {
+          "x": 149,
+          "y": -499
+        },
         "color": "#DDAF00",
         "shape": "circle",
         "size": {
@@ -4363,14 +2933,670 @@
           "max": 7,
           "growthPerDay": 1
         },
-        "name": "Tiny-429*19",
-        "innerRotation": 4.025877177159588,
-        "model": "Tiny-6",
-        "stage": 1,
+        "name": "Tiny-60*3",
+        "innerRotation": 4.774180539974229,
+        "model": "Tiny-7",
+        "stage": 1
+      },
+      {
+        "birth": 64,
+        "distance": 1030,
+        "angleToOrigine": 0.783456418265005,
         "position": {
-          "x": 290,
-          "y": 106
-        }
+          "x": 729,
+          "y": -727
+        },
+        "color": "#DDAF00",
+        "shape": "circle",
+        "size": {
+          "min": 3,
+          "max": 7,
+          "growthPerDay": 1
+        },
+        "name": "Tiny-60*4",
+        "innerRotation": 5.514926951960645,
+        "model": "Tiny-7",
+        "stage": 1
+      },
+      {
+        "birth": 100,
+        "distance": 524,
+        "angleToOrigine": 0.6525966311059826,
+        "position": {
+          "x": 416,
+          "y": -319
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*2",
+        "innerRotation": 2.8183347197227047,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 683,
+        "angleToOrigine": 0.6615838067507969,
+        "position": {
+          "x": 538,
+          "y": -420
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*4",
+        "innerRotation": 4.624960682788229,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 827,
+        "angleToOrigine": 2.6596988945243982,
+        "position": {
+          "x": -733,
+          "y": -384
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*5",
+        "innerRotation": 3.2531791125646925,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 536,
+        "angleToOrigine": 0.6997870384147388,
+        "position": {
+          "x": 410,
+          "y": -346
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*6",
+        "innerRotation": 3.3037564083081725,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 751,
+        "angleToOrigine": 2.4636353481883644,
+        "position": {
+          "x": -585,
+          "y": -472
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*9",
+        "innerRotation": 2.746710998647201,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 647,
+        "angleToOrigine": 1.069607678195792,
+        "position": {
+          "x": 310,
+          "y": -568
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*2",
+        "innerRotation": 4.771354182844505,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 1269,
+        "angleToOrigine": 0.10026971716203753,
+        "position": {
+          "x": 1262,
+          "y": -128
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*3",
+        "innerRotation": 4.508438325315228,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 765,
+        "angleToOrigine": 2.8203648382987,
+        "position": {
+          "x": -726,
+          "y": -242
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*4",
+        "innerRotation": 4.959142132416125,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 349,
+        "angleToOrigine": 0.008670302963785462,
+        "position": {
+          "x": 348,
+          "y": -4
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*6",
+        "innerRotation": 0.6138361721384974,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 617,
+        "angleToOrigine": 0.35535688202018045,
+        "position": {
+          "x": 578,
+          "y": -215
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*7",
+        "innerRotation": 5.716932679484859,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 1330,
+        "angleToOrigine": 0.8124592250202185,
+        "position": {
+          "x": 914,
+          "y": -966
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*8",
+        "innerRotation": 1.3399704686693164,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 1797,
+        "angleToOrigine": 0.3268832921831482,
+        "position": {
+          "x": 1701,
+          "y": -578
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*2",
+        "innerRotation": 1.89907177740612,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 1645,
+        "angleToOrigine": 0.9897980448427494,
+        "position": {
+          "x": 902,
+          "y": -1376
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*4",
+        "innerRotation": 0.24027322200690276,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 1679,
+        "angleToOrigine": 0.4041731743566306,
+        "position": {
+          "x": 1543,
+          "y": -661
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*6",
+        "innerRotation": 3.5068940207207313,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 980,
+        "angleToOrigine": 3.029689792801057,
+        "position": {
+          "x": -974,
+          "y": -110
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*3",
+        "innerRotation": 1.4136723920794618,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 1684,
+        "angleToOrigine": 0.6894937561548538,
+        "position": {
+          "x": 1299,
+          "y": -1072
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*6",
+        "innerRotation": 1.9263626205370183,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 100,
+        "distance": 1539,
+        "angleToOrigine": 0.8819134702686898,
+        "position": {
+          "x": 978,
+          "y": -1189
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-100*8",
+        "innerRotation": 4.086323183742335,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 953,
+        "angleToOrigine": -0.25804168364871477,
+        "position": {
+          "x": 921,
+          "y": 243
+        },
+        "color": "#44ee44",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "clover-101*3",
+        "innerRotation": 3.337579227170976,
+        "model": "Clover-3",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 726,
+        "angleToOrigine": -0.6082126174979449,
+        "position": {
+          "x": 595,
+          "y": 414
+        },
+        "color": "#44ee44",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "clover-101*5",
+        "innerRotation": 1.9083027455969968,
+        "model": "Clover-3",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 787,
+        "angleToOrigine": -0.855170363426715,
+        "position": {
+          "x": 516,
+          "y": 593
+        },
+        "color": "#44ee44",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "clover-101*6",
+        "innerRotation": 0.5576290511041283,
+        "model": "Clover-3",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 909,
+        "angleToOrigine": -0.1785960701854223,
+        "position": {
+          "x": 894,
+          "y": 161
+        },
+        "color": "#44ee44",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "clover-101*7",
+        "innerRotation": 1.481524263663758,
+        "model": "Clover-3",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 122,
+        "angleToOrigine": 1.3883809197123858,
+        "position": {
+          "x": 22,
+          "y": -120
+        },
+        "color": "#DDAF00",
+        "shape": "circle",
+        "size": {
+          "min": 3,
+          "max": 7,
+          "growthPerDay": 1
+        },
+        "name": "Tiny-101*5",
+        "innerRotation": 5.733262446248694,
+        "model": "Tiny-6",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 854,
+        "angleToOrigine": -0.11151460878889606,
+        "position": {
+          "x": 848,
+          "y": 95
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-101*6",
+        "innerRotation": 6.039053657906465,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 1781,
+        "angleToOrigine": -0.8431664946632498,
+        "position": {
+          "x": 1184,
+          "y": 1329
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-101*8",
+        "innerRotation": 3.782833161687129,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 1484,
+        "angleToOrigine": 0.7597972888399108,
+        "position": {
+          "x": 1075,
+          "y": -1023
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-101*2",
+        "innerRotation": 0.0650064675179437,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 1503,
+        "angleToOrigine": 0.5246715429042145,
+        "position": {
+          "x": 1300,
+          "y": -753
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-101*3",
+        "innerRotation": 3.2966469993276486,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 1417,
+        "angleToOrigine": 0.7058206250165288,
+        "position": {
+          "x": 1078,
+          "y": -920
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-101*4",
+        "innerRotation": 3.521926058877655,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 1628,
+        "angleToOrigine": 0.9783009655830328,
+        "position": {
+          "x": 909,
+          "y": -1351
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-101*6",
+        "innerRotation": 3.9961084719921067,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 1330,
+        "angleToOrigine": 0.7373149529963371,
+        "position": {
+          "x": 984,
+          "y": -895
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-101*3",
+        "innerRotation": 3.8085441022525943,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 1410,
+        "angleToOrigine": 0.6486679944507017,
+        "position": {
+          "x": 1123,
+          "y": -852
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-101*4",
+        "innerRotation": 3.164170673228432,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 1732,
+        "angleToOrigine": 0.4747737145501939,
+        "position": {
+          "x": 1540,
+          "y": -792
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-101*5",
+        "innerRotation": 1.852272391382705,
+        "model": "Spirula-10",
+        "stage": 0
+      },
+      {
+        "birth": 101,
+        "distance": 1437,
+        "angleToOrigine": 0.827822241077858,
+        "position": {
+          "x": 972,
+          "y": -1059
+        },
+        "color": "#B24DBD",
+        "shape": "circle",
+        "size": {
+          "min": 6,
+          "max": 13,
+          "growthPerDay": 1
+        },
+        "name": "spirula-101*6",
+        "innerRotation": 1.4738691572140232,
+        "model": "Spirula-10",
+        "stage": 0
       }
     ],
     "rocks": [

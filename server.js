@@ -11,14 +11,16 @@ let users = [];
 let worldModel = null;
 let worldOnHold = false;
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 10 * 60 * 1000; // 10 minutes
+const dayLengthConnection = 15 * 60 * 1000; // 10 minutes
 
+let maxPlants = 99;
 let dayLength = dayLengthConnection;
 let intervalDays;
 let serverLoaded = false;
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
+app.use(express.json())
 app.use(express.static(__dirname));
 
 fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
@@ -76,6 +78,14 @@ function saveWorld() {
 app.get('/', function (req, res) {
   if (serverLoaded) {
     res.sendFile('index.html', { root: __dirname });
+  } else {
+    res.status(202).json({ "error": "Server is still loading ! Try later" });
+  }
+});
+
+app.get('/plants', function (req, res) {
+  if (serverLoaded) {
+    res.status(200).json(worldModel.data.plants);
   } else {
     res.status(202).json({ "error": "Server is still loading ! Try later" });
   }
@@ -317,6 +327,15 @@ io.on('connection', (socket) => {
     console.log("Beginning Checking plants");
     console.log("plants before : " + worldModel.data.plants.length);
 
+    let currentPopulation = worldModel.data.plants.length;
+    let isPopulationLow =  currentPopulation <= 40;
+    // too many : get rid of the seeds
+    if(currentPopulation >= maxPlants){
+      worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
+        return x.stage > 0;
+      });
+    }
+
     let newPlants = [];
      worldModel.data.plants.forEach((x)=>{
       if(!x.position){
@@ -332,6 +351,7 @@ io.on('connection', (socket) => {
        }
        let age = worldModel.gardenDay - x.birth + 1;
        console.log(x.name + " age : " +   age );
+
 
        if(x.stage === 0){ // seed
         age += model.evolution.seedCountDown;
@@ -369,10 +389,10 @@ io.on('connection', (socket) => {
                 }
               }
             }
-          }else if(age >= model.evolution.maxAge * 5){
+          }else if(age >= model.evolution.maxAge ){
             x.stage++; // giving back to garden :-(
           } 
-       }else if(x.stage === 2){// dying
+       }else if(x.stage >= 2 && !isPopulationLow){// dying
         if (Math.random() > 0.5){
           x.stage++; // to remove on next day
         }
@@ -380,10 +400,12 @@ io.on('connection', (socket) => {
     });
     
     let beforeNr = worldModel.data.plants.length;
+    if(!isPopulationLow){
+      worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
+        return x.stage < 4;
+      });
+    }
 
-    worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
-      return x.stage < 4;
-    });
     /*
     worldModel.data.rocks.forEach((rock) => {
       console.log(`Rock ${rock.name} has a size of ${rock.size}`)
@@ -405,7 +427,7 @@ io.on('connection', (socket) => {
       });
       if(findLake.length === 1){
         let lakePosition = findLake[0].position;
-        let lakeRadius = Math.floor(findLake[0].size[0] / 2);
+        let lakeRadius = Math.floor(findLake[0].size[0] / 1.5);
         newPlants = newPlants.filter((seed) => {
             return getDistance(lakePosition,seed.position) > lakeRadius;
         });
@@ -433,8 +455,8 @@ io.on('connection', (socket) => {
       worldModel.data.plants = [... worldModel.data.plants,...newPlants];
     }
     
-    let criticalDistance = 30;
-    let criticalAge = 30;
+    let criticalDistance = 40;
+    let criticalAge = 12;
 
     let youngPlants = worldModel.data.plants.filter((x)=>{
       return x.stage === 1 && (worldModel.gardenDay - x.birth <= criticalAge);
@@ -472,6 +494,10 @@ io.on('connection', (socket) => {
         worldModel.data.plants = [...worldModel.data.plants,...youngPlants];
       }
     }
+    worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
+      return x.distance < 0.9 * worldModel.radius;
+    });
+
     console.log("stopping Checking plants");
     console.log("plants after : " + worldModel.data.plants.length);
   }

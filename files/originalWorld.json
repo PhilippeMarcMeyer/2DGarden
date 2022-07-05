@@ -3,7 +3,7 @@
 	"radius": 2000,
 	"baseColor": "#1144ff",
 	"perimeterColor": "#a0522d",
-	"gardenDay": 381,
+	"gardenDay": 27,
 	"currentCenter": {
 	  "x": 0,
 	  "y": 0
@@ -13,17 +13,17 @@
 		{
 		  "name": "Spirula-10",
 		  "evolution": {
-			"maxAge": 300,
-			"seedsDay": 180,
+			"maxAge": 150,
+			"seedsDay": 22,
 			"seeds": {
-			  "min": 3,
-			  "max": 7
+			  "min": 5,
+			  "max": 12
 			},
-			"seedCountDown": -6,
+			"seedCountDown": -4,
 			"seedSuccesRate": 0.7,
 			"seedDistance": {
-			  "min": 50,
-			  "max": 120
+			  "min": 250,
+			  "max": 520
 			}
 		  },
 		  "leaves": {
@@ -95,17 +95,17 @@
 			"radius": null
 		  },
 		  "evolution": {
-			"maxAge": 120,
-			"seedsDay": 72,
+			"maxAge": 99,
+			"seedsDay": 33,
 			"seeds": {
-			  "min": 3,
-			  "max": 7
+			  "min": 6,
+			  "max": 13
 			},
 			"seedCountDown": -6,
-			"seedSuccesRate": 0.6,
+			"seedSuccesRate": 0.68,
 			"seedDistance": {
-			  "min": 10,
-			  "max": 70
+			  "min": 250,
+			  "max": 320
 			}
 		  },
 		  "leaves": {
@@ -164,17 +164,17 @@
 		{
 		  "name": "Clover-3",
 		  "evolution": {
-			"maxAge": 120,
-			"seedsDay": 72,
+			"maxAge": 99,
+			"seedsDay": 35,
 			"seeds": {
-			  "min": 7,
-			  "max": 12
+			  "min": 4,
+			  "max": 7
 			},
 			"seedCountDown": -6,
 			"seedSuccesRate": 0.75,
 			"seedDistance": {
-			  "min": 10,
-			  "max": 50
+			  "min": 170,
+			  "max": 340
 			}
 		  },
 		  "leaves": {
@@ -233,7 +233,7 @@
 		  "name": "Lilium-7",
 		  "evolution": {
 			"maxAge": 170,
-			"seedsDay": 102,
+			"seedsDay": 42,
 			"seeds": {
 			  "min": 3,
 			  "max": 6
@@ -241,8 +241,8 @@
 			"seedCountDown": -7,
 			"seedSuccesRate": 0.7,
 			"seedDistance": {
-			  "min": 25,
-			  "max": 70
+			  "min": 75,
+			  "max": 370
 			}
 		  },
 		  "leaves": {
@@ -304,17 +304,17 @@
 		{
 		  "name": "Tiny-6",
 		  "evolution": {
-			"maxAge": 45,
+			"maxAge": 35,
 			"seedsDay": 27,
 			"seeds": {
-			  "min": 12,
-			  "max": 36
+			  "min": 3,
+			  "max": 6
 			},
 			"seedCountDown": -3,
 			"seedSuccesRate": 0.4,
 			"seedDistance": {
-			  "min": 15,
-			  "max": 52
+			  "min": 120,
+			  "max": 450
 			}
 		  },
 		  "leaves": {
@@ -376,16 +376,16 @@
 		  "name": "Tiny-7",
 		  "evolution": {
 			"maxAge": 85,
-			"seedsDay": 51,
+			"seedsDay": 41,
 			"seeds": {
-			  "min": 12,
-			  "max": 24
+			  "min": 2,
+			  "max": 5
 			},
 			"seedCountDown": -5,
 			"seedSuccesRate": 0.4,
 			"seedDistance": {
-			  "min": 15,
-			  "max": 75
+			  "min": 160,
+			  "max": 415
 			}
 		  },
 		  "leaves": {
@@ -447,8 +447,8 @@
 		{
 		  "name": "Xelium-8",
 		  "evolution": {
-			"maxAge": 200,
-			"seedsDay": 120,
+			"maxAge": 120,
+			"seedsDay": 37,
 			"seeds": {
 			  "min": 6,
 			  "max": 9
@@ -456,8 +456,8 @@
 			"seedCountDown": -7,
 			"seedSuccesRate": 0.7,
 			"seedDistance": {
-			  "min": 65,
-			  "max": 145
+			  "min": 165,
+			  "max": 345
 			}
 		  },
 		  "leaves": {
@@ -520,8 +520,8 @@
 		{
 		  "name": "Pelium-6",
 		  "evolution": {
-			"maxAge": 170,
-			"seedsDay": 102,
+			"maxAge": 110,
+			"seedsDay": 43,
 			"seeds": {
 			  "min": 6,
 			  "max": 9
@@ -529,8 +529,8 @@
 			"seedCountDown": -7,
 			"seedSuccesRate": 0.7,
 			"seedDistance": {
-			  "min": 39,
-			  "max": 89
+			  "min": 139,
+			  "max": 289
 			}
 		  },
 		  "leaves": {
@@ -1040,7 +1040,11 @@
 				"x": -0.805,
 				"y": -0.725
 			  }
-			]
+			],
+			"position": {
+			  "x": 0,
+			  "y": 0
+			}
 		  },
 		  {
 			"distance": 0,
@@ -1052,7 +1056,11 @@
 			"size": [
 			  250
 			],
-			"opacity": 0.1
+			"opacity": 0.1,
+			"position": {
+			  "x": 0,
+			  "y": 0
+			}
 		  },
 		  {
 			"distance": 300,
@@ -1064,7 +1072,11 @@
 			"size": [
 			  300
 			],
-			"opacity": 0.1
+			"opacity": 0.1,
+			"position": {
+			  "x": 229,
+			  "y": -194
+			}
 		  },
 		  {
 			"distance": 1000,
@@ -1076,7 +1088,11 @@
 			"size": [
 			  300
 			],
-			"opacity": 0.1
+			"opacity": 0.1,
+			"position": {
+			  "x": -905,
+			  "y": -428
+			}
 		  },
 		  {
 			"name": "south-lake",
@@ -1251,7 +1267,11 @@
 				"x": -0.465,
 				"y": -0.585
 			  }
-			]
+			],
+			"position": {
+			  "x": -211,
+			  "y": 977
+			}
 		  },
 		  {
 			"name": "south-lake-1",
@@ -1425,7 +1445,11 @@
 				"x": -0.465,
 				"y": -0.585
 			  }
-			]
+			],
+			"position": {
+			  "x": -211,
+			  "y": 977
+			}
 		  },
 		  {
 			"name": "south-lake-2",
@@ -1599,11 +1623,135 @@
 				"x": -0.465,
 				"y": -0.585
 			  }
-			]
+			],
+			"position": {
+			  "x": -211,
+			  "y": 977
+			}
 		  }
 		]
 	  },
 	  "plants": [
+		{
+		  "birth": 25,
+		  "distance": 504,
+		  "angleToOrigine": 2.1186993169243404,
+		  "position": {
+			"x": -263,
+			"y": -431
+		  },
+		  "color": "#B24DBD",
+		  "shape": "circle",
+		  "size": {
+			"min": 6,
+			"max": 13,
+			"growthPerDay": 1
+		  },
+		  "name": "spirula-22*3",
+		  "innerRotation": 5.7361304605813075,
+		  "model": "Spirula-10",
+		  "stage": 1
+		},
+		{
+		  "birth": 25,
+		  "distance": 1110,
+		  "angleToOrigine": 2.9541100280086954,
+		  "position": {
+			"x": -1091,
+			"y": -207
+		  },
+		  "color": "#B24DBD",
+		  "shape": "circle",
+		  "size": {
+			"min": 6,
+			"max": 13,
+			"growthPerDay": 1
+		  },
+		  "name": "spirula-22*4",
+		  "innerRotation": 0.9618803960420821,
+		  "model": "Spirula-10",
+		  "stage": 1
+		},
+		{
+		  "birth": 25,
+		  "distance": 968,
+		  "angleToOrigine": 2.868191485845054,
+		  "position": {
+			"x": -933,
+			"y": -262
+		  },
+		  "color": "#B24DBD",
+		  "shape": "circle",
+		  "size": {
+			"min": 6,
+			"max": 13,
+			"growthPerDay": 1
+		  },
+		  "name": "spirula-22*6",
+		  "innerRotation": 2.110852898310757,
+		  "model": "Spirula-10",
+		  "stage": 1
+		},
+		{
+		  "birth": 25,
+		  "distance": 757,
+		  "angleToOrigine": 2.768397017176331,
+		  "position": {
+			"x": -705,
+			"y": -276
+		  },
+		  "color": "#B24DBD",
+		  "shape": "circle",
+		  "size": {
+			"min": 6,
+			"max": 13,
+			"growthPerDay": 1
+		  },
+		  "name": "spirula-22*7",
+		  "innerRotation": 5.932429934617274,
+		  "model": "Spirula-10",
+		  "stage": 1
+		},
+		{
+		  "birth": 25,
+		  "distance": 1242,
+		  "angleToOrigine": 0.4811385364714556,
+		  "position": {
+			"x": 1100,
+			"y": -575
+		  },
+		  "color": "#B24DBD",
+		  "shape": "circle",
+		  "size": {
+			"min": 6,
+			"max": 13,
+			"growthPerDay": 1
+		  },
+		  "name": "spirula-22*9",
+		  "innerRotation": 3.1173998190854024,
+		  "model": "Spirula-10",
+		  "stage": 1
+		},
+		{
+		  "birth": 15,
+		  "distance": 577,
+		  "angleToOrigine": 0.38385785178641496,
+		  "position": {
+			"x": 535,
+			"y": -217
+		  },
+		  "color": "#DDAF00",
+		  "shape": "circle",
+		  "size": {
+			"min": 3,
+			"max": 7,
+			"growthPerDay": 1
+		  },
+		  "name": "Tiny-51*3",
+		  "innerRotation": 2.3936615436392437,
+		  "model": "Tiny-6",
+		  "stage": 1
+		},
 		{
 		  "birth": 1,
 		  "distance": 530,
@@ -1618,7 +1766,11 @@
 		  "name": "spirula-1",
 		  "innerRotation": 0.99,
 		  "model": "Spirula-10",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -528,
+			"y": -49
+		  }
 		},
 		{
 		  "birth": 2,
@@ -1634,7 +1786,11 @@
 		  "name": "spirula-2",
 		  "innerRotation": 2.99,
 		  "model": "Spirula-10",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -326,
+			"y": 417
+		  }
 		},
 		{
 		  "birth": 3,
@@ -1650,7 +1806,11 @@
 		  "name": "spirula-3",
 		  "innerRotation": 0.99,
 		  "model": "Clover-4",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -91,
+			"y": -228
+		  }
 		},
 		{
 		  "birth": 1,
@@ -1666,7 +1826,11 @@
 		  "name": "clover-1",
 		  "innerRotation": 0.4,
 		  "model": "Clover-3",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": 484,
+			"y": -124
+		  }
 		},
 		{
 		  "birth": 4,
@@ -1682,7 +1846,11 @@
 		  "name": "clover-2",
 		  "innerRotation": 0.02,
 		  "model": "Clover-3",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -394,
+			"y": 219
+		  }
 		},
 		{
 		  "birth": 3,
@@ -1698,7 +1866,11 @@
 		  "name": "clover-3",
 		  "innerRotation": 2.4,
 		  "model": "Clover-3",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": 8,
+			"y": -400
+		  }
 		},
 		{
 		  "birth": 8,
@@ -1714,7 +1886,11 @@
 		  "name": "Lilium-1",
 		  "innerRotation": 0.4,
 		  "model": "Lilium-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": 339,
+			"y": -87
+		  }
 		},
 		{
 		  "birth": 7,
@@ -1730,7 +1906,11 @@
 		  "name": "Lilium-2",
 		  "innerRotation": 0.67,
 		  "model": "Lilium-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": 256,
+			"y": -239
+		  }
 		},
 		{
 		  "birth": 1,
@@ -1746,7 +1926,11 @@
 		  "name": "Lilium-3",
 		  "innerRotation": 0.4,
 		  "model": "Lilium-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -229,
+			"y": -501
+		  }
 		},
 		{
 		  "birth": 2,
@@ -1762,7 +1946,11 @@
 		  "name": "Lilium-4",
 		  "innerRotation": 0.4,
 		  "model": "Lilium-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -347,
+			"y": -50
+		  }
 		},
 		{
 		  "birth": 3,
@@ -1778,7 +1966,11 @@
 		  "name": "Lilium-5",
 		  "innerRotation": 3,
 		  "model": "Lilium-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -220,
+			"y": -273
+		  }
 		},
 		{
 		  "birth": 5,
@@ -1794,7 +1986,11 @@
 		  "name": "Lilium-6",
 		  "innerRotation": 0.4,
 		  "model": "Lilium-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": 203,
+			"y": -285
+		  }
 		},
 		{
 		  "birth": 4,
@@ -1810,7 +2006,11 @@
 		  "name": "Lilium-7",
 		  "innerRotation": 0.4,
 		  "model": "Lilium-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": 145,
+			"y": -38
+		  }
 		},
 		{
 		  "birth": 7,
@@ -1826,7 +2026,11 @@
 		  "name": "Lilium-8",
 		  "innerRotation": 0.4,
 		  "model": "Lilium-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": 145,
+			"y": -38
+		  }
 		},
 		{
 		  "birth": 2,
@@ -1842,7 +2046,11 @@
 		  "name": "Pelium-1",
 		  "innerRotation": 3.4,
 		  "model": "Pelium-6",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": 396,
+			"y": -272
+		  }
 		},
 		{
 		  "birth": 3,
@@ -1858,7 +2066,11 @@
 		  "name": "Tiny-1",
 		  "innerRotation": 3.4,
 		  "model": "Tiny-6",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -150,
+			"y": -7
+		  }
 		},
 		{
 		  "birth": 4,
@@ -1874,7 +2086,11 @@
 		  "name": "Tiny-2",
 		  "innerRotation": 3.4,
 		  "model": "Tiny-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -104,
+			"y": 38
+		  }
 		},
 		{
 		  "birth": 9,
@@ -1890,7 +2106,11 @@
 		  "name": "Tiny-3",
 		  "innerRotation": 3.4,
 		  "model": "Tiny-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -406,
+			"y": -145
+		  }
 		},
 		{
 		  "birth": 1,
@@ -1906,7 +2126,11 @@
 		  "name": "Tiny-4",
 		  "innerRotation": 3.4,
 		  "model": "Tiny-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -457,
+			"y": -163
+		  }
 		},
 		{
 		  "birth": 12,
@@ -1922,7 +2146,11 @@
 		  "name": "Tiny-5",
 		  "innerRotation": 3.4,
 		  "model": "Tiny-7",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -371,
+			"y": -176
+		  }
 		},
 		{
 		  "birth": 3,
@@ -1938,7 +2166,11 @@
 		  "name": "Tiny-6",
 		  "innerRotation": 3.5,
 		  "model": "Tiny-6",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": -42,
+			"y": -91
+		  }
 		},
 		{
 		  "birth": 9,
@@ -1954,7 +2186,11 @@
 		  "name": "Xelium-1",
 		  "innerRotation": 3.4,
 		  "model": "Xelium-8",
-		  "stage": 10
+		  "stage": 1,
+		  "position": {
+			"x": 149,
+			"y": -155
+		  }
 		}
 	  ],
 	  "rocks": [
@@ -2155,7 +2391,11 @@
 			  "x": -0.815,
 			  "y": -0.605
 			}
-		  ]
+		  ],
+		  "position": {
+			"x": 477,
+			"y": 147
+		  }
 		},
 		{
 		  "size": 350,
@@ -2322,7 +2562,11 @@
 			  "x": -0.205,
 			  "y": -0.775
 			}
-		  ]
+		  ],
+		  "position": {
+			"x": 107,
+			"y": 203
+		  }
 		},
 		{
 		  "size": 320,
@@ -2489,7 +2733,11 @@
 			  "x": -0.45,
 			  "y": -0.615
 			}
-		  ]
+		  ],
+		  "position": {
+			"x": -497,
+			"y": -372
+		  }
 		},
 		{
 		  "size": 315,
@@ -2696,7 +2944,11 @@
 			  "x": -0.36,
 			  "y": -0.725
 			}
-		  ]
+		  ],
+		  "position": {
+			"x": -581,
+			"y": 153
+		  }
 		},
 		{
 		  "size": 515,
@@ -2883,7 +3135,11 @@
 			  "x": -0.32,
 			  "y": -0.795
 			}
-		  ]
+		  ],
+		  "position": {
+			"x": 828,
+			"y": -351
+		  }
 		},
 		{
 		  "size": 420,
@@ -3042,7 +3298,11 @@
 			  "x": -0.6033333333333334,
 			  "y": -0.25
 			}
-		  ]
+		  ],
+		  "position": {
+			"x": -211,
+			"y": 977
+		  }
 		}
 	  ]
 	}

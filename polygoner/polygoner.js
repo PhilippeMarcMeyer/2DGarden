@@ -38,8 +38,10 @@ var center = function (arr)
     return {x : Math.floor((minX + maxX) / 2),y : Math.floor((minY + maxY) / 2)};
 }
 
+
+
 function draw() {
-	rect(0, 0, width, height);
+
 	if (isMultiple) {
 		polygones.forEach((arr) => {
 			if (arr.length > 0) {

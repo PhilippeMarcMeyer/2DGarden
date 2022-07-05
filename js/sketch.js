@@ -3,6 +3,8 @@ let needUpdate, saveContext, context, _camera, mode, things, debugMode, scribble
 let worldModel, gameLoaded, floor;
 let keys = { up: false, down: false, left: false, right: false }
 let framerate = 50;
+let emiteveryNframe = 12;
+
 const camOverPlantLimit = 40;
 let playerColors = '#00AD00,#0000AD,#FF4500,#00ADAD,#AD00AD,#582900,#FFCC00,#000000,#33FFCC'.split(',');
 let otherPlayersIndex = 0;
@@ -41,13 +43,21 @@ function setup() {
 	});
 }
 
+function serverSendPlayerPosition(){
+		let posNr = _camera.positionsTransmitter.length;
+		if(posNr > 0){
+			message( _camera.positionsTransmitter[posNr-1]);
+			_camera.positionsTransmitter.length = 0;
+		}
+}
+
 function draw() {
 	if (!gameLoaded) return;
-	if(things.length > 300){
-		framerate = 20;
-	}else if(things.length > 200){
+	if(things.length > 99){
+		framerate = 25;
+	}else if(things.length > 70){
 		framerate = 30;
-	}else if(things.length > 100){
+	}else if(things.length > 40){
 		framerate = 40;
 	}else{
 		framerate = 50;
@@ -69,7 +79,12 @@ function draw() {
 	translate(width / 2, height / 2);
 	clear();
 	floor.draw();
-	if(_camera) _camera.setDirection();
+	if (_camera) {
+		_camera.setDirection();
+		if ((frameCount % emiteveryNframe) === 0) {
+			serverSendPlayerPosition();
+		}
+	}
 	things
 		.filter((t) => {
 			return !(t instanceof Plant) || (t instanceof Plant && t.collider.dim2 < camOverPlantLimit)
@@ -78,7 +93,7 @@ function draw() {
 			thing.draw();
 		});
 	if(_camera) _camera.draw();
-	things
+	  things
 		.filter((t) => {
 			return (t instanceof Plant && t.collider.dim2 >= camOverPlantLimit);
 		})
@@ -183,7 +198,7 @@ socket.on("info", (msg) => {
 
   function setWorldDay(day){
 	worldModel.gardenDay = day;
-	things = updatePlants(worldModel);
+	updatePlants();
   }
 
 function message(info){
@@ -339,18 +354,19 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 	this.hLimit = h2 -h4;
 	this.dotsNumber = playerDotsNumber;
 	this.dotsColor = playerDotsColor;
-
+    this.positionsTransmitter = [];
 
 
 	this.turn = function(amount){ // -1 or +1
+		let self = this;
 		this.rotation -= this.rotStep*amount;
 		if(this.rotation<0) this.rotation  += k360degres;
 		if(this.rotation > k360degres ) this.rotation = 0;
-		message({
+		self.positionsTransmitter.push({
 			what : "player-moved",
-			position: this.position,
-			rotation: this.rotation
-		})
+			position: self.position,
+			rotation: self.rotation
+		});
 	}
 
 	this.setDirection = function(){
@@ -389,9 +405,9 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 		}
 		let rotation = this.rotation + randomized;
 		var dirx = Math.cos(rotation);
-		var dirz = - Math.sin(rotation);
+		var diry = - Math.sin(rotation);
 		self.position.x = Math.floor(self.position.x + (dirx * amount * self.walkStep)); 
-		self.position.y = Math.floor(self.position.y + (dirz * amount * self.walkStep));
+		self.position.y = Math.floor(self.position.y + (diry * amount * self.walkStep));
 
 		self.isMoving = true;	
 
@@ -421,11 +437,12 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 			} else if (drawPos.y < self.hLimit) {
 				worldModel.currentCenter.y -= (self.previousLocation.y - self.position.y);
 			}
-			message({
+			self.positionsTransmitter.push({
 				what : "player-moved",
 				position: self.position,
 				rotation: self.rotation
-			})
+			});
+
 			if(frameCount % framerate === 1){
 				let cookieInfos = { name: self.name, color: self.color, position: self.position, rotation: self.rotation, generation : self.generation };
 				document.cookie = "garden="+ JSON.stringify(cookieInfos);
@@ -572,7 +589,6 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 		context.closePath();
 		context.stroke();
 		context.fill();
-		context.stroke();
 		//self.dotsNumber
 		context.beginPath();
 		context.strokeStyle=self.dotsColor; 
@@ -726,16 +742,30 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 
 }
 
-function updatePlants(world){
-	let notMobs = things.filter((t) => {
-		return !(t instanceof Plant)
-	});
-	world.data.plants.forEach((r)=>{
-		let plant = new Plant(r)
-		plant.init();
-		notMobs.push(plant);
-	});
-	return notMobs;
+function updatePlants(){
+	let plants;
+	plantsUpdate()
+	.then(function(data){
+        if("error" in data){
+			console.log(data.error);
+		  }else{
+			let newPlants = [];
+			plants = [...data];
+			things = things.filter((t) => {
+				return !(t instanceof Plant)
+			});
+			plants.forEach((r,i)=>{
+				let plant = new Plant(r)
+				plant.init(newPlants);
+				newPlants.push(plant);
+			});
+			worldModel.data.plants = [...plants];
+			newPlants.sort((a,b) => {
+				return a.collider.dim2 - b.collider.dim2;
+			});
+			things = [...things,...newPlants];
+		  }
+	})
 }
 
 function setNotMobs(world){
@@ -751,7 +781,7 @@ function setNotMobs(world){
 		notMobsPlants.push(new Plant(r));
 	});
 	notMobsPlants.forEach(function (t) {
-		t.init();
+		t.init(notMobsPlants);
 	});
 	notMobsPlants.sort((a,b) => {
 		return a.collider.dim2 - b.collider.dim2;
@@ -781,19 +811,16 @@ function Plant(data) {
 	this.model = data.model ? data.model : null;
 	this.protectRadius = null;
 	this.stage = data.stage ?? 1;
+	this.isPrime = false;
 	this.collider = {
 		shape: "circle",
 		center : null,
 		data: null,
 		dim2 : null
 	}
-	this.init = function () {
+	this.init = function (arrOfPlants) {
 		let self = this;
 		let modelQueryResult = null;
-
-		if(self.model === 'Clover-4'){
-			console.log(self.model);
-		}
 
 		if(self.model){
 			modelQueryResult = worldModel.data.models.filter((x) => { return x.name === self.model});
@@ -814,8 +841,28 @@ function Plant(data) {
 				self.protectRadius = {...modelQueryResult[0].protectRadius};
 			}
 		}
+
+		// the real position according to origin point
+		let cos = Math.cos(self.angleToOrigine);
+		let sin = -Math.sin(self.angleToOrigine);
+		self.positionAbsolute.x = Math.floor(cos * self.distance);
+		self.positionAbsolute.y = Math.floor(sin * self.distance);
+
+		let minDistanceToNeighbour = 1000;
+		if(arrOfPlants){
+			arrOfPlants.forEach((n) => {
+				let dist = getDistance(n.positionAbsolute,self.positionAbsolute);
+				if(dist > 0 && dist < minDistanceToNeighbour){
+					minDistanceToNeighbour = dist;
+				}
+			});
+		}
 	
 		let spikesRadius = Math.min(self.age * self.leaves.leafModel.size.growthPerDay + self.leaves.leafModel.size.min, self.leaves.leafModel.size.max);
+		if(spikesRadius > minDistanceToNeighbour){
+			spikesRadius = minDistanceToNeighbour;
+		}
+
 		if(self.protectRadius !== null){
 			self.protectRadius.radius =  Math.min((self.age * self.protectRadius.growthPerDay) + self.protectRadius.min, self.protectRadius.max);
 		}else{
@@ -828,7 +875,14 @@ function Plant(data) {
 		if (self.leaves === null) {
 			self.geometry.crown = null;
 		} else {
-			self.geometry.crown = { shape: self.leaves.shape, color: self.leaves.leafModel.color,number: self.leaves.number, radius: spikesRadius }
+			self.geometry.crown = { shape: self.leaves.shape, color: self.leaves.leafModel.color,number: self.leaves.number, radius: spikesRadius };
+			if(self.geometry.crown.shape === "double-curve") {
+				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, -60)
+			}else if (self.geometry.crown.shape === "double-bezier"){
+				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 40)
+			}else{
+				self.geometry.crown.borderColor = self.geometry.crown.color;
+			}
 			self.geometry.crown.spikes = [];
 			if (self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier") {
 				for (let i = 0; i < self.geometry.crown.number; i++) {
@@ -848,11 +902,7 @@ function Plant(data) {
 						}
 					})
 				}
-				// the real position according to origin point
-				let cos = Math.cos(self.angleToOrigine);
-				let sin = -Math.sin(self.angleToOrigine);
-				self.positionAbsolute.x = Math.floor(cos * self.distance);
-				self.positionAbsolute.y = Math.floor(sin * self.distance);
+
 				self.geometry.heart.center = { x: self.positionAbsolute.x, y: self.positionAbsolute.y };
 				self.collider.center = { x: self.positionAbsolute.x, y: self.positionAbsolute.y };
 				const spikeRadius = self.geometry.crown.radius;
@@ -860,18 +910,37 @@ function Plant(data) {
 				self.geometry.crown.spikes.forEach((spike, index) => {
 					for (const key in spike.curveLeft) {
 						let centralPoint = { ...self.positionAbsolute };
-						spike.curveLeft[key] = simpleRotate(spike.curveLeft[key],self.innerRotation+self.leaves.leafModel.angles[index]);
+						spike.curveLeft[key] = simpleRotate(spike.curveLeft[key], self.innerRotation + self.leaves.leafModel.angles[index]);
 						spike.curveLeft[key].x = Math.floor(centralPoint.x + (spike.curveLeft[key].x * spikeRadius));
 						spike.curveLeft[key].y = Math.floor(centralPoint.y + (spike.curveLeft[key].y * spikeRadius));
 					}
 					for (const key in spike.curveRight) {
 						let centralPoint = { ...self.positionAbsolute };
-						spike.curveRight[key] = simpleRotate(spike.curveRight[key],self.innerRotation+self.leaves.leafModel.angles[index]);
+						spike.curveRight[key] = simpleRotate(spike.curveRight[key], self.innerRotation + self.leaves.leafModel.angles[index]);
 						spike.curveRight[key].x = Math.floor(centralPoint.x + (spike.curveRight[key].x * spikeRadius));
 						spike.curveRight[key].y = Math.floor(centralPoint.y + (spike.curveRight[key].y * spikeRadius));
 					}
 			});
-			}else{
+		}else if(self.geometry.crown.shape === "lines"){
+
+			    let centralPoint = { ...self.positionAbsolute };
+				self.geometry.heart.center =  {...self.positionAbsolute};;
+				self.collider.center = {...self.positionAbsolute};
+
+				const spikeRadius = self.geometry.crown.radius;
+
+				self.collider.dim2 = spikeRadius;
+				let aleaMax = Math.floor(spikeRadius / 8);
+				for (let i = 0; i < self.geometry.crown.number; i++) {
+					let pt = {x:0,y:-1};
+					let alea = (Math.random() * aleaMax) - aleaMax;
+					pt = simpleRotate(pt,self.innerRotation + self.leaves.leafModel.angles[i]);
+
+					pt.x = Math.floor(centralPoint.x + (pt.x * spikeRadius) + alea);
+					pt.y = Math.floor(centralPoint.y + (pt.y * spikeRadius) + alea);
+					self.geometry.crown.spikes.push(pt);
+				}
+		}else{
 				throw 'Not implemented plant crown shape : ' + self.geometry.crown.shape;
 			}
 		}
@@ -912,37 +981,55 @@ function Plant(data) {
 			context.restore();
 		}
 		if(self.geometry && self.geometry.crown ){
-			if(self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier"){
+			if(self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier" || self.geometry.crown.shape === "lines"){
 				let color = self.geometry.crown.color;
+				let borderColor = self.geometry.crown.borderColor;
 				self.geometry.crown.spikes.forEach((spike)=>{
-					let leftPts = {...spike.curveLeft};
-					let rightPts = {...spike.curveRight};
+					let leftPts;
+					let rightPts;
+					if (self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier") {
+						leftPts = { ...spike.curveLeft };
+						rightPts = { ...spike.curveRight };
 
-					for (const key in leftPts) {
-						leftPts[key] = drawingPositionGet(leftPts[key]);
+						for (const key in leftPts) {
+							leftPts[key] = drawingPositionGet(leftPts[key]);
+						}
+						for (const key in rightPts) {
+							rightPts[key] = drawingPositionGet(rightPts[key]);
+						}
 					}
-					for (const key in rightPts) {
-						rightPts[key] = drawingPositionGet(rightPts[key]);
-					}
+
 					context.save();
+
 					if (self.animation && self.animation.length > 0) {
 						translate(self.animation[0], self.animation[0]);
 						self.animation.shift();
 					} 
-					context.globalAlpha = 1;
-					context.strokeStyle = color;
+
+					context.globalAlpha = self.geometry.crown.shape === "lines" ? 0.5 : 1;
+					context.strokeStyle = borderColor;
 					context.fillStyle = color;
+
 					context.beginPath();
 					if (self.geometry.crown.shape === "double-curve") {
 						curve(leftPts.ctrlPt1.x, leftPts.ctrlPt1.y, leftPts.pt1.x, leftPts.pt1.y, leftPts.pt2.x, leftPts.pt2.y, leftPts.ctrlPt2.x, leftPts.ctrlPt2.y);
 						curve(rightPts.ctrlPt1.x, rightPts.ctrlPt1.y, rightPts.pt1.x, rightPts.pt1.y, rightPts.pt2.x, rightPts.pt2.y, rightPts.ctrlPt2.x, rightPts.ctrlPt2.y);
 					}
 					if (self.geometry.crown.shape === "double-bezier") {
-						context.strokeStyle = LightenDarkenColor(color,60);
 						bezier(leftPts.pt1.x, leftPts.pt1.y,leftPts.ctrlPt1.x, leftPts.ctrlPt1.y,leftPts.ctrlPt2.x, leftPts.ctrlPt2.y,  leftPts.pt2.x, leftPts.pt2.y);
 						bezier( rightPts.pt1.x, rightPts.pt1.y,rightPts.ctrlPt1.x, rightPts.ctrlPt1.y, rightPts.ctrlPt2.x, rightPts.ctrlPt2.y, rightPts.pt2.x, rightPts.pt2.y);
 					}
+					if (self.geometry.crown.shape === "lines") {
+						strokeWeight(1);
+						let centerPos = drawingPositionGet(self.geometry.heart.center);
+						self.geometry.crown.spikes.forEach((pt) => {
+							context.moveTo(centerPos.x, centerPos.y);
+							let drawPos = drawingPositionGet(pt);
+							context.lineTo(drawPos.x, drawPos.y);
+						})
+					}
 					context.closePath();
+
 					context.stroke();
 					context.fill();
 					context.restore();
@@ -1274,6 +1361,8 @@ function setKeyDown(){
 		text('Position : (' + _camera.position.x + ',' + _camera.position.y + ')' , -w2 + hOffset, -h2 + lineTop);
 		lineTop += 20;
 		text(`framerate : ${framerate}` , -w2 + hOffset, -h2 + lineTop);
+		lineTop += 20;
+		text(`plants nr : ${worldModel.data.plants.length}` , -w2 + hOffset, -h2 + lineTop);
 	}
 	lineTop+= 20;
 	if(debugMode){
@@ -1312,4 +1401,29 @@ function setKeyDown(){
 		otherPlayersIndex++;
 		_otherPlayers.push(msg);
 	}
+  }
+
+  function plantsUpdate(){
+	return new Promise(function (resolve, reject) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", "plants",true);
+		xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+		xhr.onload = function () {
+		  if (this.status >= 200 && this.status < 300) {
+			try {
+			  let data = JSON.parse(xhr.response);
+			  resolve(data);
+			} catch (e) {
+			  reject({"error":"invalid json"});
+			}
+		  } else {
+			reject({"error":xhr.statusText});
+		  }
+		};
+		xhr.onerror = function () {
+		  reject({"error":xhr.statusText});
+		};
+		xhr.send();
+	});
+
   }
