@@ -10,8 +10,10 @@ const fs = require('fs');
 let users = [];
 let worldModel = null;
 let worldOnHold = false;
+let maxPlantDistance = 1200; 
+
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 5 * 60 * 1000; // 10 minutes
+const dayLengthConnection = 2 * 60 * 1000; // 10 minutes
 
 let maxPlants = 99;
 let dayLength = dayLengthConnection;
@@ -42,10 +44,12 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
     }
 
     serverLoaded = true;
-    
+   // tidyGarden();
     intervalPlayersSaving = setInterval(function(){
       savePlayers();
     },3*60*1000)
+
+    maxPlantDistance = worldModel.radius * 0.7;
 
     intervalDays = setInterval(function () {
       worldOnHold = true;
@@ -198,6 +202,16 @@ io.on('connection', (socket) => {
               u.socket.emit('info', { position: msg.position, rotation: msg.rotation, target: msg.target, what: "target-shake" });
             }
           })
+      }else if(msg.what === 'plant-moved'){
+        console.log(msg);
+        worldModel.data.plants.forEach((p) => {
+          if(p.name === msg.target){
+            p.position = msg.position;
+            let plantPosInfos = getAngleAndDistance(p.position);
+            p.distance = plantPosInfos.distance;
+            p.angleToOrigine = plantPosInfos.angleToOrigine;
+          }
+        });
       }
     });
   })
@@ -316,26 +330,119 @@ io.on('connection', (socket) => {
   function destroy(){
     worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
       let test = Math.random();
-      return test < 0.8;
+      return test < 0.3;
     });
     saveWorld();
   }
 
+  function tidyGarden(){
+    worldModel.data.rocks.forEach((rock) => {
+      let radius = Math.floor(rock.size / 2) + 20;
+      worldModel.data.plants = worldModel.data.plants.filter((p) => {
+        return getDistance(rock.position, p.position) > radius;
+      });
+    });
+
+    let findLake = worldModel.data.floor.shapes.filter((x) => {
+      return x.name && x.name === "south-lake";
+    });
+    if (findLake.length === 1) {
+      let lakePosition = findLake[0].position;
+      let lakeRadius = Math.floor(findLake[0].size[0] / 1.5);
+      worldModel.data.plants = worldModel.data.plants.filter((p) => {
+        return getDistance(lakePosition, p.position) > lakeRadius;
+      });
+    }
+    saveWorld();
+  }
+
+  function saveSpecies(){
+    worldModel.data.models.forEach((m) => {
+      let nr = worldModel.data.plants.filter((p)=>{
+        return p.model === m.name;
+      }).length;
+      if(nr === 0){
+        worldModel.data.plants.push( {
+          "birth": worldModel.gardenDay,
+          "distance": 15 + Math.floor(Math.random() * 40) + Math.floor(Math.random() * 80),
+          "angleToOrigine": 0.6472761753028762,
+          "color": `${LightenDarkenColor(m.leaves.leafModel.color,20)}`,
+          "shape": "circle",
+          "size": {
+            "min": parseInt(Math.floor(m.leaves.leafModel.size.min/5)),
+            "max": Math.min(parseInt(Math.floor(m.leaves.leafModel.size.max/5)),9),
+            "growthPerDay": 1
+          },
+          "name": `${m.name}-${worldModel.gardenDay}*1`,
+          "innerRotation": Math.random() * Math.PI * 2,
+          "model": `${m.name}`,
+          "stage": 0
+        })
+      }
+    });
+  }
+
+  function getSeedsChance(modelName){
+      let nr = worldModel.data.plants.filter((x)=>{
+        return x.model === modelName;
+      }).length;
+
+      return Math.max(1 - (nr*0.3),0.1);
+  }
+
+  function getModelExpansion(modelName) {
+    return worldModel.data.plants.filter((x) => {
+      return x.model === modelName;
+    }).length;
+  }
+
   function checkPlants(){
     // removing dead plants :-(
-
     console.log("Beginning Checking plants");
     console.log("plants before : " + worldModel.data.plants.length);
 
     let currentPopulation = worldModel.data.plants.length;
     let isPopulationLow =  currentPopulation <= 40;
-    // too many : get rid of the seeds
-    if(currentPopulation >= maxPlants){
-      worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
-        return x.stage > 0;
-      });
-    }
+    let isPopulationHigh = currentPopulation > maxPlants;
 
+    worldModel.data.plants.forEach((p) => {
+      if(p.distance === maxPlantDistance){
+        p.distance = Math.floor(Math.random() * maxPlantDistance);
+        p.position = getPosition(p.distance ,p.angleToOrigine);
+      }
+    });
+
+    // too many : get rid of the seeds
+    if(isPopulationHigh){
+      let plantsSpeciesStatus = worldModel.data.models.map((x)=>{
+        return {model:x.name,population:0};
+      });
+      plantsSpeciesStatus.forEach((x) => {
+        x.population = getModelExpansion(x.model);
+      });
+      plantsSpeciesStatus.sort((a,b)=>{
+          return b.population - a.population;
+      });
+      worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
+        let test = Math.random();
+        return (test < 0.7 && x.model === plantsSpeciesStatus[0].model) || x.model !== plantsSpeciesStatus[0].model;
+      });
+      let plants2stop = worldModel.data.plants.length - maxPlants
+      if(plants2stop > 0){
+        worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
+          let test = Math.random();
+          return (test < 0.8 && x.model === plantsSpeciesStatus[1].model) || x.model !== plantsSpeciesStatus[1].model;
+        });
+      }
+      plants2stop = worldModel.data.plants.length - maxPlants
+      if(plants2stop > 0){
+        worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
+          let test = Math.random();
+          return (test < 0.9 && x.model === plantsSpeciesStatus[2].model) || x.model !== plantsSpeciesStatus[2].model;
+        });
+      }
+    }
+  
     let newPlants = [];
      worldModel.data.plants.forEach((x)=>{
       if(!x.position){
@@ -361,7 +468,7 @@ io.on('connection', (socket) => {
         }
        }else if(x.stage >= 1){// flower
           if(age >= model.evolution.seedsDay){
-            if (Math.random() <= 0.1){
+            if (Math.random() <= getSeedsChance(x.model)){
               console.log("seeds ?")
               seedsNr = Math.floor(((model.evolution.seeds.max - model.evolution.seeds.min) * Math.random()) + 0.5) + model.evolution.seeds.min;
               console.log("seedsNr " + seedsNr)
@@ -372,27 +479,36 @@ io.on('connection', (socket) => {
                   // todo : cacl true distance and angle !!!
                   let seedAngle = (Math.random() * Math.PI * 2);
                   let seedDistance =  model.evolution.seedDistance.min + Math.floor(((model.evolution.seedDistance.max - model.evolution.seedDistance.min) * Math.random()) + 0.5);
-                  let seedPosInfos = getSeedPositionToOrigine(x.distance,x.angleToOrigine,seedAngle,seedDistance)
+                  let newPt = getPosition(seedDistance,seedAngle);
+                  newPt.x += x.position.x;
+                  newPt.y += x.position.y;
+                  let seedPosInfos = getAngleAndDistance(newPt);
+                  if(seedPosInfos.distance > maxPlantDistance){
+                    seedPosInfos.distance = Math.floor(Math.random() * maxPlantDistance);
+                    newPt = getPosition(seedPosInfos.distance ,seedPosInfos.angleToOrigine);
+                  }
                   newPlants.push({
                     birth: worldModel.gardenDay,
-                    distance: seedPosInfos.distance,
+                    distance: Math.min(seedPosInfos.distance,maxPlantDistance),
                     angleToOrigine: seedPosInfos.angleToOrigine,
-                    position : getPosition(seedPosInfos.distance,seedPosInfos.angleToOrigine),
+                    position : newPt,
                     color: x.color,
                     shape: x.shape,
                     size: {... x.size},
                     name : x.name.split("-")[0] + "-" + worldModel.gardenDay + "*" + (n + 1),
-                    innerRotation : (Math.random() * 3.14159 * 2),
+                    innerRotation : (Math.random() * Math.PI * 2),
                     model:x.model,
                     stage: 0
                   });
                 }
               }
             }
-          }else if(age >= model.evolution.maxAge ){
+          }
+          if(age >= model.evolution.maxAge ){
             x.stage++; // giving back to garden :-(
           } 
-       }else if(x.stage >= 2 && !isPopulationLow){// dying
+       }
+       if(x.stage >= 2 && !isPopulationLow){// dying
         if (Math.random() > 0.5){
           x.stage++; // to remove on next day
         }
@@ -427,7 +543,7 @@ io.on('connection', (socket) => {
       });
       if(findLake.length === 1){
         let lakePosition = findLake[0].position;
-        let lakeRadius = Math.floor(findLake[0].size[0] / 1.5);
+        let lakeRadius = Math.floor(findLake[0].size[0] / 1.4);
         newPlants = newPlants.filter((seed) => {
             return getDistance(lakePosition,seed.position) > lakeRadius;
         });
@@ -439,7 +555,7 @@ io.on('connection', (socket) => {
     if (newPlants.length > 0) {
       let seedsBefore = newPlants.length;
       worldModel.data.rocks.forEach((rock) => {
-        let radius = Math.floor(rock.size / 2) + 20;
+        let radius = Math.floor(rock.size / 1.6) ;
         newPlants = newPlants.filter((seed) => {
           return getDistance(rock.position, seed.position) > radius;
         });
@@ -499,7 +615,15 @@ io.on('connection', (socket) => {
     });
 
     console.log("stopping Checking plants");
-    console.log("plants after : " + worldModel.data.plants.length);
+    let beforeSaveSpecies = worldModel.data.plants.length;
+
+    console.log(`plants after : ${beforeSaveSpecies}`);
+   saveSpecies();
+    let afterSaveSpecies = worldModel.data.plants.length;
+    let savedSpecies = afterSaveSpecies - beforeSaveSpecies;
+    if(savedSpecies > 0){
+      console.log(`Saved species : ${savedSpecies}`);
+    }
   }
 
   function checkGenerations(){
@@ -554,46 +678,30 @@ io.on('connection', (socket) => {
     return '#' + rHex + gHex + bHex;
   }
 
-  function getSeedPositionToOrigine(parentDistance,parentAngleToOrigine,seedAngle,seedDistance){
-
-    let cos = Math.cos(parentAngleToOrigine);
-		let sin = -Math.sin(parentAngleToOrigine);
-
-    let parentPosition = {
-      x : Math.floor(cos * parentDistance),
-      y :  Math.floor(sin * parentDistance)
-    }
-
-    cos = Math.cos(seedAngle);
-		sin = -Math.sin(seedAngle);
-	
-	let SeedPosition = {
-      x : Math.floor(cos * seedDistance) + parentPosition.x,
-      y : Math.floor(sin * seedDistance) + parentPosition.y
-  }
-
-  let divider = Math.max(SeedPosition.x,SeedPosition.y);
-  if(divider === 0){
-    divider = 1;
-  }
-  let x = SeedPosition.x / divider;
-  let y = SeedPosition.y / divider;
-    return {
-      distance : getDistance({x:0,y:0},SeedPosition),
-      angleToOrigine : Math.atan2(y, x)
-    }
-  }
-
-  function getDistance(ptA,ptB){
+  function getDistance(ptA, ptB) {
     let w = Math.abs(ptA.x - ptB.x);
     let h = Math.abs(ptA.y - ptB.y);
-    return Math.sqrt(Math.pow(w + h,2));
+    return Math.sqrt(Math.pow(w + h, 2));
   }
-  
-  function getPosition(distance,angleToOrigine){
+
+
+  function getAngleAndDistance(pt) {
+    return {
+      distance: getDistance(pt, {
+        x: 0,
+        y: 0
+      }),
+      angleToOrigine: Math.atan2(pt.y, pt.x)
+    }
+  }
+
+  function getPosition(distance, angleToOrigine) {
     let cos = Math.cos(angleToOrigine);
     let sin = -Math.sin(angleToOrigine);
-    return {x:Math.floor(cos * distance),y:Math.floor(sin * distance)}
+    return {
+      x: Math.floor(cos * distance),
+      y: Math.floor(sin * distance)
+    }
   }
 
   function checkLakeAndRocks(){
@@ -609,3 +717,33 @@ io.on('connection', (socket) => {
       }
     });
   }
+
+  //Chris Coyier 
+function LightenDarkenColor(col, amt) {
+  
+  var usePound = false;
+
+  if (col[0] == "#") {
+      col = col.slice(1);
+      usePound = true;
+  }
+
+  var num = parseInt(col,16);
+
+  var r = (num >> 16) + amt;
+
+  if (r > 255) r = 255;
+  else if  (r < 0) r = 0;
+
+  var b = ((num >> 8) & 0x00FF) + amt;
+
+  if (b > 255) b = 255;
+  else if  (b < 0) b = 0;
+
+  var g = (num & 0x0000FF) + amt;
+
+  if (g > 255) g = 255;
+  else if (g < 0) g = 0;
+
+  return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
+}

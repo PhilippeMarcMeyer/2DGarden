@@ -1,7 +1,13 @@
 let w2, h2, w4, h4,wh2, k90degres, k60degres, k45degres, k180degres, k270degres, k360degres, k80degres, k280degres, camFov, focalW, focalH, zoom, focalAverage;
 let needUpdate, saveContext, context, _camera, mode, things, debugMode, scribble;
 let worldModel, gameLoaded, floor;
-let keys = { up: false, down: false, left: false, right: false }
+let keys = {
+	up: false,
+	down: false,
+	left: false,
+	right: false,
+	shift: false
+}
 let framerate = 50;
 let emiteveryNframe = 12;
 
@@ -21,6 +27,38 @@ let playerRotation = toradians(90);
 let playerDotsNumber = 3;
 let playerDotsColor =  '#ffffff'
 let socket = io();
+let plantsBag = [];
+
+function mouseClicked() {
+	if (keys.shift && gameLoaded) {
+		let pointClicked = {
+			x: mouseX - Math.floor(width / 2),
+			y:  Math.floor(height / 2) - mouseY
+		};
+		//pointClicked = realPositionGet(pointClicked);
+		console.log(pointClicked);
+
+		let plantsClicked = worldModel.data.plants.filter((p) => {
+			return getDistance(p.position,pointClicked) < 30;
+		});
+
+		if(plantsClicked.length > 0){
+			plantsClicked.forEach((p) => {
+				plantsBag.push({name:p.name});
+			});
+		}else if(plantsBag.length > 0){
+			let plantToMove = plantsBag.shift();
+			console.log(plantToMove);
+			message({
+				what : "plant-moved",
+				position: pointClicked,
+				target: plantToMove.name
+			})
+
+		}
+	}
+	return false;
+  }
 
 function setup() {
 	debugMode = false;
@@ -108,6 +146,13 @@ function drawingPositionGet(truePosition) {
 	return {
 		"x": worldModel && worldModel.currentCenter ? truePosition.x - worldModel.currentCenter.x : truePosition.x,
 		"y": worldModel && worldModel.currentCenter ? truePosition.y - worldModel.currentCenter.y : truePosition.y
+	};
+}
+
+function realPositionGet(drawingPosition) {
+	return {
+		"x": worldModel && worldModel.currentCenter ? drawingPosition.x + worldModel.currentCenter.x : drawingPosition.x,
+		"y": worldModel && worldModel.currentCenter ? drawingPosition.y + worldModel.currentCenter.y : drawingPosition.y
 	};
 }
 
@@ -563,7 +608,6 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 			];
 		}
 
-
 		camCos = Math.cos(self.rotation);
 		camSin = -Math.sin(self.rotation);
 
@@ -847,7 +891,7 @@ function Plant(data) {
 		let sin = -Math.sin(self.angleToOrigine);
 		self.positionAbsolute.x = Math.floor(cos * self.distance);
 		self.positionAbsolute.y = Math.floor(sin * self.distance);
-
+/*
 		let minDistanceToNeighbour = 1000;
 		if(arrOfPlants){
 			arrOfPlants.forEach((n) => {
@@ -857,11 +901,11 @@ function Plant(data) {
 				}
 			});
 		}
-	
+	*/
 		let spikesRadius = Math.min(self.age * self.leaves.leafModel.size.growthPerDay + self.leaves.leafModel.size.min, self.leaves.leafModel.size.max);
-		if(spikesRadius > minDistanceToNeighbour){
-			spikesRadius = minDistanceToNeighbour;
-		}
+		//if(spikesRadius > minDistanceToNeighbour){
+			//spikesRadius = minDistanceToNeighbour;
+		//}
 
 		if(self.protectRadius !== null){
 			self.protectRadius.radius =  Math.min((self.age * self.protectRadius.growthPerDay) + self.protectRadius.min, self.protectRadius.max);
@@ -1301,6 +1345,10 @@ function setKeyDown(){
 			case "ArrowDown": // down
 				keys.down = true;
 				break;
+			case "ShiftLeft":
+				keys.shift = true;
+				break;
+
 		};
 	}); 
   }
@@ -1340,6 +1388,9 @@ function setKeyDown(){
 				break;
 			case "ArrowDown": // down
 				keys.down = false;
+				break;
+			case "ShiftLeft":
+				keys.shift = false;
 				break;
 		};
 	}); 
