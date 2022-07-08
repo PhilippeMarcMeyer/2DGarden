@@ -7,13 +7,14 @@ const io = require('socket.io')(server, { cookie: true })
 const cookieParser = require('cookie-parser')
 const cookieName = "garden";
 const fs = require('fs');
+
 let users = [];
 let worldModel = null;
 let worldOnHold = false;
 let maxPlantDistance = 1200; 
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 2 * 60 * 1000; // 10 minutes
+const dayLengthConnection = 15 * 60 * 1000; // m minutes
 
 let maxPlants = 99;
 let dayLength = dayLengthConnection;
@@ -746,4 +747,39 @@ function LightenDarkenColor(col, amt) {
   else if (g < 0) g = 0;
 
   return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
+}
+
+// -- agents
+function manageGardens (floorZones){
+  let gardenZones = floorZones.filter((floorZone) => {
+       return floorZone.specific && floorZone.specific === "auto-garden";
+  });
+
+  let gardenManagers = [];
+
+   gardenZones.forEach(zone => {
+       gardenManagers.push(new gardenFactory(zone))
+   });
+   return gardenZones;
+}
+
+function gardenFactory(zone){
+   this.zone = {...zone};
+   this.workers = [];
+   let nrWorkers = Math.floor(Math.cbrt(this.zone.size[0]) + 0.5);
+   for (let i = 0; i < nrWorkers; i++){
+       this.workers.push(new gardenWorker(zoneName,i+1))
+   }
+}
+
+function gardenWorker(zoneName,index){
+   this.rank = index;
+   this.name = `Worker ${index} of ${zoneName}`;
+   this.speed = 50; // millisec per pixel
+   this.spots = [null,null,null]; // "pockets" to carry seeds
+   this.stomach = {capacity : 200,current : 200, costPer100Pixels : 1};
+   this.pixelsSpent = 0;
+   this.hungryActions = [{action : "find", what : "plant",where : "outside-garden"},{action : "eat", what : "plant"}];
+   this.completionActions = [{action : "find", what : "seed"},{action : "bring", what : "seed"},{action : "plant", what : "seed"}];
+   this.idleActions = [{action : "find", what : "seed"},{action : "bring", what : "seed"},{action : "plant", what : "seed"}];
 }
