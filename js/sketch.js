@@ -54,7 +54,6 @@ function mouseClicked() {
 				position: pointClicked,
 				target: plantToMove.name
 			})
-
 		}
 	}
 	return false;
@@ -213,7 +212,7 @@ socket.on("info", (msg) => {
 		playerName = msg.name ?? "???";
 		playerColor = msg.color ?? "#FF5555";
 		playerGeneration = msg.generation ?? 1;
-		playerPosition =  {x:0,y:0};
+		playerPosition =  msg.position ?? {x:0,y:0};
 		playerRotation = msg.rotation ?? toradians(90);
 		playerDotsNumber = msg.dotsNumber ?? 3;
 		playerDotsColor = msg.dotsColor ?? '#ffffff'
@@ -379,7 +378,7 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 
 	this.knownThings = [];
 	this.rotation = rotation ? rotation : 0; 
-	this.position = position;
+	this.position = position; 
 	this.distance = 0;
 	this.previousLocation = {x:0,y:0}; 
 	this.antePenultLocation = {x:0,y:0}; 
@@ -401,6 +400,7 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 	this.dotsColor = playerDotsColor;
     this.positionsTransmitter = [];
 
+	if(worldModel && worldModel.currentCenter) worldModel.currentCente = {...this.position};
 
 	this.turn = function(amount){ // -1 or +1
 		let self = this;
@@ -580,6 +580,8 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 	
 	this.drawCamera=function(){
 		let self = this;
+		if(worldModel && worldModel.currentCenter) worldModel.currentCenter = {...self.position};
+
 		let drawPos = drawingPositionGet(self.position);
 		let camCos = Math.cos(self.rotation + k90degres);
 		let camSin = -Math.sin(self.rotation + k90degres);

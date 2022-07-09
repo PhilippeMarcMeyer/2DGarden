@@ -773,13 +773,14 @@ function gardenFactory(zone){
 }
 
 function gardenWorker(zoneName,index){
+   this.size = 20;
    this.rank = index;
    this.name = `Worker ${index} of ${zoneName}`;
    this.speed = 50; // millisec per pixel
-   this.spots = [null,null,null]; // "pockets" to carry seeds
-   this.stomach = {capacity : 200,current : 200, costPer100Pixels : 1};
+   this.spots = [null,null,null,null,null]; // "pockets" to carry seeds
+   this.battery = {capacity : 200,current : 200, costPer100Pixels : 1, chargingTimePerUnit : 5000};
    this.pixelsSpent = 0;
-   this.hungryActions = [{action : "find", what : "plant",where : "outside-garden"},{action : "eat", what : "plant"}];
+   this.hungryActions = [{action : "find", what : "power",where : "auto-garden"},{action : "recharge", what : "me"}];
    this.completionActions = [{action : "find", what : "seed"},{action : "bring", what : "seed"},{action : "plant", what : "seed"}];
    this.idleActions = [{action : "find", what : "seed"},{action : "bring", what : "seed"},{action : "plant", what : "seed"}];
 }
