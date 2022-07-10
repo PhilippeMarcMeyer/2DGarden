@@ -10,7 +10,7 @@ let keys = {
 }
 let framerate = 50;
 let emiteveryNframe = 12;
-
+let autoGardens = null;
 const camOverPlantLimit = 32;
 let playerColors = '#00AD00,#0000AD,#FF4500,#00ADAD,#AD00AD,#582900,#FFCC00,#000000,#33FFCC'.split(',');
 let otherPlayersIndex = 0;
@@ -80,12 +80,12 @@ function setup() {
 	});
 }
 
-function serverSendPlayerPosition(){
-		let posNr = _camera.positionsTransmitter.length;
-		if(posNr > 0){
-			message( _camera.positionsTransmitter[posNr-1]);
-			_camera.positionsTransmitter.length = 0;
-		}
+function serverSendPlayerPosition() {
+	let posNr = _camera.positionsTransmitter.length;
+	if (posNr > 0) {
+		message(_camera.positionsTransmitter[posNr - 1]);
+		_camera.positionsTransmitter.length = 0;
+	}
 }
 
 function draw() {
@@ -129,7 +129,10 @@ function draw() {
 		.forEach(function (thing) {
 			thing.draw();
 		});
+
+	if(autoGardens) drawAutoGardens();
 	if(_camera) _camera.draw();
+
 	  things
 		.filter((t) => {
 			return (t instanceof Plant && t.collider.dim2 >= camOverPlantLimit);
@@ -138,6 +141,27 @@ function draw() {
 			thing.draw();
 		});
 		drawInformations();
+}
+
+function drawAutoGardens(){
+	autoGardens.forEach((garden)=>{
+		let topLeft = drawingPositionGet(garden.buildingInfos.topLeft);
+		let buildingHeight = garden.buildingInfos.height;
+		let buildingWidth = garden.buildingInfos.width;
+		context.beginPath();
+		context.strokeStyle = "silver";
+		strokeWeight(3);
+		line(topLeft.x, topLeft.y + buildingHeight,topLeft.x, topLeft.y);
+		line(topLeft.x, topLeft.y,topLeft.x + buildingWidth, topLeft.y);
+		line(topLeft.x + buildingWidth, topLeft.y,topLeft.x + buildingWidth, topLeft.y + buildingHeight);
+		strokeWeight(1);
+		let interBoxesWidth = buildingWidth / (garden.buildingInfos.boxes)
+		for(let i = 1; i <= garden.buildingInfos.boxes; i++){
+			line(topLeft.x + (interBoxesWidth * i), topLeft.y, topLeft.x + (interBoxesWidth * i), topLeft.y + buildingHeight);
+		}
+		context.closePath();
+		context.stroke();
+	});
 }
 
 // Utilities
@@ -219,7 +243,8 @@ socket.on("info", (msg) => {
 		_camera = new Kamera(framerate / 350, 350 / framerate, playerRotation,playerPosition,playerName,playerColor,playerGeneration,playerDotsNumber,playerDotsColor); 
 		let cookieInfos = {"name" : playerName,"color" : playerColor,position :playerPosition,rotation : playerRotation };
 		document.cookie = "garden="+ JSON.stringify(cookieInfos);
-
+	}else if(msg.what === 'auto-gardens'){
+		autoGardens = [...msg.data];
 	}else if(msg.what === 'player-disconnected'){
 		_otherPlayers = _otherPlayers.filter((u) => {
 			return u.playerId !== msg.playerId;

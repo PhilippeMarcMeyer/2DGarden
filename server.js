@@ -50,8 +50,6 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
 
     autoGardens = manageGardens(worldModel.data.floor.shapes);
 
-    console.log(JSON.stringify(autoGardens))
-
     intervalPlayersSaving = setInterval(function(){
       savePlayers();
     },3*60*1000)
@@ -150,6 +148,7 @@ io.on('connection', (socket) => {
     console.log('player-identity')
     let data = { playerId: idconnected, what: "player-identity", name: p.name, color: p.color, position: p.position, rotation: p.rotation ,generation : p.generation ,dotsColor : p.dotsColor,dotsNumber : p.dotsNumber};
     p.socket.emit('info',data);
+    p.socket.emit('info', { playerId: idconnected, data: autoGardens, what: "auto-gardens"});
     if(otherPlayers.length > 0){
       data.what = "player-connected";
       // Tell other players, there's a new kid in town !
@@ -771,8 +770,8 @@ function manageGardens (floorZones){
 
 function gardenFactory(zone){
    this.zone = {...zone};
-   this.workerOuterSize = 20;
-   this.workerInnerSize = 18;
+   this.workerOuterSize = 40;
+   this.workerInnerSize = 36;
    this.workers = [];
    this.nrWorkers = Math.floor(Math.cbrt(this.zone.size[0]) + 0.5);
    this.buildingInfos = {
@@ -780,7 +779,7 @@ function gardenFactory(zone){
      height:this.workerOuterSize,
      topLeft: {
        x: this.zone.position.x - Math.floor((this.workerOuterSize * this.nrWorkers) / 2),
-       y: this.zone.position.y - this.zone.size[0]
+       y: this.zone.position.y + this.zone.size[0] + 10
      },
      boxes : this.nrWorkers,
      orientation : toradians(90)
