@@ -12,6 +12,8 @@ let users = [];
 let worldModel = null;
 let worldOnHold = false;
 let maxPlantDistance = 1200; 
+let autoGardens = [];
+let intervalAutoGardens = null;
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
 const dayLengthConnection = 15 * 60 * 1000; // m minutes
@@ -45,7 +47,11 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
     }
 
     serverLoaded = true;
-   // tidyGarden();
+
+    autoGardens = manageGardens(worldModel.data.floor.shapes);
+
+    console.log(JSON.stringify(autoGardens))
+
     intervalPlayersSaving = setInterval(function(){
       savePlayers();
     },3*60*1000)
@@ -760,22 +766,44 @@ function manageGardens (floorZones){
    gardenZones.forEach(zone => {
        gardenManagers.push(new gardenFactory(zone))
    });
-   return gardenZones;
+   return gardenManagers;
 }
 
 function gardenFactory(zone){
    this.zone = {...zone};
+   this.workerOuterSize = 20;
+   this.workerInnerSize = 18;
    this.workers = [];
-   let nrWorkers = Math.floor(Math.cbrt(this.zone.size[0]) + 0.5);
-   for (let i = 0; i < nrWorkers; i++){
-       this.workers.push(new gardenWorker(zoneName,i+1))
+   this.nrWorkers = Math.floor(Math.cbrt(this.zone.size[0]) + 0.5);
+   this.buildingInfos = {
+     width: this.workerOuterSize * this.nrWorkers,
+     height:this.workerOuterSize,
+     topLeft: {
+       x: this.zone.position.x - Math.floor((this.workerOuterSize * this.nrWorkers) / 2),
+       y: this.zone.position.y - this.zone.size[0]
+     },
+     boxes : this.nrWorkers,
+     orientation : toradians(90)
+   };
+   for (let i = 0; i < this.nrWorkers; i++){
+       this.workers.push(new gardenWorker(zone,i+1,this.nrWorkers,this.workerOuterSize,this.workerInnerSize ));
    }
 }
 
-function gardenWorker(zoneName,index){
-   this.size = 20;
+function gardenWorker(zone,index,nrWorkers,outerSize,innerSize){
+   this.outerSize = outerSize;
+   this.innerSize = innerSize;
    this.rank = index;
-   this.name = `Worker ${index} of ${zoneName}`;
+   this.autoGarden = zone.name;
+   this.name = `Worker ${index}`;
+   this.refillPosition = {...zone.position};
+   this.refillPosition.y -= zone.size[0]+this.outerSize/2;
+   this.refillPosition.x -= ((this.outerSize * nrWorkers) / 2) + (this.outerSize * (index - 1)) - this.outerSize / 2;
+   this.refillPosition.x = Math.floor(this.refillPosition.x);
+   this.refillPosition.y = Math.floor(this.refillPosition.y);
+   this.currentPosition = {...this.refillPosition};
+   this.refillOrientation = toradians(270);
+   this.currentOrientation = this.refillOrientation;
    this.speed = 50; // millisec per pixel
    this.spots = [null,null,null,null,null]; // "pockets" to carry seeds
    this.battery = {capacity : 200,current : 200, costPer100Pixels : 1, chargingTimePerUnit : 5000};
@@ -783,4 +811,8 @@ function gardenWorker(zoneName,index){
    this.hungryActions = [{action : "find", what : "power",where : "auto-garden"},{action : "recharge", what : "me"}];
    this.completionActions = [{action : "find", what : "seed"},{action : "bring", what : "seed"},{action : "plant", what : "seed"}];
    this.idleActions = [{action : "find", what : "seed"},{action : "bring", what : "seed"},{action : "plant", what : "seed"}];
+}
+
+function toradians(degrees) {
+	return degrees * Math.PI / 180;
 }
