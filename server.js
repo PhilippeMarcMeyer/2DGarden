@@ -769,35 +769,40 @@ function manageGardens (floorZones){
 }
 
 function gardenFactory(zone){
-   this.zone = {...zone};
-   this.workerOuterSize = 40;
-   this.workerInnerSize = 36;
+   this.name = zone.name;
+   this.circlesOfPlants = zone.circlesOfPlants;
+   this.workerOuterSize = zone.workerOuterSize;
+   this.workerInnerSize = zone.workerInnerSize;
+   this.position = {...zone.position};
+   this.radius = zone.size[0];
    this.workers = [];
-   this.nrWorkers = Math.floor(Math.cbrt(this.zone.size[0]) + 0.5);
+   this.nrWorkers = zone.nrWorkers ?? Math.floor(Math.cbrt(this.zone.size[0]) + 0.5);
    this.buildingInfos = {
      width: this.workerOuterSize * this.nrWorkers,
      height:this.workerOuterSize,
      topLeft: {
-       x: this.zone.position.x - Math.floor((this.workerOuterSize * this.nrWorkers) / 2),
-       y: this.zone.position.y + this.zone.size[0] + 10
+       x: this.position.x - Math.floor((this.workerOuterSize * this.nrWorkers) / 2),
+       y: this.position.y +  this.radius + 10
      },
      boxes : this.nrWorkers,
-     orientation : toradians(90)
+     orientation : zone.orientation ?? toradians(90)
    };
+   let data = {...this};
    for (let i = 0; i < this.nrWorkers; i++){
-       this.workers.push(new gardenWorker(zone,i+1,this.nrWorkers,this.workerOuterSize,this.workerInnerSize ));
+       let worker = new gardenWorker(data, i + 1,this.position);
+       this.workers.push(worker);
    }
 }
 
-function gardenWorker(zone,index,nrWorkers,outerSize,innerSize){
-   this.outerSize = outerSize;
-   this.innerSize = innerSize;
+function gardenWorker(data,index,pos){
+   this.outerSize = data.workerOuterSize;
+   this.innerSize = data.workerInnerSize;
    this.rank = index;
-   this.autoGarden = zone.name;
+   this.autoGarden = data.name;
    this.name = `Worker ${index}`;
-   this.refillPosition = {...zone.position};
-   this.refillPosition.y -= zone.size[0]+this.outerSize/2;
-   this.refillPosition.x -= ((this.outerSize * nrWorkers) / 2) + (this.outerSize * (index - 1)) - this.outerSize / 2;
+   this.refillPosition = {...pos};
+   this.refillPosition.y -= data.radius + this.outerSize / 2;
+   this.refillPosition.x -= ((this.outerSize * data.nrWorkers) / 2) + (this.outerSize * (index - 1)) - this.outerSize / 2;
    this.refillPosition.x = Math.floor(this.refillPosition.x);
    this.refillPosition.y = Math.floor(this.refillPosition.y);
    this.currentPosition = {...this.refillPosition};

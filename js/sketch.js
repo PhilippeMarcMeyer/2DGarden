@@ -245,6 +245,27 @@ socket.on("info", (msg) => {
 		document.cookie = "garden="+ JSON.stringify(cookieInfos);
 	}else if(msg.what === 'auto-gardens'){
 		autoGardens = [...msg.data];
+
+		autoGardens.forEach( (garden) => {
+			garden.collider = {};
+			garden.collider.shape = 'poly';
+			let w = garden.buildingInfos.width;
+			let h = garden.buildingInfos.height;
+			let topLeft = {...garden.buildingInfos.topLeft};
+			let topRight = {
+				x: topLeft.x + w,
+				y: topLeft.y
+			};
+			let bottomLeft = {
+				x: topLeft.x,
+				y: topLeft.y + h
+			};
+			let bottomRight = {
+				x: topLeft.x + w,
+				y: topLeft.y + h
+			};
+			garden.collider.data = [topLeft, topRight, bottomRight, bottomLeft, topLeft];
+		});
 	}else if(msg.what === 'player-disconnected'){
 		_otherPlayers = _otherPlayers.filter((u) => {
 			return u.playerId !== msg.playerId;
@@ -533,16 +554,33 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 	}
 
 	this.checkCollisions = function () {
-		var self = this;
-		things.forEach(function (x) {
+		let self = this;
+		let stopped = false;
+		if(autoGardens) {
+			autoGardens.forEach( (garden) => {
+				if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, garden.collider.data)) {
+					self.restorePosition();
+					self.isMoving = false;	
+					stopped = true;
+				}
+			});
+		}
+
+		if(stopped) return;
+
+		for (let i = 0 ; i < things.length;i++){
+			if(stopped) break;
+			let x = things[i];
 			if(x.collider.shape === 'poly'){
 				if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.data)) {
 					self.restorePosition();
 					self.isMoving = false;	
+					stopped = true;
 				}
 			}else if(x.collider.shape === 'circle'){
 				if (collideCircleCircle(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.center.x,x.collider.center.y, x.collider.data)) {
 					x.shake();
+					stopped = true;
 					message({
 						what : "player-collided",
 						position: this.position,
@@ -551,15 +589,21 @@ function Kamera(rotStep,walkStep,rotation,position,playerName,playerColor,player
 					})
 				}
 			}
-		});
+		}
+
+		if(stopped) return;
+
 		if(_otherPlayers.length > 0){
-			_otherPlayers.forEach(function(u){
+			for (let i = 0 ; i < things._otherPlayers;i++){
+				if(stopped) break;
+				let u = _otherPlayers[i];
 				if(getDistance({x:0,y:0},u.position) < 100) return;
 				if (collideCircleCircle(self.position.x, self.position.y, self.bodyRadius * 2, u.position.x, u.position.y, u.bodyRadius * 2)) {
 					self.restorePosition();
-					self.isMoving = false;				
+					self.isMoving = false;	
+					stopped = true;			
 				}
-			});
+			};
 		}
 	}
 	
