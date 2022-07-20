@@ -16,8 +16,8 @@ let autoGardens = [];
 let intervalAutoGardens = null;
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 15 * 60 * 1000; // m minutes
-
+const dayLengthConnection = 5 * 60 * 1000; // m minutes
+const autoGardensTiming = 5000;
 let maxPlants = 99;
 let dayLength = dayLengthConnection;
 let intervalDays;
@@ -48,6 +48,8 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
 
     serverLoaded = true;
 
+   // tidyGarden();
+
     autoGardens = manageGardens(worldModel.data.floor.shapes);
 
     intervalPlayersSaving = setInterval(function(){
@@ -55,6 +57,11 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
     },3*60*1000)
 
     maxPlantDistance = worldModel.radius * 0.7;
+
+    intervalAutoGardens = setInterval(() => {
+      if(worldOnHold) return;
+        autoGardensManage();
+    },autoGardensTiming);
 
     intervalDays = setInterval(function () {
       worldOnHold = true;
@@ -64,7 +71,7 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
       // check the evolution in the plant models to see if the begin to make seeds and later perish
       // later add bonuses or maluses according to weather, water, soil, animals attack
       // it would mean than a little part of the evolution is set in the plant itself and not in its model
-      // some plants could give protection to the ladybug on a radius egal to their size (4 leaves clovers !)
+      // some plants could give protection to the ladybug on a radius egal to their size (4 petals clovers !)
       // check if a lady bug is too old, then add 1 to the generation in the players.json aka usersMemory
       checkLakeAndRocks();
       checkGenerations();
@@ -342,8 +349,10 @@ io.on('connection', (socket) => {
   }
 
   function tidyGarden(){
+    console.log('tidy garden');
     worldModel.data.rocks.forEach((rock) => {
-      let radius = Math.floor(rock.size / 2) + 20;
+      let radius = Math.floor(rock.size);
+      console.log(radius);
       worldModel.data.plants = worldModel.data.plants.filter((p) => {
         return getDistance(rock.position, p.position) > radius;
       });
@@ -354,10 +363,17 @@ io.on('connection', (socket) => {
     });
     if (findLake.length === 1) {
       let lakePosition = findLake[0].position;
-      let lakeRadius = Math.floor(findLake[0].size[0] / 1.5);
+      let lakeRadius = Math.floor(findLake[0].size[0]);
+      console.log(`Lake radius ${lakeRadius}`);
+      console.log(worldModel.data.plants.length);
+
       worldModel.data.plants = worldModel.data.plants.filter((p) => {
-        return getDistance(lakePosition, p.position) > lakeRadius;
+        let dist = getDistance(lakePosition, p.position);
+        console.log(dist);
+        return dist > lakeRadius;
       });
+      console.log(worldModel.data.plants.length);
+
     }
     saveWorld();
   }
@@ -372,11 +388,11 @@ io.on('connection', (socket) => {
           "birth": worldModel.gardenDay,
           "distance": 15 + Math.floor(Math.random() * 40) + Math.floor(Math.random() * 80),
           "angleToOrigine": 0.6472761753028762,
-          "color": `${LightenDarkenColor(m.leaves.leafModel.color,20)}`,
+          "color": `${LightenDarkenColor(m.petals.leafModel.color,20)}`,
           "shape": "circle",
           "size": {
-            "min": parseInt(Math.floor(m.leaves.leafModel.size.min/5)),
-            "max": Math.min(parseInt(Math.floor(m.leaves.leafModel.size.max/5)),9),
+            "min": parseInt(Math.floor(m.petals.leafModel.size.min/5)),
+            "max": Math.min(parseInt(Math.floor(m.petals.leafModel.size.max/5)),9),
             "growthPerDay": 1
           },
           "name": `${m.name}-${worldModel.gardenDay}*1`,
@@ -549,7 +565,7 @@ io.on('connection', (socket) => {
       });
       if(findLake.length === 1){
         let lakePosition = findLake[0].position;
-        let lakeRadius = Math.floor(findLake[0].size[0] / 1.4);
+        let lakeRadius = Math.floor(findLake[0].size[0]);
         newPlants = newPlants.filter((seed) => {
             return getDistance(lakePosition,seed.position) > lakeRadius;
         });
@@ -561,7 +577,7 @@ io.on('connection', (socket) => {
     if (newPlants.length > 0) {
       let seedsBefore = newPlants.length;
       worldModel.data.rocks.forEach((rock) => {
-        let radius = Math.floor(rock.size / 1.6) ;
+        let radius = Math.floor(rock.size) ;
         newPlants = newPlants.filter((seed) => {
           return getDistance(rock.position, seed.position) > radius;
         });
@@ -577,8 +593,8 @@ io.on('connection', (socket) => {
       worldModel.data.plants = [... worldModel.data.plants,...newPlants];
     }
     
-    let criticalDistance = 40;
-    let criticalAge = 12;
+    let criticalDistance = 60;
+    let criticalAge = 15;
 
     let youngPlants = worldModel.data.plants.filter((x)=>{
       return x.stage === 1 && (worldModel.gardenDay - x.birth <= criticalAge);
@@ -685,11 +701,8 @@ io.on('connection', (socket) => {
   }
 
   function getDistance(ptA, ptB) {
-    let w = Math.abs(ptA.x - ptB.x);
-    let h = Math.abs(ptA.y - ptB.y);
-    return Math.sqrt(Math.pow(w + h, 2));
+    return Math.sqrt(Math.pow(ptB.x - ptA.x, 2) + Math.pow(ptB.y - ptA.y, 2));
   }
-
 
   function getAngleAndDistance(pt) {
     return {
@@ -768,53 +781,75 @@ function manageGardens (floorZones){
    return gardenManagers;
 }
 
-function gardenFactory(zone){
-   this.name = zone.name;
-   this.circlesOfPlants = zone.circlesOfPlants;
-   this.workerOuterSize = zone.workerOuterSize;
-   this.workerInnerSize = zone.workerInnerSize;
-   this.position = {...zone.position};
-   this.radius = zone.size[0];
-   this.workers = [];
-   this.nrWorkers = zone.nrWorkers ?? Math.floor(Math.cbrt(this.zone.size[0]) + 0.5);
-   this.buildingInfos = {
-     width: this.workerOuterSize * this.nrWorkers,
-     height:this.workerOuterSize,
-     topLeft: {
-       x: this.position.x - Math.floor((this.workerOuterSize * this.nrWorkers) / 2),
-       y: this.position.y +  this.radius + 10
-     },
-     boxes : this.nrWorkers,
-     orientation : zone.orientation ?? toradians(90)
-   };
-   let data = {...this};
-   for (let i = 0; i < this.nrWorkers; i++){
-       let worker = new gardenWorker(data, i + 1,this.position);
-       this.workers.push(worker);
-   }
+function gardenFactory(zone) {
+  this.name = zone.name;
+  this.circlesOfPlants = zone.circlesOfPlants;
+  this.workerOuterSize = zone.workerOuterSize;
+  this.workerInnerSize = zone.workerInnerSize;
+  this.position = { ...zone.position };
+  this.radius = zone.size[0];
+  this.workers = [];
+  this.nrWorkers = zone.nrWorkers ?? Math.floor(Math.cbrt(this.zone.size[0]) + 0.5);
+  this.buildingInfos = {
+    width: this.workerOuterSize * this.nrWorkers,
+    height: this.workerOuterSize,
+    topLeft: {
+      x: this.position.x - Math.floor((this.workerOuterSize * this.nrWorkers) / 2),
+      y: this.position.y + this.radius + 10
+    },
+    boxes: this.nrWorkers,
+    orientation: zone.orientation ?? toradians(90)
+  };
+  let data = { ...this };
+  for (let i = 0; i < this.nrWorkers; i++) {
+    let workerPosition = {... this.buildingInfos.topLeft};
+    workerPosition.x += (this.workerOuterSize * i);
+    let worker = new gardenWorker(data, i + 1, workerPosition);
+    this.workers.push(worker);
+  }
 }
 
-function gardenWorker(data,index,pos){
-   this.outerSize = data.workerOuterSize;
-   this.innerSize = data.workerInnerSize;
-   this.rank = index;
-   this.autoGarden = data.name;
-   this.name = `Worker ${index}`;
-   this.refillPosition = {...pos};
-   this.refillPosition.y -= data.radius + this.outerSize / 2;
-   this.refillPosition.x -= ((this.outerSize * data.nrWorkers) / 2) + (this.outerSize * (index - 1)) - this.outerSize / 2;
-   this.refillPosition.x = Math.floor(this.refillPosition.x);
-   this.refillPosition.y = Math.floor(this.refillPosition.y);
-   this.currentPosition = {...this.refillPosition};
-   this.refillOrientation = toradians(270);
-   this.currentOrientation = this.refillOrientation;
-   this.speed = 50; // millisec per pixel
-   this.spots = [null,null,null,null,null]; // "pockets" to carry seeds
-   this.battery = {capacity : 200,current : 200, costPer100Pixels : 1, chargingTimePerUnit : 5000};
-   this.pixelsSpent = 0;
-   this.hungryActions = [{action : "find", what : "power",where : "auto-garden"},{action : "recharge", what : "me"}];
-   this.completionActions = [{action : "find", what : "seed"},{action : "bring", what : "seed"},{action : "plant", what : "seed"}];
-   this.idleActions = [{action : "find", what : "seed"},{action : "bring", what : "seed"},{action : "plant", what : "seed"}];
+function autoGardensManage(){
+  autoGardens.forEach((garden) => {
+    garden.workers.forEach((worker, index) => {
+        if((worker.action.status === "powering" && worker.battery.current === worker.battery.capacity) || worker.action.status === "idle" ){
+          worker.action.status = "active";
+          worker.action.missionType = "cleaning";
+          worker.action.objectiveType = "objectiveType";
+          worker.action.objective = "active";
+
+        }
+    });
+  });
+}
+
+function gardenWorker(data, index, pos) {
+  this.outerSize = data.workerOuterSize;
+  this.innerSize = data.workerInnerSize;
+  this.model = 'gardener';
+  this.rank = index;
+  this.autoGarden = data.name;
+  this.name = `Worker ${index}`;
+  this.refillPosition = { ...pos };
+  let multiplier = this.innerSize * 0.6;
+
+  this.refillPosition.y += multiplier + 2;
+  this.refillPosition.x += this.outerSize / 2;
+  this.refillPosition.x = Math.floor(this.refillPosition.x);
+  this.refillPosition.y = Math.floor(this.refillPosition.y); 
+  this.currentPosition = { ...this.refillPosition };
+  this.refillOrientation = toradians(270);
+  this.currentOrientation = this.refillOrientation;
+  this.speed = 50; // millisec per pixel
+  this.spots = [null, null, null, null, null]; // "pockets" to carry seeds
+  this.battery = { capacity: 200, current: 200, costPer100Pixels: 1, chargingTimePerUnit: 5000 };
+  this.pixelsSpent = 0;
+  this.action = {
+    status : "powering",
+    missionType : null,
+    objective : null,
+    objectiveType : null
+  }
 }
 
 function toradians(degrees) {

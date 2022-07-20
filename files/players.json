@@ -1,12 +1,12 @@
 {
   "Elrond": {
     "position": {
-      "x": -802,
-      "y": -340
+      "x": 430,
+      "y": -1058
     },
-    "rotation": 2.214285714285714,
+    "rotation": 5.711756735751013,
     "color": "#FF0000",
-    "birth": 2710,
+    "birth": 2877,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
@@ -14,12 +14,12 @@
   },
   "Boromir": {
     "position": {
-      "x": 0,
-      "y": 0
+      "x": -360,
+      "y": -661
     },
-    "rotation": 0,
+    "rotation": 4.854613878608163,
     "color": "#DDDD00",
-    "birth": 2708,
+    "birth": 2970,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
@@ -27,12 +27,12 @@
   },
   "Frodo": {
     "position": {
-      "x": 0,
-      "y": 0
+      "x": -19,
+      "y": 27
     },
-    "rotation": 2.428571428571428,
+    "rotation": 0.21428571428571427,
     "color": "#0000AD",
-    "birth": 78,
+    "birth": 2791,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
