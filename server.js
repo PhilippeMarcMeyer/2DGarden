@@ -11,14 +11,15 @@ const fs = require('fs');
 let users = [];
 let worldModel = null;
 let worldOnHold = false;
-let maxPlantDistance = 1200; 
+let worldLoading = false;
+let maxPlantDistance = 1600; 
 let autoGardens = [];
 let intervalAutoGardens = null;
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 5 * 60 * 1000; // m minutes
+const dayLengthConnection = 15 * 60 * 1000; // m minutes
 const autoGardensTiming = 5000;
-let maxPlants = 99;
+let maxPlants = 69;
 let dayLength = dayLengthConnection;
 let intervalDays;
 let serverLoaded = false;
@@ -28,6 +29,7 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(express.static(__dirname));
 
+worldLoading = true;
 fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
   if (err) {
     console.log("World model file reading failed:", err);
@@ -39,7 +41,7 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
       return;
     }
     worldModel = JSON.parse(rawdata);
-
+    worldLoading = false;
     if (rawplayers === null || rawplayers === '') {
       usersMemory = {};
     } else {
@@ -50,7 +52,7 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
 
    // tidyGarden();
 
-    autoGardens = manageGardens(worldModel.data.floor.shapes);
+    //autoGardens = manageGardens(worldModel.data.floor.shapes);
 
     intervalPlayersSaving = setInterval(function(){
       savePlayers();
@@ -84,9 +86,12 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
 });
 
 function saveWorld() {
+  worldLoading = true;
   fs.writeFile("./files/world1.json", JSON.stringify(worldModel, null, 2), err => {
     if (err) {
       console.log("Error writing world file:", err);
+    }else{
+      worldLoading = false;
     }
   });
 }
@@ -155,7 +160,7 @@ io.on('connection', (socket) => {
     console.log('player-identity')
     let data = { playerId: idconnected, what: "player-identity", name: p.name, color: p.color, position: p.position, rotation: p.rotation ,generation : p.generation ,dotsColor : p.dotsColor,dotsNumber : p.dotsNumber};
     p.socket.emit('info',data);
-    p.socket.emit('info', { playerId: idconnected, data: autoGardens, what: "auto-gardens"});
+   // p.socket.emit('info', { playerId: idconnected, data: autoGardens, what: "auto-gardens"});
     if(otherPlayers.length > 0){
       data.what = "player-connected";
       // Tell other players, there's a new kid in town !
@@ -223,11 +228,28 @@ io.on('connection', (socket) => {
             let plantPosInfos = getAngleAndDistance(p.position);
             p.distance = plantPosInfos.distance;
             p.angleToOrigine = plantPosInfos.angleToOrigine;
+ 
+          if(worldOnHold || worldLoading){
+
+            } else {
+              worldLoading = true;
+              fs.writeFile("./files/world1.json", JSON.stringify(worldModel, null, 2), err => {
+                if (err) {
+                  console.log("Error writing world file:", err);
+                }else{
+                  worldLoading = false;
+                  users
+                  .forEach((u) => {
+                    u.socket.emit('info', { what: "plant-moved" });
+                  })
+                }
+              });
+            }
           }
         });
       }
     });
-  })
+})
 
   server.listen(port, () => {
     console.log(`2DGarden listening on port ${port}`)
@@ -419,6 +441,7 @@ io.on('connection', (socket) => {
   }
 
   function checkPlants(){
+    if(worldLoading) return;
     // removing dead plants :-(
     console.log("Beginning Checking plants");
     console.log("plants before : " + worldModel.data.plants.length);

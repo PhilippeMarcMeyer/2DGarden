@@ -8,11 +8,10 @@ let keys = {
 	right: false,
 	shift: false
 }
-let offScreen = null;
-let isOffScreen = false;
-let framerate = 50;
-let emiteveryNframe = 12;
+let framerate = 30;
+let emiteveryNframe = 8;
 let autoGardens = null;
+let isAutoGardensSet = false;
 const camOverPlantLimit = 32;
 let playerColors = '#4e3d28,#2f1b0c,#303030,#2f4f4f,#5a5e6b,#1d4851,#132e18,#2c0020,#172b3b'.split(',');
 let otherPlayersIndex = 0;
@@ -34,27 +33,35 @@ let plantsBag = [];
 function mouseClicked() {
 	if (keys.shift && gameLoaded) {
 		let pointClicked = {
-			x: mouseX - Math.floor(width / 2),
-			y: Math.floor(height / 2) - mouseY
+			x: (mouseX - Math.floor(width / 2)) + worldModel.currentCenter.x ,
+			y: (mouseY - Math.floor(height / 2)) + worldModel.currentCenter.y
 		};
 		//pointClicked = realPositionGet(pointClicked);
 		console.log(pointClicked);
 
-		let plantsClicked = worldModel.data.plants.filter((p) => {
-			return getDistance(p.position, pointClicked) < 30;
+		let plants = things
+		.filter((t) => {
+			return t instanceof Plant;
+		})
+
+		let plantsClicked = plants.filter((p) => {
+			return getDistance(p.position, pointClicked) < 20;
 		});
 
 		if (plantsClicked.length > 0) {
-			plantsClicked.forEach((p) => {
-				plantsBag.push({ name: p.name });
-			});
+			console.log(`plant added to bag : ${plantsClicked[0].name} at ${plantsClicked[0].position.x},${plantsClicked[0].position.y}`);
+
+				if(plantsBag.indexOf(plantsClicked[0].name) === -1){
+					plantsBag.push(plantsClicked[0].name);
+				}
+		
 		} else if (plantsBag.length > 0) {
 			let plantToMove = plantsBag.shift();
-			console.log(plantToMove);
+			console.log(`moving plant : ${plantToMove} at ${pointClicked.x},${pointClicked.y}`);
 			message({
 				what: "plant-moved",
 				position: pointClicked,
-				target: plantToMove.name
+				target: plantToMove
 			})
 		}
 	}
@@ -75,7 +82,6 @@ function setup() {
 		setKeyDown();
 		setKeyUp();
 		floor = new Floor(worldModel);
-		offscreen = createGraphics(worldModel.radius,worldModel.radius);
 		gameLoaded = true;
 		socket.on('news', function (msg) {
 			console.log(msg)
@@ -91,16 +97,50 @@ function serverSendPlayerPosition() {
 	}
 }
 
+function setAutoGardens(){
+	autoGardens.forEach((garden) => {
+		garden.collider = {};
+		garden.collider.shape = 'poly';
+		let w = garden.buildingInfos.width;
+		let h = garden.buildingInfos.height;
+		let topLeft = { ...garden.buildingInfos.topLeft };
+		let topRight = {
+			x: topLeft.x + w,
+			y: topLeft.y
+		};
+		let bottomLeft = {
+			x: topLeft.x,
+			y: topLeft.y + h
+		};
+		let bottomRight = {
+			x: topLeft.x + w,
+			y: topLeft.y + h
+		};
+		garden.collider.data = [topLeft, topRight, bottomRight, bottomLeft, topLeft];
+		garden.workers.forEach((w) => {
+			let models = worldModel.data.robotModels.filter((x) => {
+				return x.name === w.model;
+			});
+			if (models.length === 1) {
+				w.matrix = [...models[0].matrix];
+			} else {
+				w.matrix = null;
+			}
+		})
+	});
+	isAutoGardensSet = true;
+}
+
 function draw() {
 	if (!gameLoaded) return;
-	if (things.length > 99) {
-		framerate = 25;
-	} else if (things.length > 70) {
-		framerate = 30;
-	} else if (things.length > 40) {
-		framerate = 40;
+	if (things.length > 75) {
+		framerate = 10;
+	} else if (things.length > 65) {
+		framerate = 15;
+	} else if (things.length > 45) {
+		framerate = 20;
 	} else {
-		framerate = 50;
+		framerate = 25;
 	}
 	if (frameCount % (framerate * 3) === 0) {
 		let now = new Date().getTime();
@@ -120,6 +160,8 @@ function draw() {
 	clear();
 	floor.draw();
 	if (_camera) {
+		_camera.rotStep = framerate / 100;
+		_camera.walkStep = 250 / framerate;
 		_camera.setDirection();
 		if ((frameCount % emiteveryNframe) === 0) {
 			serverSendPlayerPosition();
@@ -134,7 +176,7 @@ function draw() {
 		});
 		if (_camera) _camera.draw();
 
-		if (autoGardens) drawAutoGardens();
+		if (isAutoGardensSet) drawAutoGardens();
 
 	things
 		.filter((t) => {
@@ -143,15 +185,6 @@ function draw() {
 		.forEach(function (thing) {
 			thing.draw();
 		});
-/* 
-if(!isOffScreen){
-	offscreen.image(canvas,0,0);
-	isOffScreen = true;
-} */
-
-
-		
-
 
 	drawInformations();
 }
@@ -292,37 +325,7 @@ socket.on("info", (msg) => {
 		document.cookie = "garden=" + JSON.stringify(cookieInfos);
 	} else if (msg.what === 'auto-gardens') {
 		autoGardens = [...msg.data];
-
-		autoGardens.forEach((garden) => {
-			garden.collider = {};
-			garden.collider.shape = 'poly';
-			let w = garden.buildingInfos.width;
-			let h = garden.buildingInfos.height;
-			let topLeft = { ...garden.buildingInfos.topLeft };
-			let topRight = {
-				x: topLeft.x + w,
-				y: topLeft.y
-			};
-			let bottomLeft = {
-				x: topLeft.x,
-				y: topLeft.y + h
-			};
-			let bottomRight = {
-				x: topLeft.x + w,
-				y: topLeft.y + h
-			};
-			garden.collider.data = [topLeft, topRight, bottomRight, bottomLeft, topLeft];
-			garden.workers.forEach((w) => {
-				let models = worldModel.data.robotModels.filter((x) => {
-					return x.name === w.model;
-				});
-				if (models.length === 1) {
-					w.matrix = [...models[0].matrix];
-				} else {
-					w.matrix = null;
-				}
-			})
-		});
+		isAutoGardensSet = false;
 	} else if (msg.what === 'player-disconnected') {
 		_otherPlayers = _otherPlayers.filter((u) => {
 			return u.playerId !== msg.playerId;
@@ -340,6 +343,8 @@ socket.on("info", (msg) => {
 		}
 	} else if (msg.what === 'world-day') {
 		setWorldDay(msg.day)
+	}else if(msg.what === 'plant-moved'){
+		updatePlants();
 	}
 });
 
@@ -613,12 +618,14 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 	this.checkCollisions = function () {
 		let self = this;
 		let stopped = false;
-		if (autoGardens) {
+		if (autoGardens && isAutoGardensSet) {
 			autoGardens.forEach((garden) => {
-				if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, garden.collider.data)) {
-					self.restorePosition();
-					self.isMoving = false;
-					stopped = true;
+				if (garden.collider) {
+					if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, garden.collider.data)) {
+						self.restorePosition();
+						self.isMoving = false;
+						stopped = true;
+					}
 				}
 			});
 		}
@@ -649,19 +656,18 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 		}
 
 		if (stopped) return;
-
-		if (_otherPlayers.length > 0) {
+/* 
+		if (_otherPlayers.length > 0 && !keys.shift) {
 			for (let i = 0; i < things._otherPlayers; i++) {
 				if (stopped) break;
 				let u = _otherPlayers[i];
-				if (getDistance({ x: 0, y: 0 }, u.position) < 100) return;
 				if (collideCircleCircle(self.position.x, self.position.y, self.bodyRadius * 2, u.position.x, u.position.y, u.bodyRadius * 2)) {
 					self.restorePosition();
 					self.isMoving = false;
 					stopped = true;
 				}
 			};
-		}
+		} */
 	}
 
 	this.drawCross = function () {
@@ -985,6 +991,7 @@ function Plant(data) {
 	this.protectRadius = null;
 	this.stage = data.stage ?? 1;
 	this.isPrime = false;
+	this.position = data.position ?? getPosition(this.distance, this.angleToOrigine)
 	this.positionAbsolute = data.position ?? null;
 	this.collider = {
 		shape: "circle",
@@ -1026,11 +1033,11 @@ function Plant(data) {
 
 		// the real position according to origin point
 		if(!self.positionAbsolute){
-			self.positionAbsolute = {};
-			let cos = Math.cos(self.angleToOrigine);
+			self.positionAbsolute = {...self.position};
+/* 			let cos = Math.cos(self.angleToOrigine);
 			let sin = -Math.sin(self.angleToOrigine);
 			self.positionAbsolute.x = Math.floor(cos * self.distance);
-			self.positionAbsolute.y = Math.floor(sin * self.distance);
+			self.positionAbsolute.y = Math.floor(sin * self.distance); */
 		}
 		
 		/*
@@ -1501,6 +1508,7 @@ function Plant(data) {
 	}
 
 	function getDistance(ptA, ptB) {
+		if(!(ptA && ptA.x && ptA.y && ptB && ptB.x && ptB.y )) return -1;
 		return Math.sqrt(Math.pow(ptB.x - ptA.x, 2) + Math.pow(ptB.y - ptA.y, 2));
 	  }
 	
@@ -1731,5 +1739,13 @@ function Plant(data) {
 			};
 			xhr.send();
 		});
-
 	}
+
+	function getPosition(distance, angleToOrigine) {
+		let cos = Math.cos(angleToOrigine);
+		let sin = -Math.sin(angleToOrigine);
+		return {
+		  x: Math.floor(cos * distance),
+		  y: Math.floor(sin * distance)
+		}
+	  }

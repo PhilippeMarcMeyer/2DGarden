@@ -1,12 +1,12 @@
 {
   "Elrond": {
     "position": {
-      "x": 430,
-      "y": -1058
+      "x": 346,
+      "y": 379
     },
-    "rotation": 5.711756735751013,
+    "rotation": 5.983185307179587,
     "color": "#FF0000",
-    "birth": 2877,
+    "birth": 3069,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
@@ -14,12 +14,12 @@
   },
   "Boromir": {
     "position": {
-      "x": -360,
-      "y": -661
+      "x": -183,
+      "y": -471
     },
-    "rotation": 4.854613878608163,
+    "rotation": 2.400000000000001,
     "color": "#DDDD00",
-    "birth": 2970,
+    "birth": 3052,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
@@ -27,12 +27,12 @@
   },
   "Frodo": {
     "position": {
-      "x": -19,
-      "y": 27
+      "x": 0,
+      "y": 0
     },
-    "rotation": 0.21428571428571427,
+    "rotation": 0,
     "color": "#0000AD",
-    "birth": 2791,
+    "birth": 3032,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
@@ -40,12 +40,12 @@
   },
   "Sam": {
     "position": {
-      "x": -599,
-      "y": -252
+      "x": -158,
+      "y": -967
     },
-    "rotation": 0.570796326794897,
+    "rotation": 3.714285714285713,
     "color": "#FF4500",
-    "birth": 361,
+    "birth": 3043,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
