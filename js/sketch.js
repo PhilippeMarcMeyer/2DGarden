@@ -1051,6 +1051,7 @@ function Plant(data) {
 				});
 			}
 		*/
+		// 4 leaves clovers provide a protection radius to ladybugs (will provide !)
 		let spikesRadius = Math.min(self.age * self.petals.leafModel.size.growthPerDay + self.petals.leafModel.size.min, self.petals.leafModel.size.max);
 
 		if (self.protectRadius !== null) {
@@ -1070,7 +1071,9 @@ function Plant(data) {
 				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, -60)
 			} else if (self.geometry.crown.shape === "double-bezier") {
 				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 40)
-			} else {
+			} else if (self.geometry.crown.shape === "polygon") {
+				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, -80)
+			}else {
 				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 100)
 			}
 			self.geometry.crown.spikes = [];
@@ -1125,12 +1128,38 @@ function Plant(data) {
 					let pt = { x: 0, y: -1 };
 					let alea = (Math.random() * aleaMax) - aleaMax;
 					pt = simpleRotate(pt, self.innerRotation + self.petals.leafModel.angles[i]);
-
 					pt.x = Math.floor(centralPoint.x + (pt.x * spikeRadius) + alea);
 					pt.y = Math.floor(centralPoint.y + (pt.y * spikeRadius) + alea);
 					self.geometry.crown.spikes.push(pt);
 				}
-			} else {
+			} else if (self.geometry.crown.shape === "polygon") {
+				let centralPoint = { ...self.positionAbsolute };
+				self.geometry.heart.center = { ...self.positionAbsolute };;
+				self.collider.center = { ...self.positionAbsolute };
+				const spikeRadius = self.geometry.crown.radius;
+
+				self.collider.dim2 = spikeRadius;
+				let aleaMax = Math.floor(spikeRadius / 8);
+
+				self.geometry.crown.colors = [];
+
+				let previousColor = self.geometry.crown.color;
+				for (let i = 0; i < self.geometry.crown.number; i++) {
+					let matrix = [...self.petals.leafModel.matrix];
+					self.geometry.crown.spikes.push(matrix);
+					previousColor = LightenDarkenColor(previousColor,-25)
+					self.geometry.crown.colors.push(previousColor);
+				}
+				let ratio = 1;
+				for (let index = 0; index < self.geometry.crown.spikes.length; index++) {
+					ratio -= (index/9);
+					for (let ptNum = 0; ptNum < self.geometry.crown.spikes[index].length; ptNum++) {
+						self.geometry.crown.spikes[index][ptNum] = simpleRotate(self.geometry.crown.spikes[index][ptNum], self.innerRotation + + self.petals.leafModel.angles[index]);
+						self.geometry.crown.spikes[index][ptNum].x = Math.floor(centralPoint.x + (self.geometry.crown.spikes[index][ptNum].x * spikeRadius * ratio));
+						self.geometry.crown.spikes[index][ptNum].y = Math.floor(centralPoint.y + (self.geometry.crown.spikes[index][ptNum].y * spikeRadius * ratio));
+					};
+				};
+			}else {
 				throw 'Not implemented plant crown shape : ' + self.geometry.crown.shape;
 			}
 		}
@@ -1328,22 +1357,53 @@ function Plant(data) {
 						context.restore();
 
 					});
-					if (self.geometry.heart.shape === 'circle') {
-						context.save();
-						context.strokeStyle = self.geometry.heart.color;
-						context.fillStyle = self.geometry.heart.color;
+
+				}else if(self.geometry.crown.shape === "polygon"){
+					let color = self.geometry.crown.color;
+					let borderColor = self.geometry.crown.borderColor;
+
+					context.save();
+					context.globalAlpha = 0.6;
+					context.strokeStyle = borderColor;
+					context.fillStyle = color;
+					context.beginPath();
+
+					self.geometry.crown.spikes.forEach((petal,index) => {
+						context.fillStyle = self.geometry.crown.colors[index];
 						context.beginPath();
-						let centralPt = drawingPositionGet({ ...self.geometry.heart.center });
-						circle(centralPt.x, centralPt.y, self.geometry.heart.diameter);
-						if (debugMode) {text(self.name, centralPt.x + 20, centralPt.y);text(`${self.positionAbsolute.x},${self.positionAbsolute.y}`, centralPt.x, centralPt.y + 20);};
+
+						let petalCopy = [...petal];
+						let petalPoints = [];
+						petalCopy.forEach((pt,index) => {
+							petalPoints[index] = drawingPositionGet(pt);
+						});
+						context.moveTo(petalPoints[0].x, petalPoints[0].y);
+						petalPoints.forEach((pt) => {
+							context.lineTo(pt.x, pt.y);
+						});
 						context.closePath();
 						context.stroke();
 						context.fill();
-						context.restore();
-					}
+					});
+
+
+					context.restore();
+				}
+				if (self.geometry.heart.shape === 'circle') {
+					context.save();
+					context.strokeStyle = self.geometry.heart.color;
+					context.fillStyle = self.geometry.heart.color;
+					context.beginPath();
+					let centralPt = drawingPositionGet({ ...self.geometry.heart.center });
+					circle(centralPt.x, centralPt.y, self.geometry.heart.diameter);
+					if (debugMode) {text(self.name, centralPt.x + 20, centralPt.y);text(`${self.positionAbsolute.x},${self.positionAbsolute.y}`, centralPt.x, centralPt.y + 20);};
+					context.closePath();
+					context.stroke();
+					context.fill();
+					context.restore();
 				}
 			}
-			if (self.animation && self.animation.length > 0 && !debugMode) {
+/* 			if (self.animation && self.animation.length > 0 && !debugMode) {
 				context.save();
 				context.beginPath();
 				context.strokeStyle = "#000";
@@ -1355,7 +1415,7 @@ function Plant(data) {
 				context.stroke();
 				context.fill();
 				context.restore();
-			}
+			} */
 		}
 	}
 }

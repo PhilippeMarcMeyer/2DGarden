@@ -19,7 +19,7 @@ let intervalAutoGardens = null;
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
 const dayLengthConnection = 15 * 60 * 1000; // m minutes
 const autoGardensTiming = 5000;
-let maxPlants = 69;
+let maxPlants = 89;
 let dayLength = dayLengthConnection;
 let intervalDays;
 let serverLoaded = false;
