@@ -17,7 +17,7 @@ let autoGardens = [];
 let intervalAutoGardens = null;
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 15 * 60 * 1000; // m minutes
+const dayLengthConnection = 6 * 60 * 1000; // m minutes
 const autoGardensTiming = 5000;
 let maxPlants = 89;
 let dayLength = dayLengthConnection;
@@ -49,6 +49,7 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
     }
 
     serverLoaded = true;
+    console.log( `World model loaded at ${new Date().toISOString()}`);
 
    // tidyGarden();
 
@@ -443,7 +444,8 @@ io.on('connection', (socket) => {
   function checkPlants(){
     if(worldLoading) return;
     // removing dead plants :-(
-    console.log("Beginning Checking plants");
+    console.log( `Beginning Checking plants at ${new Date().toISOString()}`);
+
     console.log("plants before : " + worldModel.data.plants.length);
 
     let currentPopulation = worldModel.data.plants.length;
@@ -659,7 +661,6 @@ io.on('connection', (socket) => {
       return x.distance < 0.9 * worldModel.radius;
     });
 
-    console.log("stopping Checking plants");
     let beforeSaveSpecies = worldModel.data.plants.length;
 
     console.log(`plants after : ${beforeSaveSpecies}`);
@@ -669,6 +670,7 @@ io.on('connection', (socket) => {
     if(savedSpecies > 0){
       console.log(`Saved species : ${savedSpecies}`);
     }
+    console.log( `Stop Checking plants at ${new Date().toISOString()}`);
   }
 
   function checkGenerations(){
