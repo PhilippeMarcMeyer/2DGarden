@@ -1496,22 +1496,6 @@ function Plant(data) {
 				}
 
 			}
-
-
-
-		if (self.animation && self.animation.length > 0 && !debugMode) {
-				context.save();
-				context.beginPath();
-				context.strokeStyle = "#000";
-				context.fillStyle = "#000";
-
-				let centralPt = drawingPositionGet(self.positionAbsolute);
-				text(self.name, centralPt.x + 50, centralPt.y - 50);
-				context.closePath();
-				context.stroke();
-				context.fill();
-				context.restore();
-			} 
 		}
 	}
 }
