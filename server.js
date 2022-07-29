@@ -14,12 +14,11 @@ let worldOnHold = false;
 let worldLoading = false;
 let maxPlantDistance = 1600; 
 let autoGardens = [];
-let intervalAutoGardens = null;
+let limitingCirles = [];
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
 const dayLengthConnection = 6 * 60 * 1000; // m minutes
 const autoGardensTiming = 5000;
-let maxPlants = 89;
 let dayLength = dayLengthConnection;
 let intervalDays;
 let serverLoaded = false;
@@ -47,6 +46,16 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
     } else {
       usersMemory = JSON.parse(rawplayers);
     }
+
+    limitingCirles = worldModel.data.floor.shapes.filter((x) => {
+      return x.type && x.type === "auto-limit";
+    });
+
+    limitingCirles.forEach((circle) => {
+      if(!circle.position) {
+        circle.position = getPosition(circle.distance ,circle.angleToOrigine);
+      }
+     });
 
     serverLoaded = true;
     console.log( `World model loaded at ${new Date().toISOString()}`);
@@ -160,7 +169,7 @@ io.on('connection', (socket) => {
     // tell client's new player about it's player identity and show it
     console.log('player-identity')
     let data = { playerId: idconnected, what: "player-identity", name: p.name, color: p.color, position: p.position, rotation: p.rotation ,generation : p.generation ,dotsColor : p.dotsColor,dotsNumber : p.dotsNumber};
-    p.socket.emit('info',data);
+    socket.emit('info',data);
    // p.socket.emit('info', { playerId: idconnected, data: autoGardens, what: "auto-gardens"});
     if(otherPlayers.length > 0){
       data.what = "player-connected";
@@ -171,8 +180,9 @@ io.on('connection', (socket) => {
       // Tell the new player, other players are already in the game
       otherPlayers.forEach((u) => {
         data = { playerId: u.id, what: "player-connected", name: u.name, color: u.color, position: u.position, rotation: u.rotation ,generation : u.generation ,dotsColor : u.dotsColor,dotsNumber : u.dotsNumber};
-        newPlayer[0].socket.emit('info',data);
-      });
+        socket.emit('info',data);
+        console.log();
+      }); 
     }
   }
 
@@ -448,18 +458,49 @@ io.on('connection', (socket) => {
 
     console.log("plants before : " + worldModel.data.plants.length);
 
-    let currentPopulation = worldModel.data.plants.length;
-    let isPopulationLow =  currentPopulation <= 40;
-    let isPopulationHigh = currentPopulation > maxPlants;
+   // First limits ; the number of plants is limited inside every cirlcle
+
+    limitingCirles.forEach((circle) => {
+      circle.currentNr = 0;
+     });
 
     worldModel.data.plants.forEach((p) => {
-      if(p.distance === maxPlantDistance){
+      for(let i = 0; i < limitingCirles.length;i++){
+        p.parentCircle = null;
+        if(getDistance(limitingCirles[i].position,p.position < limitingCirles[i].size[0])){
+          p.parentCircle = limitingCirles[i].name;
+          limitingCirles[i].currentNr ++;
+          break;
+        }
+      }
+    });
+
+    worldModel.data.plants.forEach((p) => {
+      if(p.parentCircle === null && p.distance >= maxPlantDistance){
         p.distance = Math.floor(Math.random() * maxPlantDistance);
         p.position = getPosition(p.distance ,p.angleToOrigine);
       }
     });
 
-    // too many : get rid of the seeds
+    let maxPlants = 25; // Plants outside circles
+
+    limitingCirles.forEach((circle) => {
+        maxPlants += circle.maxPlants;
+        if(circle.currentNr > circle.maxPlants){
+          worldModel.data.plants =  worldModel.data.plants.filter((p)=>{
+            let test = Math.random();
+            return (test < 0.9 && p.parentCircle === circle.name) || x.parentCircle !== circle.name;
+          });
+        }
+     });
+
+     console.log(`plants after circles check : ${worldModel.data.plants.length} / ${maxPlants} `);
+
+    // seconde limit : population as a whole
+     let currentPopulation = worldModel.data.plants.length;
+     let isPopulationLow =  currentPopulation <= 40;
+     let isPopulationHigh = currentPopulation > maxPlants;
+    // too many : get rid of the seeds but on species with high population
     if(isPopulationHigh){
       let plantsSpeciesStatus = worldModel.data.models.map((x)=>{
         return {model:x.name,population:0};
@@ -489,7 +530,9 @@ io.on('connection', (socket) => {
         });
       }
     }
-  
+
+    console.log(`plants after general population check : ${worldModel.data.plants.length} / ${maxPlants} `);
+
     let newPlants = [];
      worldModel.data.plants.forEach((x)=>{
       if(!x.position){
@@ -505,7 +548,6 @@ io.on('connection', (socket) => {
        }
        let age = worldModel.gardenDay - x.birth + 1;
        console.log(x.name + " age : " +   age );
-
 
        if(x.stage === 0){ // seed
         age += model.evolution.seedCountDown;
@@ -530,13 +572,15 @@ io.on('connection', (socket) => {
                   newPt.x += x.position.x;
                   newPt.y += x.position.y;
                   let seedPosInfos = getAngleAndDistance(newPt);
+                  /*
                   if(seedPosInfos.distance > maxPlantDistance){
                     seedPosInfos.distance = Math.floor(Math.random() * maxPlantDistance);
                     newPt = getPosition(seedPosInfos.distance ,seedPosInfos.angleToOrigine);
                   }
+                  */
                   newPlants.push({
                     birth: worldModel.gardenDay,
-                    distance: Math.min(seedPosInfos.distance,maxPlantDistance),
+                    distance: seedPosInfos.distance,
                     angleToOrigine: seedPosInfos.angleToOrigine,
                     position : newPt,
                     color: x.color,
@@ -568,16 +612,6 @@ io.on('connection', (socket) => {
         return x.stage < 4;
       });
     }
-
-    /*
-    worldModel.data.rocks.forEach((rock) => {
-      console.log(`Rock ${rock.name} has a size of ${rock.size}`)
-      let radius = (rock.size/2)+20;
-      worldModel.data.plants = worldModel.data.plants.filter((plant) => {
-        return getDistance(rock.position, plant.position) > radius;
-      });
-    });
-    */
 
     let afterNr = worldModel.data.plants.length;
 

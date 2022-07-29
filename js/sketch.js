@@ -185,7 +185,6 @@ function draw() {
 		.forEach(function (thing) {
 			thing.draw();
 		});
-
 	drawInformations();
 }
 
@@ -377,13 +376,9 @@ function Floor(worldModel) {
 					// the real position according to origin point
 					element.center = { x: Math.floor(cos * s.distance), y: Math.floor(sin * s.distance) };
 					element.shape = s.shape;
-					element.color0 = s.color === "baseColor" ? worldModel.baseColor : s.color;
-					let colorAmount = s.way === "up" ? 10 : -10;
-					element.color1 = LightenDarkenColor(element.color0, colorAmount);
-					element.color2 = LightenDarkenColor(element.color1, colorAmount);
+					element.color = s.color === "baseColor" ? worldModel.baseColor : s.color;
 					element.opacity = s.opacity;
-					element.diameter1 = s.size[0];
-					element.diameter2 = Math.floor(element.diameter1 / 2);
+					element.diameter = s.size[0];
 					self.elements.push(element);
 				} else if (s.shape === "polygon") {
 					let cos = Math.cos(s.angleToOrigine);
@@ -434,19 +429,10 @@ function Floor(worldModel) {
 				context.save();
 				context.beginPath();
 				let centralPt = drawingPositionGet({ ...elem.center });
-				context.fillStyle = elem.color1;
-				context.strokeStyle = elem.color1;
+				context.fillStyle = elem.color;
+				context.strokeStyle = elem.color;
 				context.globalAlpha = elem.opacity;
-				context.arc(centralPt.x, centralPt.y, elem.diameter1, 0, 2 * Math.PI);
-				context.closePath();
-				context.fill();
-				context.stroke();
-
-				context.beginPath();
-				context.fillStyle = elem.color2;
-				context.strokeStyle = elem.color2;
-				context.globalAlpha = elem.opacity;
-				context.arc(centralPt.x, centralPt.y, elem.diameter2, 0, 2 * Math.PI);
+				context.arc(centralPt.x, centralPt.y, elem.diameter, 0, 2 * Math.PI);
 				context.closePath();
 				context.fill();
 				context.stroke();
@@ -609,7 +595,23 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 		self.drawCamera();
 		if (_otherPlayers.length > 0) {
 			_otherPlayers.forEach(function (u) {
-				_camera.drawCamera.apply(u);
+				//_camera.drawCamera.apply(u);
+
+				let otherPlayerData = {
+					position: u.position,
+					rotation: u.rotation,
+					dotsNumber: u.dotsNumber,
+					opacity: u.opacity,
+					isMoving: u.isMoving,
+					bodyRadius: u.bodyRadius,
+					bodyInMotionDiameter2: u.bodyInMotionDiameter2,
+					bodyInMotionDiameter1: u.bodyInMotionDiameter1,
+					dotsColor: u.dotsColor,
+					generation: u.generation,
+					name: u.name,
+					color : u.color
+				};
+				drawPlayer(otherPlayerData);
 			});
 		}
 		//self.drawScanner();
@@ -656,9 +658,9 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 		}
 
 		if (stopped) return;
-/* 
+
 		if (_otherPlayers.length > 0 && !keys.shift) {
-			for (let i = 0; i < things._otherPlayers; i++) {
+			for (let i = 0; i < _otherPlayers; i++) {
 				if (stopped) break;
 				let u = _otherPlayers[i];
 				if (collideCircleCircle(self.position.x, self.position.y, self.bodyRadius * 2, u.position.x, u.position.y, u.bodyRadius * 2)) {
@@ -667,7 +669,7 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 					stopped = true;
 				}
 			};
-		} */
+		} 
 	}
 
 	this.drawCross = function () {
@@ -712,123 +714,26 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 
 	this.drawCamera = function () {
 		let self = this;
+
+		let playerData = {
+			position : self.position,
+			rotation : self.rotation,
+			dotsNumber : self.dotsNumber,
+			opacity : self.opacity,
+			isMoving : self.isMoving,
+			bodyRadius : self.bodyRadius,
+			bodyInMotionDiameter2 : self.bodyInMotionDiameter2,
+			bodyInMotionDiameter1 : self.bodyInMotionDiameter1,
+			dotsColor : self.dotsColor,
+			generation : self.generation,
+			name : self.name,
+			color : self.color
+		};
+
 		if (worldModel && worldModel.currentCenter) worldModel.currentCenter = { ...self.position };
 
-		let drawPos = drawingPositionGet(self.position);
-		let camCos = Math.cos(self.rotation + k90degres);
-		let camSin = -Math.sin(self.rotation + k90degres);
-		let camCos2 = Math.cos(self.rotation);
-		let camSin2 = -Math.sin(self.rotation);
+		drawPlayer(playerData);
 
-		let dotsPositions = [];
-
-		if (self.dotsNumber === 2) {
-			dotsPositions = [
-				{ x: camCos * -9, y: camSin * -9 },
-				{ x: camCos * 9, y: camSin * 9 }
-			];
-		} else if (self.dotsNumber === 3) {
-			dotsPositions = [
-				{ x: camCos * -9, y: camSin * -9 },
-				{ x: camCos * 9, y: camSin * 9 },
-				{ x: camCos2 * -10, y: camSin2 * -10 }
-			];
-		} else if (self.dotsNumber === 4) {
-			dotsPositions = [
-				{ x: camCos * -9, y: camSin * -9 },
-				{ x: camCos * 9, y: camSin * 9 },
-				{ x: camCos * -9, y: camSin * 9 },
-				{ x: camCos * -9, y: camSin * 9 }
-			];
-		}
-
-		camCos = Math.cos(self.rotation);
-		camSin = -Math.sin(self.rotation);
-
-		context.save();
-
-		context.globalAlpha = self.opacity;
-
-		context.beginPath();
-		context.strokeStyle = "black";
-		context.fillStyle = self.color;
-
-		context.beginPath();
-		if (self.isMoving) {
-			if (frameCount % 4 === 0) {
-				context.ellipse(drawPos.x, drawPos.y, self.bodyRadius, self.bodyInMotionDiameter2, self.rotation * -1, 0, 2 * Math.PI);
-			} else {
-				context.ellipse(drawPos.x, drawPos.y, self.bodyRadius, self.bodyInMotionDiameter1, self.rotation * -1, 0, 2 * Math.PI);
-			}
-		} else {
-			context.ellipse(drawPos.x, drawPos.y, self.bodyRadius, self.bodyRadius * 0.9, self.rotation * -1, 0, 2 * Math.PI);
-		}
-
-		context.closePath();
-		context.stroke();
-		context.fill();
-		//self.dotsNumber
-		context.beginPath();
-		context.strokeStyle = self.dotsColor;
-		context.fillStyle = self.dotsColor;
-
-		dotsPositions.forEach((d) => {
-			circle(drawPos.x + d.x, drawPos.y + d.y, 6);
-		});
-		context.closePath();
-		context.stroke();
-		context.fill();
-
-		let completeName = self.generation > 1 ? self.name + " " + self.generation : self.name;
-		text(completeName, drawPos.x + 30, drawPos.y);
-
-		// right Eye
-		let eyeCos = Math.cos(self.rotation - 0.4);
-		let eyeSin = -Math.sin(self.rotation - 0.4);
-		let vectorEye = { x: eyeCos * 30, y: eyeSin * 30 };
-		let pupilCos = Math.cos(self.rotation - 0.3);
-		let pupilSin = -Math.sin(self.rotation - 0.3);
-		let vectorPupil = { x: pupilCos * 30, y: pupilSin * 30 };
-
-		context.fillStyle = "white";
-		context.beginPath();
-		context.arc(drawPos.x + (vectorEye.x * 0.5), drawPos.y + (vectorEye.y * 0.5), (self.bodyRadius / 4), 0, 2 * Math.PI, false);
-		context.closePath();
-		context.stroke();
-		context.fill();
-
-		context.fillStyle = "black";
-		context.beginPath();
-		context.arc(drawPos.x + (vectorPupil.x * 0.6), drawPos.y + (vectorPupil.y * 0.6), (self.bodyRadius / 8), 0, 2 * Math.PI, false);
-		context.closePath();
-		context.stroke();
-		context.fill();
-
-		//strokeWeight(10);
-		// left Eye
-		eyeCos = Math.cos(self.rotation + 0.4);
-		eyeSin = -Math.sin(self.rotation + 0.4);
-		vectorEye = { x: eyeCos * 30, y: eyeSin * 30 };
-		pupilCos = Math.cos(self.rotation + 0.3);
-		pupilSin = -Math.sin(self.rotation + 0.3);
-		vectorPupil = { x: pupilCos * 30, y: pupilSin * 30 };
-		context.fillStyle = "white";
-
-		context.beginPath();
-		context.arc(drawPos.x + (vectorEye.x * 0.5), drawPos.y + (vectorEye.y * 0.5), (this.bodyRadius / 4), 0, 2 * Math.PI, false);
-		context.closePath();
-		context.stroke();
-		context.fill();
-
-		context.fillStyle = "black";
-		context.beginPath();
-		context.arc(drawPos.x + (vectorPupil.x * 0.6), drawPos.y + (vectorPupil.y * 0.6), (this.bodyRadius / 8), 0, 2 * Math.PI, false);
-		context.closePath();
-		context.stroke();
-		context.fill();
-
-
-		context.restore();
 	}
 
 	this.drawScanner = function () {
@@ -918,6 +823,126 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 		this.previousLocation.y = this.antePenultLocation.y;
 	}
 
+}
+
+function drawPlayer(playerData){
+
+
+	let drawPos = drawingPositionGet(playerData.position);
+	let camCos = Math.cos(playerData.rotation + k90degres);
+	let camSin = -Math.sin(playerData.rotation + k90degres);
+	let camCos2 = Math.cos(playerData.rotation);
+	let camSin2 = -Math.sin(playerData.rotation);
+
+	let dotsPositions = [];
+
+	if (playerData.dotsNumber === 2) {
+		dotsPositions = [
+			{ x: camCos * -9, y: camSin * -9 },
+			{ x: camCos * 9, y: camSin * 9 }
+		];
+	} else if (playerData.dotsNumber === 3) {
+		dotsPositions = [
+			{ x: camCos * -9, y: camSin * -9 },
+			{ x: camCos * 9, y: camSin * 9 },
+			{ x: camCos2 * -10, y: camSin2 * -10 }
+		];
+	} else if (playerData.dotsNumber === 4) {
+		dotsPositions = [
+			{ x: camCos * -9, y: camSin * -9 },
+			{ x: camCos * 9, y: camSin * 9 },
+			{ x: camCos * -9, y: camSin * 9 },
+			{ x: camCos * -9, y: camSin * 9 }
+		];
+	}
+
+	camCos = Math.cos(playerData.rotation);
+	camSin = -Math.sin(playerData.rotation);
+
+	context.save();
+
+	context.globalAlpha = playerData.opacity;
+
+	context.beginPath();
+	context.strokeStyle = "black";
+	context.fillStyle = playerData.color;
+
+	context.beginPath();
+	if (playerData.isMoving) {
+		if (frameCount % 4 === 0) {
+			context.ellipse(drawPos.x, drawPos.y, playerData.bodyRadius, playerData.bodyInMotionDiameter2, playerData.rotation * -1, 0, 2 * Math.PI);
+		} else {
+			context.ellipse(drawPos.x, drawPos.y, playerData.bodyRadius, playerData.bodyInMotionDiameter1, playerData.rotation * -1, 0, 2 * Math.PI);
+		}
+	} else {
+		context.ellipse(drawPos.x, drawPos.y, playerData.bodyRadius, playerData.bodyRadius * 0.9, playerData.rotation * -1, 0, 2 * Math.PI);
+	}
+
+	context.closePath();
+	context.stroke();
+	context.fill();
+	//self.dotsNumber
+	context.beginPath();
+	context.strokeStyle = playerData.dotsColor;
+	context.fillStyle = playerData.dotsColor;
+
+	dotsPositions.forEach((d) => {
+		circle(drawPos.x + d.x, drawPos.y + d.y, 6);
+	});
+	context.closePath();
+	context.stroke();
+	context.fill();
+
+	let completeName = playerData.generation > 1 ? playerData.name + " " + playerData.generation : playerData.name;
+	text(completeName, drawPos.x + 30, drawPos.y);
+
+	// right Eye
+	let eyeCos = Math.cos(playerData.rotation - 0.4);
+	let eyeSin = -Math.sin(playerData.rotation - 0.4);
+	let vectorEye = { x: eyeCos * 30, y: eyeSin * 30 };
+	let pupilCos = Math.cos(playerData.rotation - 0.3);
+	let pupilSin = -Math.sin(playerData.rotation - 0.3);
+	let vectorPupil = { x: pupilCos * 30, y: pupilSin * 30 };
+
+	context.fillStyle = "white";
+	context.beginPath();
+	context.arc(drawPos.x + (vectorEye.x * 0.5), drawPos.y + (vectorEye.y * 0.5), (playerData.bodyRadius / 4), 0, 2 * Math.PI, false);
+	context.closePath();
+	context.stroke();
+	context.fill();
+
+	context.fillStyle = "black";
+	context.beginPath();
+	context.arc(drawPos.x + (vectorPupil.x * 0.6), drawPos.y + (vectorPupil.y * 0.6), (playerData.bodyRadius / 8), 0, 2 * Math.PI, false);
+	context.closePath();
+	context.stroke();
+	context.fill();
+
+	//strokeWeight(10);
+	// left Eye
+	eyeCos = Math.cos(playerData.rotation + 0.4);
+	eyeSin = -Math.sin(playerData.rotation + 0.4);
+	vectorEye = { x: eyeCos * 30, y: eyeSin * 30 };
+	pupilCos = Math.cos(playerData.rotation + 0.3);
+	pupilSin = -Math.sin(playerData.rotation + 0.3);
+	vectorPupil = { x: pupilCos * 30, y: pupilSin * 30 };
+	context.fillStyle = "white";
+
+	context.beginPath();
+	context.arc(drawPos.x + (vectorEye.x * 0.5), drawPos.y + (vectorEye.y * 0.5), (playerData.bodyRadius / 4), 0, 2 * Math.PI, false);
+	context.closePath();
+	context.stroke();
+	context.fill();
+
+	context.fillStyle = "black";
+	context.beginPath();
+	context.arc(drawPos.x + (vectorPupil.x * 0.6), drawPos.y + (vectorPupil.y * 0.6), (playerData.bodyRadius / 8), 0, 2 * Math.PI, false);
+	context.closePath();
+	context.stroke();
+	context.fill();
+
+
+	context.restore();
 }
 
 function updatePlants() {
@@ -1238,6 +1263,33 @@ function Plant(data) {
 						spike.curveRight[key].y = Math.floor(centralPoint.y + (spike.curveRight[key].y * spikeRadius));
 					}
 				});
+			}else if (self.geometry.leaves.shape === "simple-curve" || self.geometry.leaves.shape === "simple-bezier") {
+
+				let spikesRadius = Math.min(self.age * self.leaves.leafModel.size.growthPerDay + self.leaves.leafModel.size.min, self.leaves.leafModel.size.max);
+
+				self.geometry.leaves = { shape: self.leaves.shape, color: self.leaves.leafModel.color, number: self.leaves.number, radius: spikesRadius };
+				self.geometry.leaves.borderColor = LightenDarkenColor(self.geometry.leaves.color, 40);
+				self.geometry.leaves.spikes = [];
+				for (let i = 0; i < self.geometry.leaves.number; i++) {
+					let matrix = [...self.leaves.leafModel.matrix];
+					self.geometry.leaves.spikes.push({
+						curveUnique: {
+							pt1: matrix[0],
+							ctrlPt1: matrix[1],
+							ctrlPt2: matrix[2],
+							pt2: matrix[3]
+						}
+					})
+				}
+				const spikeRadius = self.geometry.leaves.radius;
+				self.geometry.leaves.spikes.forEach((spike, index) => {
+					for (const key in spike.curveUnique) {
+						let centralPoint = { ...self.positionAbsolute };
+						spike.curveUnique[key] = simpleRotate(spike.curveUnique[key], self.innerRotation + self.leaves.leafModel.angles[index]);
+						spike.curveUnique[key].x = Math.floor(centralPoint.x + (spike.curveUnique[key].x * spikeRadius));
+						spike.curveUnique[key].y = Math.floor(centralPoint.y + (spike.curveUnique[key].y * spikeRadius));
+					}
+				});
 			}
 		}
 		
@@ -1317,6 +1369,37 @@ function Plant(data) {
 					context.stroke();
 					context.fill();
 					context.restore();
+
+				}else if(self.geometry.leaves.shape === "simple-curve" || self.geometry.leaves.shape === "simple-bezier"){
+					let color = self.geometry.leaves.color;
+					let borderColor = self.geometry.leaves.borderColor;
+					context.save();
+					context.strokeStyle = borderColor;
+					context.fillStyle = color;
+					context.globalAlpha = 1;
+
+					context.beginPath();
+					self.geometry.leaves.spikes.forEach((spike) => {
+						curvePts = { ...spike.curveUnique };
+						for (const key in curvePts) {
+							curvePts[key] = drawingPositionGet(curvePts[key]);
+						}
+						if (self.animation && self.animation.length > 0) {
+							translate(self.animation[0], self.animation[0]);
+							self.animation.shift();
+						}
+						if (self.geometry.leaves.shape === "simple-curve") {
+							curve(curvePts.ctrlPt1.x, curvePts.ctrlPt1.y, curvePts.pt1.x, curvePts.pt1.y, curvePts.pt2.x, curvePts.pt2.y, curvePts.ctrlPt2.x, curvePts.ctrlPt2.y);
+						}
+						if (self.geometry.leaves.shape === "simple-bezier") {
+							bezier(curvePts.pt1.x, curvePts.pt1.y, curvePts.ctrlPt1.x, curvePts.ctrlPt1.y, curvePts.ctrlPt2.x, curvePts.ctrlPt2.y, curvePts.pt2.x, curvePts.pt2.y);
+						}
+					});
+					context.closePath();
+					context.stroke();
+					context.fill();
+					context.restore();
+
 				}
 			}
 			if (self.geometry && self.geometry.crown) {
