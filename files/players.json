@@ -1,12 +1,12 @@
 {
   "Elrond": {
     "position": {
-      "x": 1657,
-      "y": -1281
+      "x": -444,
+      "y": 1687
     },
-    "rotation": 0.20000000000000004,
+    "rotation": 3.100000000000001,
     "color": "#FF0000",
-    "birth": 3232,
+    "birth": 3261,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,
@@ -14,12 +14,12 @@
   },
   "Boromir": {
     "position": {
-      "x": -144,
-      "y": -379
+      "x": 0,
+      "y": 0
     },
-    "rotation": 5.599999999999996,
+    "rotation": 0,
     "color": "#DDDD00",
-    "birth": 3216,
+    "birth": 3230,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,

@@ -60,6 +60,8 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
     serverLoaded = true;
     console.log( `World model loaded at ${new Date().toISOString()}`);
 
+   // checkPlants();
+   // saveWorld();
    // tidyGarden();
 
     //autoGardens = manageGardens(worldModel.data.floor.shapes);
@@ -68,7 +70,7 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
       savePlayers();
     },3*60*1000)
 
-    maxPlantDistance = worldModel.radius * 0.7;
+    maxPlantDistance = worldModel.radius * 1;
 
     intervalAutoGardens = setInterval(() => {
       if(worldOnHold) return;
@@ -464,74 +466,56 @@ io.on('connection', (socket) => {
       circle.currentNr = 0;
      });
 
+     let currentNrOutOfCircles = 0;
+
     worldModel.data.plants.forEach((p) => {
+      let found = false;
       for(let i = 0; i < limitingCirles.length;i++){
         p.parentCircle = null;
-        if(getDistance(limitingCirles[i].position,p.position < limitingCirles[i].size[0])){
+        if(getDistance(limitingCirles[i].position,p.position) < limitingCirles[i].size[0]){
           p.parentCircle = limitingCirles[i].name;
           limitingCirles[i].currentNr ++;
+          found = true;
           break;
         }
       }
+      if(!found) currentNrOutOfCircles++;
     });
 
-    worldModel.data.plants.forEach((p) => {
-      if(p.parentCircle === null && p.distance >= maxPlantDistance){
+/*     worldModel.data.plants.forEach((p) => {
+      if(p.parentCircle != null && p.distance >= maxPlantDistance){
         p.distance = Math.floor(Math.random() * maxPlantDistance);
         p.position = getPosition(p.distance ,p.angleToOrigine);
       }
-    });
+    }); */
 
-    let maxPlants = 25; // Plants outside circles
+    let maxPlantsOutsideCircles = 25; // Plants outside circles
+    let maxPlants = maxPlantsOutsideCircles;
 
     limitingCirles.forEach((circle) => {
-        maxPlants += circle.maxPlants;
+      maxPlants += circle.maxPlants;
+      console.log(`plants in circle ${circle.name} : ${circle.currentNr} / ${circle.maxPlants} `);
+
         if(circle.currentNr > circle.maxPlants){
           worldModel.data.plants =  worldModel.data.plants.filter((p)=>{
             let test = Math.random();
-            return (test < 0.9 && p.parentCircle === circle.name) || x.parentCircle !== circle.name;
+            return (test < 0.9 && p.parentCircle === circle.name) || p.parentCircle !== circle.name;
           });
         }
      });
+     console.log(`plants outside circles : ${currentNrOutOfCircles} / ${maxPlantsOutsideCircles} `);
+
+     if(currentNrOutOfCircles > maxPlantsOutsideCircles){
+      worldModel.data.plants =  worldModel.data.plants.filter((p)=>{
+        let test = Math.random();
+        return (test < 0.9 && p.parentCircle === null) || p.parentCircle !== null;
+      });
+    }
 
      console.log(`plants after circles check : ${worldModel.data.plants.length} / ${maxPlants} `);
 
-    // seconde limit : population as a whole
      let currentPopulation = worldModel.data.plants.length;
      let isPopulationLow =  currentPopulation <= 40;
-     let isPopulationHigh = currentPopulation > maxPlants;
-    // too many : get rid of the seeds but on species with high population
-    if(isPopulationHigh){
-      let plantsSpeciesStatus = worldModel.data.models.map((x)=>{
-        return {model:x.name,population:0};
-      });
-      plantsSpeciesStatus.forEach((x) => {
-        x.population = getModelExpansion(x.model);
-      });
-      plantsSpeciesStatus.sort((a,b)=>{
-          return b.population - a.population;
-      });
-      worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
-        let test = Math.random();
-        return (test < 0.7 && x.model === plantsSpeciesStatus[0].model) || x.model !== plantsSpeciesStatus[0].model;
-      });
-      let plants2stop = worldModel.data.plants.length - maxPlants
-      if(plants2stop > 0){
-        worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
-          let test = Math.random();
-          return (test < 0.8 && x.model === plantsSpeciesStatus[1].model) || x.model !== plantsSpeciesStatus[1].model;
-        });
-      }
-      plants2stop = worldModel.data.plants.length - maxPlants
-      if(plants2stop > 0){
-        worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
-          let test = Math.random();
-          return (test < 0.9 && x.model === plantsSpeciesStatus[2].model) || x.model !== plantsSpeciesStatus[2].model;
-        });
-      }
-    }
-
-    console.log(`plants after general population check : ${worldModel.data.plants.length} / ${maxPlants} `);
 
     let newPlants = [];
      worldModel.data.plants.forEach((x)=>{
