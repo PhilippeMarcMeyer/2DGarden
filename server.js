@@ -17,7 +17,7 @@ let autoGardens = [];
 let limitingCirles = [];
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 6 * 60 * 1000; // m minutes
+const dayLengthConnection = 5 * 60 * 1000; // m minutes
 const autoGardensTiming = 5000;
 let dayLength = dayLengthConnection;
 let intervalDays;
@@ -60,8 +60,6 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
     serverLoaded = true;
     console.log( `World model loaded at ${new Date().toISOString()}`);
 
-   // checkPlants();
-   // saveWorld();
    // tidyGarden();
 
     //autoGardens = manageGardens(worldModel.data.floor.shapes);
@@ -241,9 +239,9 @@ io.on('connection', (socket) => {
             let plantPosInfos = getAngleAndDistance(p.position);
             p.distance = plantPosInfos.distance;
             p.angleToOrigine = plantPosInfos.angleToOrigine;
- 
+            p.parentCircle = null;
           if(worldOnHold || worldLoading){
-
+              // toDo : keep it for moving later
             } else {
               worldLoading = true;
               fs.writeFile("./files/world1.json", JSON.stringify(worldModel, null, 2), err => {
@@ -413,6 +411,28 @@ io.on('connection', (socket) => {
     saveWorld();
   }
 
+  function deduplicateGarden(){
+    let duplicateNr = 0;
+    worldModel.data.plants.sort((a,b) => {
+        return a.name - b.name;
+    });
+    let previous = "azertyuiop";
+    worldModel.data.plants.forEach((x)=>{
+      if(x.name === previous){
+        x.name = "toDelete";
+        duplicateNr++;
+      }else{
+        previous = x.name;
+      }
+    });
+    if(duplicateNr > 0){
+      worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
+        return x.name !== "toDelete";
+      });
+      saveWorld();
+    }
+  }
+
   function saveSpecies(){
     worldModel.data.models.forEach((m) => {
       let nr = worldModel.data.plants.filter((p)=>{
@@ -455,6 +475,9 @@ io.on('connection', (socket) => {
 
   function checkPlants(){
     if(worldLoading) return;
+    if(worldModel.gardenDay % 10 === 2){
+      deduplicateGarden();
+    }
     // removing dead plants :-(
     console.log( `Beginning Checking plants at ${new Date().toISOString()}`);
 
@@ -462,21 +485,35 @@ io.on('connection', (socket) => {
 
    // First limits ; the number of plants is limited inside every cirlcle
 
+   let seedAllowed = {};
+
     limitingCirles.forEach((circle) => {
       circle.currentNr = 0;
+      seedAllowed[circle.name] = 0;
      });
+     seedAllowed.outSideCircles = 0;
 
      let currentNrOutOfCircles = 0;
 
     worldModel.data.plants.forEach((p) => {
+      if(!p.position){
+        p.position = getPosition(p.distance,p.angleToOrigine);
+      }
       let found = false;
       for(let i = 0; i < limitingCirles.length;i++){
-        p.parentCircle = null;
-        if(getDistance(limitingCirles[i].position,p.position) < limitingCirles[i].size[0]){
-          p.parentCircle = limitingCirles[i].name;
-          limitingCirles[i].currentNr ++;
-          found = true;
-          break;
+        if(p.parentCircle){
+          if( p.parentCircle === limitingCirles[i].name){
+            limitingCirles[i].currentNr ++;
+            found = true;
+            break;
+          }
+        }else{
+          if(getDistance(limitingCirles[i].position,p.position,limitingCirles[i].name) < limitingCirles[i].size[0]){
+            p.parentCircle = limitingCirles[i].name;
+            limitingCirles[i].currentNr ++;
+            found = true;
+            break;
+          }
         }
       }
       if(!found) currentNrOutOfCircles++;
@@ -495,33 +532,20 @@ io.on('connection', (socket) => {
     limitingCirles.forEach((circle) => {
       maxPlants += circle.maxPlants;
       console.log(`plants in circle ${circle.name} : ${circle.currentNr} / ${circle.maxPlants} `);
-
-        if(circle.currentNr > circle.maxPlants){
-          worldModel.data.plants =  worldModel.data.plants.filter((p)=>{
-            let test = Math.random();
-            return (test < 0.9 && p.parentCircle === circle.name) || p.parentCircle !== circle.name;
-          });
-        }
+      seedAllowed[circle.name] = Math.max(0,circle.maxPlants - circle.currentNr);
      });
+
      console.log(`plants outside circles : ${currentNrOutOfCircles} / ${maxPlantsOutsideCircles} `);
 
-     if(currentNrOutOfCircles > maxPlantsOutsideCircles){
-      worldModel.data.plants =  worldModel.data.plants.filter((p)=>{
-        let test = Math.random();
-        return (test < 0.9 && p.parentCircle === null) || p.parentCircle !== null;
-      });
-    }
+     seedAllowed.outSideCircles = Math.max(0,maxPlantsOutsideCircles - currentNrOutOfCircles);
 
-     console.log(`plants after circles check : ${worldModel.data.plants.length} / ${maxPlants} `);
+     console.log(`Plants total check : ${worldModel.data.plants.length} / ${maxPlants} `);
 
      let currentPopulation = worldModel.data.plants.length;
      let isPopulationLow =  currentPopulation <= 40;
 
     let newPlants = [];
      worldModel.data.plants.forEach((x)=>{
-      if(!x.position){
-        x.position = getPosition(x.distance,x.angleToOrigine);
-      }
       let model;
        if(x.model){
         model = worldModel.data.models.filter((y) => {
@@ -543,7 +567,8 @@ io.on('connection', (socket) => {
           if(age >= model.evolution.seedsDay){
             if (Math.random() <= getSeedsChance(x.model)){
               console.log("seeds ?")
-              seedsNr = Math.floor(((model.evolution.seeds.max - model.evolution.seeds.min) * Math.random()) + 0.5) + model.evolution.seeds.min;
+              let parentCircle = x.parentCircle || "outSideCircles";
+              seedsNr = Math.min(seedAllowed[parentCircle],Math.floor(((model.evolution.seeds.max - model.evolution.seeds.min) * Math.random()) + 0.5) + model.evolution.seeds.min);
               console.log("seedsNr " + seedsNr)
               let n = 0
               while (n < seedsNr) {
@@ -562,19 +587,35 @@ io.on('connection', (socket) => {
                     newPt = getPosition(seedPosInfos.distance ,seedPosInfos.angleToOrigine);
                   }
                   */
-                  newPlants.push({
-                    birth: worldModel.gardenDay,
-                    distance: seedPosInfos.distance,
-                    angleToOrigine: seedPosInfos.angleToOrigine,
-                    position : newPt,
-                    color: x.color,
-                    shape: x.shape,
-                    size: {... x.size},
-                    name : x.name.split("-")[0] + "-" + worldModel.gardenDay + "*" + (n + 1),
-                    innerRotation : (Math.random() * Math.PI * 2),
-                    model:x.model,
-                    stage: 0
-                  });
+                 let seed = {
+                  birth: worldModel.gardenDay,
+                  distance: seedPosInfos.distance,
+                  angleToOrigine: seedPosInfos.angleToOrigine,
+                  position : newPt,
+                  color: x.color,
+                  shape: x.shape,
+                  size: {... x.size},
+                  name : x.name.split("-")[0] + "-" + worldModel.gardenDay + "*" + (n + 1),
+                  innerRotation : (Math.random() * Math.PI * 2),
+                  model:x.model,
+                  stage: 0
+                }
+                  if(x.specific){
+                    seed.specific = {...x.specific};
+                  }
+                  if(model.petals){
+                    if(Math.random()<= 0.05){
+                      let amount = 20 + Math.floor(Math.random() * 40);
+                      if(seed.specific){
+                        seed.specific.petals.leafModel.color = shuffleColor(seed.specific.petals.leafModel.color,amount);
+                        console.log(`Seed ${seed.name} has re-mutated...`)
+                      }else{
+                        seed.specific = {petals:{leafModel:{color:shuffleColor(model.petals.leafModel.color,amount)}}};
+                        console.log(`Seed ${seed.name} has mutated...`)
+                      }
+                    }
+                  }
+                  newPlants.push(seed);
                 }
               }
             }
@@ -637,7 +678,7 @@ io.on('connection', (socket) => {
     }
     
     let criticalDistance = 60;
-    let criticalAge = 15;
+    let criticalAge = 1;
 
     let youngPlants = worldModel.data.plants.filter((x)=>{
       return x.stage === 1 && (worldModel.gardenDay - x.birth <= criticalAge);
@@ -743,7 +784,12 @@ io.on('connection', (socket) => {
     return '#' + rHex + gHex + bHex;
   }
 
-  function getDistance(ptA, ptB) {
+  function getDistance(ptA, ptB, name) {
+    if(!(ptA && ptA.x != undefined && ptA.y != undefined && ptB && ptB.x != undefined  && ptB.y != undefined )) {
+      if(!name) name= "???";
+      console.log(`Err getDistance ${name}`);
+      return 9999;
+    }
     return Math.sqrt(Math.pow(ptB.x - ptA.x, 2) + Math.pow(ptB.y - ptA.y, 2));
   }
 

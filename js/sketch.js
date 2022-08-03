@@ -1077,6 +1077,16 @@ function Plant(data) {
 			self.geometry.crown = null;
 		} else {
 			self.geometry.crown = { shape: self.petals.shape, color: self.petals.leafModel.color, number: self.petals.number, radius: spikesRadius };
+/* 			"specific": {
+				"petals": {
+				  "leafModel": {
+					"color": "#b373e4"
+				  }
+				}
+			  } */
+			  if(self.specific && self.specific.petals && self.specific.petals.leafModel && self.specific.petals.leafModel.color){
+				self.geometry.crown.color = self.specific.petals.leafModel.color;
+			  }
 			if (self.geometry.crown.shape === "double-curve") {
 				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, -60)
 			} else if (self.geometry.crown.shape === "double-bezier") {
@@ -1376,7 +1386,7 @@ function Plant(data) {
 					context.save();
 					context.strokeStyle = borderColor;
 					context.fillStyle = color;
-					context.globalAlpha = 1;
+					context.globalAlpha = 0.8;
 
 					context.beginPath();
 					self.geometry.leaves.spikes.forEach((spike) => {
@@ -1451,9 +1461,6 @@ function Plant(data) {
 								context.lineTo(drawPos.x, drawPos.y);
 							});
 						}
-
-
-
 					});
 
 					context.closePath();
@@ -1469,7 +1476,7 @@ function Plant(data) {
 					context.save();
 					context.strokeStyle = borderColor;
 					context.fillStyle = color;
-					context.globalAlpha = 1;
+					context.globalAlpha = 0.8;
 
 					context.beginPath();
 					self.geometry.crown.spikes.forEach((spike) => {
@@ -1678,7 +1685,7 @@ function Plant(data) {
 			if (!isVisible) return;
 			self.geometry.data2D.forEach((arr, index) => {
 				context.save();
-				context.globalAlpha = 1;
+				context.globalAlpha = 0.7;
 				context.fillStyle = self.colors[index];
 				context.strokeStyle = index === 0 ? self.borderColor : self.colors[index];
 				context.beginPath();
@@ -1687,6 +1694,23 @@ function Plant(data) {
 				arr.forEach((pt) => {
 					drawPos = drawingPositionGet(pt);
 					context.lineTo(drawPos.x, drawPos.y);
+				})
+				context.closePath();
+				context.stroke();
+				context.fill();
+				context.globalAlpha = 1 - (index / 5);
+				//context.restore();
+				let delta = 7;
+				//context.save();
+				context.globalAlpha = 0.6;
+				context.fillStyle = self.colors[index];
+				context.strokeStyle = index === 0 ? self.borderColor : self.colors[index];
+				context.beginPath();
+				 drawPos = drawingPositionGet(arr[0]);
+				context.moveTo(drawPos.x-delta, drawPos.y-delta);
+				arr.forEach((pt) => {
+					drawPos = drawingPositionGet(pt);
+					context.lineTo(drawPos.x-delta, drawPos.y-delta);
 				})
 				context.closePath();
 				context.stroke();
