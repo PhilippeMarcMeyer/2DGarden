@@ -537,6 +537,18 @@ io.on('connection', (socket) => {
 
      console.log(`plants outside circles : ${currentNrOutOfCircles} / ${maxPlantsOutsideCircles} `);
 
+     if(currentNrOutOfCircles > maxPlantsOutsideCircles){ 
+        let totalPlantsBefore = worldModel.data.plants.length;
+        let ratio = maxPlantsOutsideCircles / currentNrOutOfCircles;
+        worldModel.data.plants =  worldModel.data.plants.filter((p)=>{
+          let test = Math.random();
+          return (test <= ratio && p.parentCircle == null) || p.parentCircle != null;
+        });
+        let totalPlantsAfter = worldModel.data.plants.length;
+        currentNrOutOfCircles -= (totalPlantsBefore-totalPlantsAfter);
+     }
+     console.log(`plants outside circles after houswork : ${currentNrOutOfCircles} / ${maxPlantsOutsideCircles} `);
+
      seedAllowed.outSideCircles = Math.max(0,maxPlantsOutsideCircles - currentNrOutOfCircles);
 
      console.log(`Plants total check : ${worldModel.data.plants.length} / ${maxPlants} `);
