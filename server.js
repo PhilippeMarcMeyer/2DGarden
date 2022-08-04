@@ -414,7 +414,9 @@ io.on('connection', (socket) => {
   function deduplicateGarden(){
     let duplicateNr = 0;
     worldModel.data.plants.sort((a,b) => {
-        return a.name - b.name;
+      if (a.name < b.name) { return -1; }
+      if (a.name > b.name) { return 1; }
+      return 0;
     });
     let previous = "azertyuiop";
     worldModel.data.plants.forEach((x)=>{
@@ -474,10 +476,11 @@ io.on('connection', (socket) => {
   }
 
   function checkPlants(){
+    
     if(worldLoading) return;
-    if(worldModel.gardenDay % 10 === 2){
+
       deduplicateGarden();
-    }
+    
     // removing dead plants :-(
     console.log( `Beginning Checking plants at ${new Date().toISOString()}`);
 

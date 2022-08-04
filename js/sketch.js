@@ -9,7 +9,7 @@ let keys = {
 	shift: false
 }
 let framerate = 30;
-let emiteveryNframe = 8;
+let emiteveryNframe = 5;
 let autoGardens = null;
 let isAutoGardensSet = false;
 const camOverPlantLimit = 32;
@@ -29,6 +29,8 @@ let playerDotsNumber = 3;
 let playerDotsColor = '#ffffff'
 let socket = io();
 let plantsBag = [];
+let backgroundIsReady = false;
+let backgroundImage;
 
 function mouseClicked() {
 	if (keys.shift && gameLoaded) {
@@ -67,11 +69,26 @@ function mouseClicked() {
 	}
 	return false;
 }
+function preload() {
+	let selectedImage = "BG4.png";
+	let fullPath = "/img/"+ selectedImage;
+		loadImage(fullPath, function(temp) {
+			backgroundImage = temp.get();
+			if(backgroundImage){
+				backgroundIsReady = true;
+			}
+			
+		}, function(event) {
+			console.log(event);
+		});
+	}
 
 function setup() {
+	pixelDensity(1);
 	debugMode = false;
 	gameLoaded = false;
 	frameRate(framerate);
+	preload();
 	loadJSON('/files/world1.json', result => {
 		worldModel = { ...result }
 		things = setNotMobs(worldModel);
@@ -81,7 +98,10 @@ function setup() {
 		context = drawingContext;
 		setKeyDown();
 		setKeyUp();
+//				
+
 		floor = new Floor(worldModel);
+		//generateTerrain(floor,worldModel.radius)
 		gameLoaded = true;
 		socket.on('news', function (msg) {
 			console.log(msg)
@@ -156,9 +176,30 @@ function draw() {
 			applyConnectionState(false);
 		}
 	}
+
 	translate(width / 2, height / 2);
-	clear();
-	floor.draw();
+
+	if(backgroundIsReady){
+		let diameter = worldModel.radius * 2;
+		clear();
+		let self = this;
+		context.save();
+		context.beginPath();
+		context.fillStyle = "#0227B8";
+		context.strokeStyle = "#0227B8";
+		context.rect(-width, -height, diameter, diameter);
+		context.closePath();
+		context.fill();
+		context.stroke();
+		context.restore();
+
+		let topLeft = drawingPositionGet({x:0,y:0});
+		image(backgroundImage, topLeft.x - worldModel.radius, topLeft.y - worldModel.radius, diameter, diameter);
+	}else{
+		clear();
+		floor.draw();
+	}  
+	
 	if (_camera) {
 		_camera.rotStep = framerate / 100;
 		_camera.walkStep = 250 / framerate;
@@ -1076,7 +1117,7 @@ function Plant(data) {
 		if (self.petals === null) {
 			self.geometry.crown = null;
 		} else {
-			self.geometry.crown = { shape: self.petals.shape, color: self.petals.leafModel.color, number: self.petals.number, radius: spikesRadius };
+			self.geometry.crown = { shape: self.petals.shape, color: self.petals.leafModel.color, number: self.petals.number, radius: spikesRadius,opacity : self.petals.opacity || 1 };
 /* 			"specific": {
 				"petals": {
 				  "leafModel": {
@@ -1193,15 +1234,17 @@ function Plant(data) {
 				self.geometry.crown.colors = ["#008A47"];
 
 				let previousColor = self.geometry.crown.color;
-				for (let i = 0; i < self.geometry.crown.number; i++) {
+				let ageFactor = Math.floor((self.age - 30) / 20);
+				for (let i = 0; i < (self.geometry.crown.number + ageFactor); i++) {
 					let matrix = [...self.petals.leafModel.matrix];
 					self.geometry.crown.spikes.push(matrix);
-					previousColor = LightenDarkenColor(previousColor,-25)
+					previousColor = LightenDarkenColor(previousColor,-20)
 					self.geometry.crown.colors.push(previousColor);
 				}
 				let ratio = 1;
 				for (let index = 0; index < self.geometry.crown.spikes.length; index++) {
-					ratio -= 0.15;
+					ratio *= 0.73;
+					ratio += 0.01;
 					for (let ptNum = 0; ptNum < self.geometry.crown.spikes[index].length; ptNum++) {
 						self.geometry.crown.spikes[index][ptNum] = simpleRotate(self.geometry.crown.spikes[index][ptNum], self.innerRotation + + self.petals.leafModel.angles[index]);
 						self.geometry.crown.spikes[index][ptNum].x = Math.floor(centralPoint.x + (self.geometry.crown.spikes[index][ptNum].x * spikeRadius * ratio));
@@ -1476,7 +1519,7 @@ function Plant(data) {
 					context.save();
 					context.strokeStyle = borderColor;
 					context.fillStyle = color;
-					context.globalAlpha = 0.8;
+					context.globalAlpha = self.geometry.crown.opacity;
 
 					context.beginPath();
 					self.geometry.crown.spikes.forEach((spike) => {
