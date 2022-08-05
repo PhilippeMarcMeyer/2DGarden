@@ -98,10 +98,7 @@ function setup() {
 		context = drawingContext;
 		setKeyDown();
 		setKeyUp();
-//				
-
 		floor = new Floor(worldModel);
-		//generateTerrain(floor,worldModel.radius)
 		gameLoaded = true;
 		socket.on('news', function (msg) {
 			console.log(msg)
@@ -187,12 +184,11 @@ function draw() {
 		context.beginPath();
 		context.fillStyle = "#0227B8";
 		context.strokeStyle = "#0227B8";
-		context.rect(-width, -height, diameter, diameter);
+		context.rect(-width/2, -height/2, diameter*2, diameter)*2;
 		context.closePath();
 		context.fill();
 		context.stroke();
 		context.restore();
-
 		let topLeft = drawingPositionGet({x:0,y:0});
 		image(backgroundImage, topLeft.x - worldModel.radius, topLeft.y - worldModel.radius, diameter, diameter);
 	}else{
@@ -1118,16 +1114,9 @@ function Plant(data) {
 			self.geometry.crown = null;
 		} else {
 			self.geometry.crown = { shape: self.petals.shape, color: self.petals.leafModel.color, number: self.petals.number, radius: spikesRadius,opacity : self.petals.opacity || 1 };
-/* 			"specific": {
-				"petals": {
-				  "leafModel": {
-					"color": "#b373e4"
-				  }
-				}
-			  } */
-			  if(self.specific && self.specific.petals && self.specific.petals.leafModel && self.specific.petals.leafModel.color){
+			if (self.specific && self.specific.petals && self.specific.petals.leafModel && self.specific.petals.leafModel.color) {
 				self.geometry.crown.color = self.specific.petals.leafModel.color;
-			  }
+			}
 			if (self.geometry.crown.shape === "double-curve") {
 				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, -60)
 			} else if (self.geometry.crown.shape === "double-bezier") {
@@ -1278,7 +1267,7 @@ function Plant(data) {
 		if (self.leaves !== null) {
 			let spikesRadius = Math.min(self.age * self.leaves.leafModel.size.growthPerDay + self.leaves.leafModel.size.min, self.leaves.leafModel.size.max);
 
-			self.geometry.leaves = { shape: self.leaves.shape, color: self.leaves.leafModel.color, number: self.leaves.number, radius: spikesRadius };
+			self.geometry.leaves = { shape: self.leaves.shape, color: self.leaves.leafModel.color, number: self.leaves.number, radius: spikesRadius, opacity : self.leaves.opacity || 1 };
 			self.geometry.leaves.borderColor = LightenDarkenColor(self.geometry.leaves.color, 40);
 
 			self.geometry.leaves.spikes = [];
@@ -1387,7 +1376,7 @@ function Plant(data) {
 					let borderColor = self.geometry.leaves.borderColor;
 					context.save();
 
-					//context.globalAlpha = 0.4;
+					context.globalAlpha = self.geometry.leaves.opacity;
 					context.strokeStyle = borderColor;
 					context.fillStyle = color;
 					context.beginPath();
@@ -1429,7 +1418,7 @@ function Plant(data) {
 					context.save();
 					context.strokeStyle = borderColor;
 					context.fillStyle = color;
-					context.globalAlpha = 0.8;
+					context.globalAlpha = self.geometry.leaves.opacity;
 
 					context.beginPath();
 					self.geometry.leaves.spikes.forEach((spike) => {
