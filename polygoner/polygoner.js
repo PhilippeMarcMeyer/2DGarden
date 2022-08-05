@@ -1,5 +1,5 @@
 let pointsList = [];
-var polygones = [[]];
+var polygones = [];
 let centralPt = null;
 let formulasZone = null;
 let size = 600;
@@ -44,6 +44,16 @@ function draw() {
 	if (pointsList.length > 0) {
 		point(pointsList[0].x, pointsList[0].y);
 	}
+	polygones.forEach((polys) => {
+		let prevPoint = null;
+		polys.forEach((p, index) => {
+			point(p.x, p.y);
+			if (prevPoint != null) {
+				line(prevPoint.x, prevPoint.y, p.x, p.y);
+			}
+			prevPoint = p;
+		});
+	});
 	if (pointsList.length > 1) {
 		let prevPoint = null;
 		pointsList.forEach((p, index) => {
@@ -78,16 +88,32 @@ function setListeners() {
 	}, false);
 	document.getElementById("saveRelative").addEventListener("click", function () {
 		let relativePoints = [];
-
+		
+		polygones.forEach((polys) => {
+			let arr = [];
+			polys.forEach((p) => {
+				let result = { ...p };
+				result.x -= centralPt.x;
+				result.y -= centralPt.y;
+				result.x /= size / 2;
+				result.y /= size / 2;
+				arr.push(result);
+			});
+			relativePoints.push(arr);
+		});
+		let arr2 = [];
 		pointsList.forEach((p) => {
 			let result = { ...p };
 			result.x -= centralPt.x;
 			result.y -= centralPt.y;
 			result.x /= size / 2;
 			result.y /= size / 2;
-			relativePoints.push(result);
+			arr2.push(result);
 		});
-		formulasZone.innerHTML = JSON.stringify(relativePoints);
+		relativePoints.push(arr2);
 
+		polygones.push(pointsList);
+		formulasZone.innerHTML = JSON.stringify(relativePoints);
+		pointsList = [];
 	}, false);
 }

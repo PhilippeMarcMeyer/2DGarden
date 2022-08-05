@@ -69,8 +69,8 @@ function mouseClicked() {
 	}
 	return false;
 }
-function preload() {
-	let selectedImage = "BG4.png";
+function preloadBg() {
+	let selectedImage = worldModel.backgroundImage;
 	let fullPath = "/img/"+ selectedImage;
 		loadImage(fullPath, function(temp) {
 			backgroundImage = temp.get();
@@ -88,9 +88,9 @@ function setup() {
 	debugMode = false;
 	gameLoaded = false;
 	frameRate(framerate);
-	preload();
 	loadJSON('/files/world1.json', result => {
-		worldModel = { ...result }
+		worldModel = { ...result };
+		preloadBg();
 		things = setNotMobs(worldModel);
 		createCanvas(windowWidth, windowHeight);
 		setUtilValues();
@@ -182,8 +182,8 @@ function draw() {
 		let self = this;
 		context.save();
 		context.beginPath();
-		context.fillStyle = "#0227B8";
-		context.strokeStyle = "#0227B8";
+		context.fillStyle = worldModel.baseColor;
+		context.strokeStyle = worldModel.perimeterColor;
 		context.rect(-width/2, -height/2, diameter*2, diameter)*2;
 		context.closePath();
 		context.fill();
@@ -463,7 +463,7 @@ function Floor(worldModel) {
 
 		self.elements.forEach((elem) => {
 			if (elem.shape === "circle") {
-				context.save();
+/* 				context.save();
 				context.beginPath();
 				let centralPt = drawingPositionGet({ ...elem.center });
 				context.fillStyle = elem.color;
@@ -473,7 +473,7 @@ function Floor(worldModel) {
 				context.closePath();
 				context.fill();
 				context.stroke();
-				context.restore();
+				context.restore(); */
 			} else if (elem.shape === "polygon") {
 				context.save();
 				context.beginPath();
@@ -1642,6 +1642,7 @@ function Plant(data) {
 		this.colors = data.colors.split(",");
 		this.borderColor = LightenDarkenColor(this.colors[0], -20);
 		this.repeat = data.repeat;
+		this.type = data.type;
 		this.collider = {
 			shape: "poly",
 			data: null
@@ -1649,7 +1650,9 @@ function Plant(data) {
 
 		this.init = function () {
 			let self = this;
+			let colorAmount = 10;
 			if (Array.isArray(self.geometry.data2D[0])) {
+				colorAmount = -5;
 				self.repeat = 0;
 			} else {
 				let copyGeometry = [...self.geometry.data2D];
@@ -1670,7 +1673,7 @@ function Plant(data) {
 			if (!self.colors[0]) self.colors[0] = "#ccc";
 			let prevColor = self.colors[0];
 			while (self.colors.length < self.geometry.data2D.length) {
-				prevColor = LightenDarkenColor(prevColor, 10);
+				prevColor = LightenDarkenColor(prevColor, colorAmount);
 				self.colors.push(prevColor);
 			}
 
@@ -1701,23 +1704,12 @@ function Plant(data) {
 		this.draw = function () {
 			// the _camera moves : the objects stay stationnary so the positionRelative == positionAbsolute
 			var self = this;
-			/*
-			var isVisible = false;
-			if(_camera.knownThings.indexOf(self.name) != -1){
-				isVisible = true;
-			}else{
-				if(self.hit){
-					_camera.knownThings.push(self.name);
-					isVisible = true;
-				}
-			}
-			*/
 			isVisible = true;
 
 			if (!isVisible) return;
 			self.geometry.data2D.forEach((arr, index) => {
 				context.save();
-				context.globalAlpha = 0.7;
+				context.globalAlpha = 1;
 				context.fillStyle = self.colors[index];
 				context.strokeStyle = index === 0 ? self.borderColor : self.colors[index];
 				context.beginPath();
@@ -1730,24 +1722,7 @@ function Plant(data) {
 				context.closePath();
 				context.stroke();
 				context.fill();
-				context.globalAlpha = 1 - (index / 5);
-				//context.restore();
-				let delta = 7;
-				//context.save();
-				context.globalAlpha = 0.6;
-				context.fillStyle = self.colors[index];
-				context.strokeStyle = index === 0 ? self.borderColor : self.colors[index];
-				context.beginPath();
-				 drawPos = drawingPositionGet(arr[0]);
-				context.moveTo(drawPos.x-delta, drawPos.y-delta);
-				arr.forEach((pt) => {
-					drawPos = drawingPositionGet(pt);
-					context.lineTo(drawPos.x-delta, drawPos.y-delta);
-				})
-				context.closePath();
-				context.stroke();
-				context.fill();
-				context.globalAlpha = 1 - (index / 5);
+				//context.globalAlpha = 1 - (index / 5);
 				context.restore();
 				if (debugMode) {text(self.name, drawPos.x + 20, drawPos.y);text(`${self.positionAbsolute.x},${self.positionAbsolute.y}`, drawPos.x, drawPos.y + 20);};
 
