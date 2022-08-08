@@ -771,6 +771,9 @@ io.on('connection', (socket) => {
   }
 
   function shuffleColor(hexaColor,amount){
+    if(!hexaColor){
+      return hexaColor;
+    }
     if(hexaColor.substring(0,1) != "#"){
       return hexaColor;
     }
@@ -844,6 +847,7 @@ io.on('connection', (socket) => {
   //Chris Coyier 
 function LightenDarkenColor(col, amt) {
   
+  if(!col) return "#888888";
   var usePound = false;
 
   if (col[0] == "#") {

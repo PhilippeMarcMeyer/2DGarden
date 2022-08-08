@@ -1,4 +1,4 @@
-let w2, h2, w4, h4, wh2, k90degres, k60degres, k45degres, k180degres, k270degres, k360degres, k80degres, k280degres, camFov, focalW, focalH, zoom, focalAverage;
+let w2, h2, w4, h4, wh2, k90degres, k60degres, k45degres, k180degres, k270degres, k360degres, k80degres, k280degres, k15degres, camFov, focalW, focalH, zoom, focalAverage;
 let needUpdate, saveContext, context, _camera, mode, things, debugMode, scribble;
 let worldModel, gameLoaded, floor;
 let keys = {
@@ -6,7 +6,8 @@ let keys = {
 	down: false,
 	left: false,
 	right: false,
-	shift: false
+	shift: false,
+	fly : false
 }
 let framerate = 30;
 let emiteveryNframe = 5;
@@ -211,7 +212,7 @@ function draw() {
 		.forEach(function (thing) {
 			thing.draw();
 		});
-		if (_camera) _camera.draw();
+		if (_camera && !_camera.isFlying) _camera.draw();
 
 		if (isAutoGardensSet) drawAutoGardens();
 
@@ -222,6 +223,9 @@ function draw() {
 		.forEach(function (thing) {
 			thing.draw();
 		});
+
+		if (_camera && _camera.isFlying) _camera.draw();
+
 	drawInformations();
 }
 
@@ -272,9 +276,6 @@ function drawAutoGardens() {
 				context.closePath();
 				context.fill();
 				context.stroke();
-				// text(`${pt1.x}`, pt1.x, pt1.y + 30);
-				// text(`,${pt1.y}`, pt1.x, pt1.y + 60);
-
 			}
 		});
 	});
@@ -308,6 +309,7 @@ function setUtilValues() {
 	wh2 = Math.min(w2, h2);
 	w4 = width / 4;
 	h4 = height / 4;
+	k15degres = toradians(15);
 	k90degres = toradians(90);
 	k60degres = toradians(60);
 	k45degres = toradians(45);
@@ -514,6 +516,7 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 	this.previousLocation = { x: 0, y: 0 };
 	this.antePenultLocation = { x: 0, y: 0 };
 	this.isMoving = false;
+	this.isFlying = false;
 	this.sightWidth = toradians(90);
 	this.sightLength = 200;
 	this.walkStep = walkStep;
@@ -524,7 +527,7 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 	this.name = playerName;
 	this.generation = playerGeneration;
 	this.color = playerColor,
-		this.opacity = 1;
+	this.opacity = 1;
 	this.wLimit = w2 - w4;
 	this.hLimit = h2 - h4;
 	this.dotsNumber = playerDotsNumber;
@@ -548,6 +551,8 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 	this.setDirection = function () {
 
 		_camera.isMoving = false;
+
+        _camera.isFlying = keys.fly;
 
 		if (keys.left) {
 			_camera.turn(-1);
@@ -587,17 +592,19 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 
 		self.isMoving = true;
 
-		floor.elements
-			.forEach((x) => {
-				if (x.collider && x.collider.shape === "poly") {
-					if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.data)) {
-						self.restorePosition();
-						self.isMoving = false;
+		if (!self.isFlying) {
+			floor.elements
+				.forEach((x) => {
+					if (x.collider && x.collider.shape === "poly") {
+						if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, x.collider.data)) {
+							self.restorePosition();
+							self.isMoving = false;
+						}
 					}
-				}
-			});
+				});
+		}
 
-		if (self.isMoving) {
+		if (self.isMoving && !self.isFlying) {
 			self.checkCollisions();
 		}
 
@@ -613,10 +620,12 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 			} else if (drawPos.y < self.hLimit) {
 				worldModel.currentCenter.y -= (self.previousLocation.y - self.position.y);
 			}
+
 			self.positionsTransmitter.push({
 				what: "player-moved",
 				position: self.position,
-				rotation: self.rotation
+				rotation: self.rotation,
+				airBorne : self.isFlying
 			});
 
 			if (frameCount % framerate === 1) {
@@ -632,8 +641,6 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 		self.drawCamera();
 		if (_otherPlayers.length > 0) {
 			_otherPlayers.forEach(function (u) {
-				//_camera.drawCamera.apply(u);
-
 				let otherPlayerData = {
 					position: u.position,
 					rotation: u.rotation,
@@ -651,7 +658,6 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 				drawPlayer(otherPlayerData);
 			});
 		}
-		//self.drawScanner();
 	}
 
 	this.checkCollisions = function () {
@@ -758,6 +764,7 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 			dotsNumber : self.dotsNumber,
 			opacity : self.opacity,
 			isMoving : self.isMoving,
+			isFlying : self.isFlying,
 			bodyRadius : self.bodyRadius,
 			bodyInMotionDiameter2 : self.bodyInMotionDiameter2,
 			bodyInMotionDiameter1 : self.bodyInMotionDiameter1,
@@ -770,7 +777,6 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 		if (worldModel && worldModel.currentCenter) worldModel.currentCenter = { ...self.position };
 
 		drawPlayer(playerData);
-
 	}
 
 	this.drawScanner = function () {
@@ -864,7 +870,6 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 
 function drawPlayer(playerData){
 
-
 	let drawPos = drawingPositionGet(playerData.position);
 	let camCos = Math.cos(playerData.rotation + k90degres);
 	let camSin = -Math.sin(playerData.rotation + k90degres);
@@ -896,6 +901,26 @@ function drawPlayer(playerData){
 	camCos = Math.cos(playerData.rotation);
 	camSin = -Math.sin(playerData.rotation);
 
+	if (playerData.isFlying) {
+		
+
+		context.fillStyle = "#fffff";
+		let rotleft1 = playerData.rotation + k45degres;
+		let rotleft2 = rotleft1 + k15degres;
+		let rotleft3 = rotleft2 + k15degres;
+		let rotright1 = playerData.rotation - k45degres;
+		let rotright2 = rotright1 - k15degres;
+		let rotright3 = rotright2 - k15degres;
+
+		/*
+		context.beginPath();
+		
+		context.closePath();
+		context.stroke();
+		context.fill();
+		*/
+	} 
+
 	context.save();
 
 	context.globalAlpha = playerData.opacity;
@@ -911,14 +936,14 @@ function drawPlayer(playerData){
 		} else {
 			context.ellipse(drawPos.x, drawPos.y, playerData.bodyRadius, playerData.bodyInMotionDiameter1, playerData.rotation * -1, 0, 2 * Math.PI);
 		}
-	} else {
+	} else{
 		context.ellipse(drawPos.x, drawPos.y, playerData.bodyRadius, playerData.bodyRadius * 0.9, playerData.rotation * -1, 0, 2 * Math.PI);
 	}
 
 	context.closePath();
 	context.stroke();
 	context.fill();
-	//self.dotsNumber
+
 	context.beginPath();
 	context.strokeStyle = playerData.dotsColor;
 	context.fillStyle = playerData.dotsColor;
@@ -926,13 +951,11 @@ function drawPlayer(playerData){
 	dotsPositions.forEach((d) => {
 		circle(drawPos.x + d.x, drawPos.y + d.y, 6);
 	});
+	let completeName = playerData.generation > 1 ? playerData.name + " " + playerData.generation : playerData.name;
+	text(completeName, drawPos.x + 30, drawPos.y);
 	context.closePath();
 	context.stroke();
 	context.fill();
-
-	let completeName = playerData.generation > 1 ? playerData.name + " " + playerData.generation : playerData.name;
-	text(completeName, drawPos.x + 30, drawPos.y);
-
 	// right Eye
 	let eyeCos = Math.cos(playerData.rotation - 0.4);
 	let eyeSin = -Math.sin(playerData.rotation - 0.4);
@@ -955,7 +978,6 @@ function drawPlayer(playerData){
 	context.stroke();
 	context.fill();
 
-	//strokeWeight(10);
 	// left Eye
 	eyeCos = Math.cos(playerData.rotation + 0.4);
 	eyeSin = -Math.sin(playerData.rotation + 0.4);
@@ -977,7 +999,6 @@ function drawPlayer(playerData){
 	context.closePath();
 	context.stroke();
 	context.fill();
-
 
 	context.restore();
 }
@@ -1054,7 +1075,7 @@ function Plant(data) {
 	this.stage = data.stage ?? 1;
 	this.isPrime = false;
 	this.position = data.position ?? getPosition(this.distance, this.angleToOrigine)
-	this.positionAbsolute = data.position ?? null;
+	this.positionAbsolute = data.position || null;
 	this.collider = {
 		shape: "circle",
 		center: null,
@@ -1107,13 +1128,23 @@ function Plant(data) {
 			self.protectRadius = { radius: 0 };
 		}
 		self.geometry = {};
-		self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size, center: null,borderColor: LightenDarkenColor(self.color,-30) };
 		self.collider.data = self.size;
 
 		if (self.petals === null) {
 			self.geometry.crown = null;
 		} else {
-			self.geometry.crown = { shape: self.petals.shape, color: self.petals.leafModel.color, number: self.petals.number, radius: spikesRadius,opacity : self.petals.opacity || 1 };
+			let color;
+			let colors;
+			if(self.petals.leafModel.colors){
+				colors = [... self.petals.leafModel.colors ];
+				color = colors[0];
+			}else if(self.petals.leafModel.color){
+				colors = [self.petals.leafModel.color];
+				color = self.petals.leafModel.color;
+			}
+
+			self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size, center: null,borderColor: LightenDarkenColor(self.color,-30) };
+			self.geometry.crown = { shape: self.petals.shape, color: color, colors : colors , number: self.petals.number, radius: spikesRadius,opacity : self.petals.opacity || 1 };
 			if (self.specific && self.specific.petals && self.specific.petals.leafModel && self.specific.petals.leafModel.color) {
 				self.geometry.crown.color = self.specific.petals.leafModel.color;
 			}
@@ -1127,8 +1158,10 @@ function Plant(data) {
 				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, -30)
 			}else if (self.geometry.crown.shape === "simple-curve") {
 				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, -60)
+			}else if (self.geometry.crown.shape === "polygons-with-colors") {
+				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 20);
 			}else {
-				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 100)
+				if(self.geometry.crown.color) self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 100)
 			}
 			self.geometry.crown.spikes = [];
 			if (self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier") {
@@ -1240,6 +1273,23 @@ function Plant(data) {
 						self.geometry.crown.spikes[index][ptNum].y = Math.floor(centralPoint.y + (self.geometry.crown.spikes[index][ptNum].y * spikeRadius * ratio));
 					};
 				};
+			}else if (self.geometry.crown.shape === "polygons-with-colors") {
+ 				let centralPoint = { ...self.positionAbsolute };
+				self.geometry.heart.center = { ...self.positionAbsolute };
+				self.collider.center = { ...self.positionAbsolute };
+				const spikeRadius = self.geometry.crown.radius;
+				self.collider.dim2 = spikeRadius;
+				for (let i = 0; i < self.petals.leafModel.matrix.length; i++) {
+					let matrix = [...self.petals.leafModel.matrix[i]];
+					self.geometry.crown.spikes.push(matrix);
+				}
+				for (let index = 0; index < self.geometry.crown.spikes.length; index++) {
+					for (let ptNum = 0; ptNum < self.geometry.crown.spikes[index].length; ptNum++) {
+						self.geometry.crown.spikes[index][ptNum] = simpleRotate(self.geometry.crown.spikes[index][ptNum], self.innerRotation);
+						self.geometry.crown.spikes[index][ptNum].x = Math.floor(centralPoint.x + (self.geometry.crown.spikes[index][ptNum].x * spikeRadius));
+						self.geometry.crown.spikes[index][ptNum].y = Math.floor(centralPoint.y + (self.geometry.crown.spikes[index][ptNum].y * spikeRadius));
+					};
+				}; 
 			}else if(self.geometry.crown.shape === "ellipse"){
 				let centralPoint = { ...self.positionAbsolute };
 				self.geometry.heart.center = { ...self.positionAbsolute };;
@@ -1337,7 +1387,7 @@ function Plant(data) {
 		
 		this.shake = function () {
 			var self = this;
-			self.animation = [-2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -2, 2, -1, 1, -3, -2, 2];
+			self.animation = [-3, 3, -3, 3, -3, 3, -3, 3, -3, 3, -3, 3, -3, 3, -3, 3, -1, 1, -3, -3, 3];
 		}
 		this.draw = function () {
 			var self = this;
@@ -1404,8 +1454,6 @@ function Plant(data) {
 							bezier(leftPts.pt1.x, leftPts.pt1.y, leftPts.ctrlPt1.x, leftPts.ctrlPt1.y, leftPts.ctrlPt2.x, leftPts.ctrlPt2.y, leftPts.pt2.x, leftPts.pt2.y);
 							bezier(rightPts.pt1.x, rightPts.pt1.y, rightPts.ctrlPt1.x, rightPts.ctrlPt1.y, rightPts.ctrlPt2.x, rightPts.ctrlPt2.y, rightPts.pt2.x, rightPts.pt2.y);
 						}
-
-
 					});
 					context.closePath();
 					context.stroke();
@@ -1441,7 +1489,6 @@ function Plant(data) {
 					context.stroke();
 					context.fill();
 					context.restore();
-
 				}
 			}
 			if (self.geometry && self.geometry.crown) {
@@ -1473,7 +1520,6 @@ function Plant(data) {
 							translate(self.animation[0], self.animation[0]);
 							self.animation.shift();
 						}
-
 
 						if (self.geometry.crown.shape === "double-curve") {
 							curve(leftPts.ctrlPt1.x, leftPts.ctrlPt1.y, leftPts.pt1.x, leftPts.pt1.y, leftPts.pt2.x, leftPts.pt2.y, leftPts.ctrlPt2.x, leftPts.ctrlPt2.y);
@@ -1533,20 +1579,27 @@ function Plant(data) {
 					context.restore();
 
 				}
-				else if(self.geometry.crown.shape === "polygon"){
+				else if(self.geometry.crown.shape === "polygon" || self.geometry.crown.shape === "polygons-with-colors"){
 					let color = self.geometry.crown.color;
 					let borderColor = self.geometry.crown.borderColor;
 
 					context.save();
-					context.globalAlpha = 0.9;
+					context.globalAlpha = 1;
+					strokeWeight(5);
 					context.strokeStyle = borderColor;
 					context.fillStyle = color;
-					context.beginPath();
 
 					self.geometry.crown.spikes.forEach((petal,index) => {
+						
+						context.strokeStyle = self.geometry.crown.colors[index];
 						context.fillStyle = self.geometry.crown.colors[index];
 						context.beginPath();
 
+						if (self.animation && self.animation.length > 0) {
+							translate(self.animation[0], self.animation[0]);
+							self.animation.shift();
+						}
+						
 						let petalCopy = [...petal];
 						let petalPoints = [];
 						petalCopy.forEach((pt,index) => {
@@ -1560,18 +1613,20 @@ function Plant(data) {
 						context.stroke();
 						context.fill();
 					});
-
-
 					context.restore();
+
 				}else if(self.geometry.crown.shape === "ellipse"){
 					let color = self.geometry.crown.color;
 					let centralPt = drawingPositionGet({ ...self.geometry.heart.center });
 					context.save();
-					//translate(width / 2, height / 2);
 					context.globalAlpha = 0.9;
 					context.fillStyle = color;
 			
 					self.geometry.crown.spikes.forEach((petal) => {
+						if (self.animation && self.animation.length > 0) {
+							translate(self.animation[0], self.animation[0]);
+							self.animation.shift();
+						}
 						translate(0, 0);
 						context.beginPath();
 						ellipse(0, 0, petal.w, petal.h);
@@ -1592,6 +1647,10 @@ function Plant(data) {
 					strokeWeight(1);
 					let centerPos = drawingPositionGet(self.geometry.heart.center);
 					self.geometry.crown.spikes.forEach((pt) => {
+						if (self.animation && self.animation.length > 0) {
+							translate(self.animation[0], self.animation[0]);
+							self.animation.shift();
+						}
 						context.moveTo(centerPos.x, centerPos.y);
 						let drawPos = drawingPositionGet(pt);
 						context.lineTo(drawPos.x, drawPos.y);
@@ -1643,6 +1702,7 @@ function Plant(data) {
 		this.borderColor = LightenDarkenColor(this.colors[0], -20);
 		this.repeat = data.repeat;
 		this.type = data.type;
+		this.opacity = data.opacity;
 		this.collider = {
 			shape: "poly",
 			data: null
@@ -1652,7 +1712,7 @@ function Plant(data) {
 			let self = this;
 			let colorAmount = 10;
 			if (Array.isArray(self.geometry.data2D[0])) {
-				colorAmount = -5;
+				colorAmount = -15;
 				self.repeat = 0;
 			} else {
 				let copyGeometry = [...self.geometry.data2D];
@@ -1709,7 +1769,7 @@ function Plant(data) {
 			if (!isVisible) return;
 			self.geometry.data2D.forEach((arr, index) => {
 				context.save();
-				context.globalAlpha = 1;
+				context.globalAlpha = self.opacity;
 				context.fillStyle = self.colors[index];
 				context.strokeStyle = index === 0 ? self.borderColor : self.colors[index];
 				context.beginPath();
@@ -1722,7 +1782,6 @@ function Plant(data) {
 				context.closePath();
 				context.stroke();
 				context.fill();
-				//context.globalAlpha = 1 - (index / 5);
 				context.restore();
 				if (debugMode) {text(self.name, drawPos.x + 20, drawPos.y);text(`${self.positionAbsolute.x},${self.positionAbsolute.y}`, drawPos.x, drawPos.y + 20);};
 
@@ -1835,7 +1894,11 @@ function Plant(data) {
 				case "ShiftLeft":
 					keys.shift = true;
 					break;
-
+				case "ControlRight" :
+					keys.fly = true;
+					break;
+				default :
+				console.log(event.code);
 			};
 		});
 	}
@@ -1878,6 +1941,9 @@ function Plant(data) {
 					break;
 				case "ShiftLeft":
 					keys.shift = false;
+					break;
+				case "ControlRight" :
+					keys.fly = false;
 					break;
 			};
 		});
