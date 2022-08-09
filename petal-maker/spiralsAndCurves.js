@@ -5,7 +5,7 @@ DATE : 2018-10-02
 
 
 var globals = {
-	mainHeight : 640,
+	mainHeight : 740,
 	mainWidth : 640,
 	mode : "P2D",
 	baseUnit:100,
@@ -17,10 +17,10 @@ var globals = {
 	savesRel : [],
 	state:"design"
 };
-let debut = { x: 320,    y: 320  };
+let debut = { x: 320,    y: 600  };
 let cp1 =   { x: 400,   y: 20  };
 let cp2 =   { x: 240,   y: 20  };
-let fin =   { x: 320,   y: 320 };
+let fin =   { x: 320,   y: 600 };
 let ctx;
 var CrtlPt1,CrtlPt2,ptA,ptB;
 var arrObjects = [];
@@ -38,8 +38,8 @@ function setup() {
 
 	setListeners();
 	
-	ptA = {x:320,y:320,isDragged:false,radius:10,name:"A",color:"#00ff00",shape:"rect"};
-	ptB = {x:320,y:320,isDragged:false,radius:10,name:"B",color:"#ee0000",shape:"rect"};
+	ptA = {x:320,y:600,isDragged:false,radius:10,name:"A",color:"#00ff00",shape:"rect"};
+	ptB = {x:320,y:600,isDragged:false,radius:10,name:"B",color:"#ee0000",shape:"rect"};
 		
 	CrtlPt1 = {x:400,y:20,isDragged:false,radius:10,name:"1",color:"#0000ff",shape:"ellipse"};
 	CrtlPt2 = {x:240,y:20,isDragged:false,radius:10,name:"2",color:"#0000ff",shape:"ellipse"};
@@ -104,10 +104,10 @@ function setListeners(){
 		var formula = null;
 		var relative = {};
 		
-		relative.ptA = {x:(ptA.x-320)/640,y:(ptA.y-320)/640};
-		relative.CrtlPt1 =  {x:(CrtlPt1.x-320)/640,y:(CrtlPt1.y-320)/640};
-		relative.CrtlPt2 = {x:(CrtlPt2.x-320)/640,y:(CrtlPt2.y-320)/640};
-		relative.ptB = {x:(ptB.x-320)/640,y:(ptB.y-320)/640};
+		relative.ptA = {x:(ptA.x-320)/640,y:(ptA.y-600)/740};
+		relative.CrtlPt1 =  {x:(CrtlPt1.x-320)/640,y:(CrtlPt1.y-600)/740};
+		relative.CrtlPt2 = {x:(CrtlPt2.x-320)/640,y:(CrtlPt2.y-600)/740};
+		relative.ptB = {x:(ptB.x-320)/640,y:(ptB.y-600)/740};
 		
 		var result = [];
 		
@@ -166,9 +166,6 @@ function draw() {
 	stroke(globals.strokeColor.r,globals.strokeColor.g,globals.strokeColor.b);
 	noFill();
 	strokeWeight(getStokeWeight());
-	
-	
-
 
 	if( globals.state == "design" ){
 		if(globals.curveType=="bezier"){

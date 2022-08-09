@@ -9,7 +9,7 @@ let imageSize = {w:0,h:0};
 let leftTop =  {x:0,y:0};
 
 function setup() {
-var selectedImage = "feuilles_violette.png";
+var selectedImage = "coccinelle.png";
 let can = createCanvas(size, size);
 can.parent('canvasZone');
 formulasZone = document.getElementById("formulas");

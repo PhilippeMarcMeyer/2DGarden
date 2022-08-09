@@ -17,7 +17,7 @@ let autoGardens = [];
 let limitingCirles = [];
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 10 * 60 * 1000; // m minutes
+const dayLengthConnection = 5 * 60 * 1000; // m minutes
 const autoGardensTiming = 5000;
 let dayLength = dayLengthConnection;
 let intervalDays;
@@ -623,6 +623,15 @@ io.on('connection', (socket) => {
                       let amount = 20 + Math.floor(Math.random() * 40);
                       if(seed.specific){
                         seed.specific.petals.leafModel.color = shuffleColor(seed.specific.petals.leafModel.color,amount);
+                        if(seed.specific.petals.shape === 'simple_bezier'){
+                          let r1 = (Math.random() -0.5) /1;
+                          seed.specific.petals.leafModel.matrix[1].x += r1;
+                          seed.specific.petals.leafModel.matrix[1].y += r1;
+                          let r2 = (Math.random() -0.5) /1;
+                          seed.specific.petals.leafModel.matrix[2].x += r2;
+                          seed.specific.petals.leafModel.matrix[2].y += r2;
+
+                        }
                         console.log(`Seed ${seed.name} has re-mutated...`)
                       }else{
                         seed.specific = {petals:{leafModel:{color:shuffleColor(model.petals.leafModel.color,amount)}}};
@@ -672,7 +681,7 @@ io.on('connection', (socket) => {
         console.log(`${seedsBefore - seedsAfter} seed(s) have fallen into the lake...`);
       }
     }
-
+/*
     if (newPlants.length > 0) {
       let seedsBefore = newPlants.length;
       worldModel.data.rocks.forEach((rock) => {
@@ -685,6 +694,7 @@ io.on('connection', (socket) => {
       let seedsAfter = newPlants.length;
       console.log(`${seedsBefore - seedsAfter} seed(s) have fallen onto a rock...`);
     }
+    */
 
     console.log(`Adding ${newPlants.length} seeds to the garden...`);
 

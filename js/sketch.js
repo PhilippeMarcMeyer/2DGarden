@@ -1145,8 +1145,17 @@ function Plant(data) {
 
 			self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size, center: null,borderColor: LightenDarkenColor(self.color,-30) };
 			self.geometry.crown = { shape: self.petals.shape, color: color, colors : colors , number: self.petals.number, radius: spikesRadius,opacity : self.petals.opacity || 1 };
+			self.geometry.crown.spikeRadius = spikesRadius;
 			if (self.specific && self.specific.petals && self.specific.petals.leafModel && self.specific.petals.leafModel.color) {
 				self.geometry.crown.color = self.specific.petals.leafModel.color;
+			}
+			if (self.specific && self.specific.petals && self.specific.petals.leafModel && self.specific.petals.leafModel.color) {
+				self.geometry.crown.color = self.specific.petals.leafModel.color;
+			}
+			if (self.specific && self.specific.petals && self.specific.petals.leafModel && self.specific.petals.leafModel.matrix) {
+				self.geometry.crown.matrix = self.specific.petals.leafModel.matrix;
+			}else{
+				self.geometry.crown.matrix = self.petals.leafModel.matrix;
 			}
 			if (self.geometry.crown.shape === "double-curve") {
 				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, -60)
@@ -1161,12 +1170,12 @@ function Plant(data) {
 			}else if (self.geometry.crown.shape === "polygons-with-colors") {
 				self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 20);
 			}else {
-				if(self.geometry.crown.color) self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 100)
+				if(self.geometry.crown.color) self.geometry.crown.borderColor = LightenDarkenColor(self.geometry.crown.color, 150)
 			}
 			self.geometry.crown.spikes = [];
 			if (self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier") {
 				for (let i = 0; i < self.geometry.crown.number; i++) {
-					let matrix = [...self.petals.leafModel.matrix];
+					let matrix = [...self.geometry.crown.matrix];
 					self.geometry.crown.spikes.push({
 						curveLeft: {
 							ctrlPt1: matrix[0],
@@ -1203,7 +1212,7 @@ function Plant(data) {
 				});
 			} else if (self.geometry.crown.shape === "simple-curve" || self.geometry.crown.shape === "simple-bezier") {
 				for (let i = 0; i < self.geometry.crown.number; i++) {
-					let matrix = [...self.petals.leafModel.matrix];
+					let matrix = [...self.geometry.crown.matrix];
 					self.geometry.crown.spikes.push({
 						curveUnique: {
 							pt1: matrix[0],
@@ -1258,7 +1267,7 @@ function Plant(data) {
 				let previousColor = self.geometry.crown.color;
 				let ageFactor = Math.floor((self.age - 30) / 20);
 				for (let i = 0; i < (self.geometry.crown.number + ageFactor); i++) {
-					let matrix = [...self.petals.leafModel.matrix];
+					let matrix = [...self.geometry.crown.matrix];
 					self.geometry.crown.spikes.push(matrix);
 					previousColor = LightenDarkenColor(previousColor,-20)
 					self.geometry.crown.colors.push(previousColor);
@@ -1273,14 +1282,15 @@ function Plant(data) {
 						self.geometry.crown.spikes[index][ptNum].y = Math.floor(centralPoint.y + (self.geometry.crown.spikes[index][ptNum].y * spikeRadius * ratio));
 					};
 				};
-			}else if (self.geometry.crown.shape === "polygons-with-colors") {
+			}
+			else if (self.geometry.crown.shape === "polygons-with-colors") {
  				let centralPoint = { ...self.positionAbsolute };
 				self.geometry.heart.center = { ...self.positionAbsolute };
 				self.collider.center = { ...self.positionAbsolute };
 				const spikeRadius = self.geometry.crown.radius;
 				self.collider.dim2 = spikeRadius;
-				for (let i = 0; i < self.petals.leafModel.matrix.length; i++) {
-					let matrix = [...self.petals.leafModel.matrix[i]];
+				for (let i = 0; i < self.geometry.crown.matrix.length; i++) {
+					let matrix = [...self.geometry.crown.matrix[i]];
 					self.geometry.crown.spikes.push(matrix);
 				}
 				for (let index = 0; index < self.geometry.crown.spikes.length; index++) {
@@ -1290,24 +1300,6 @@ function Plant(data) {
 						self.geometry.crown.spikes[index][ptNum].y = Math.floor(centralPoint.y + (self.geometry.crown.spikes[index][ptNum].y * spikeRadius));
 					};
 				}; 
-			}else if(self.geometry.crown.shape === "ellipse"){
-				let centralPoint = { ...self.positionAbsolute };
-				self.geometry.heart.center = { ...self.positionAbsolute };;
-				self.collider.center = { ...self.positionAbsolute };
-				const spikeRadius = self.geometry.crown.radius;
-
-				self.collider.dim2 = spikeRadius;
-				let aleaMax = Math.floor(spikeRadius / 8);
-				let color = self.geometry.crown.color;
-
-				for (let i = 0; i < self.geometry.crown.number; i++) {
-					let widthHeightRot = { w: 0, h: 0 ,r : 0};
-					let alea = (Math.random() * aleaMax) - aleaMax;
-					widthHeightRot.h = Math.floor(spikeRadius + alea);
-					widthHeightRot.w = Math.floor((widthHeightRot.h / self.petals.leafModel.size.widthLengthDivider ) + alea);
-					widthHeightRot.r =   self.innerRotation + self.petals.leafModel.angles[i];
-					self.geometry.crown.spikes.push(widthHeightRot);
-				}
 			}else {
 				throw 'Not implemented plant crown shape : ' + self.geometry.crown.shape;
 			}
@@ -1361,6 +1353,7 @@ function Plant(data) {
 
 				self.geometry.leaves = { shape: self.leaves.shape, color: self.leaves.leafModel.color, number: self.leaves.number, radius: spikesRadius };
 				self.geometry.leaves.borderColor = LightenDarkenColor(self.geometry.leaves.color, 40);
+				self.geometry.leaves.spikeRadius = spikesRadius;
 				self.geometry.leaves.spikes = [];
 				for (let i = 0; i < self.geometry.leaves.number; i++) {
 					let matrix = [...self.leaves.leafModel.matrix];
@@ -1461,11 +1454,14 @@ function Plant(data) {
 					context.restore();
 
 				}else if(self.geometry.leaves.shape === "simple-curve" || self.geometry.leaves.shape === "simple-bezier"){
-					let color = self.geometry.leaves.color;
-					let borderColor = self.geometry.leaves.borderColor;
 					context.save();
-					context.strokeStyle = borderColor;
-					context.fillStyle = color;
+					let centralPt = drawingPositionGet(self.positionAbsolute);
+					let spikeRadius = self.geometry.leaves.spikeRadius;
+					var grd = context.createRadialGradient(centralPt.x, centralPt.y, 20,centralPt.x, centralPt.y, spikeRadius*3);
+					grd.addColorStop(0, self.geometry.leaves.color);
+					grd.addColorStop(1, "white");
+					context.strokeStyle = self.geometry.leaves.color;
+					context.fillStyle = grd;
 					context.globalAlpha = self.geometry.leaves.opacity;
 
 					context.beginPath();
@@ -1486,19 +1482,21 @@ function Plant(data) {
 						}
 					});
 					context.closePath();
-					context.stroke();
 					context.fill();
 					context.restore();
 				}
 			}
 			if (self.geometry && self.geometry.crown) {
 				if (self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier" || self.geometry.crown.shape === "lines") {
-					let color = self.geometry.crown.color;
-					let borderColor = self.geometry.crown.borderColor;
 					context.save();
+					let centralPt = drawingPositionGet(self.positionAbsolute);
+					let spikeRadius = self.geometry.crown.spikeRadius;
+					var grd3 = context.createRadialGradient(centralPt.x, centralPt.y, 20,centralPt.x, centralPt.y, spikeRadius);
+					grd3.addColorStop(0, self.geometry.crown.color);
+					grd3.addColorStop(1, "white");
 					context.globalAlpha = 0.9;
-					context.strokeStyle = borderColor;
-					context.fillStyle = color;
+					context.strokeStyle =self.geometry.crown.shape === "lines" ? self.geometry.crown.color : self.geometry.crown.color;
+					context.fillStyle = self.geometry.crown.shape === "lines" ? self.geometry.crown.backgroundColor : grd3;
 					context.beginPath();
 
 					self.geometry.crown.spikes.forEach((spike) => {
@@ -1551,9 +1549,15 @@ function Plant(data) {
 				}else if(self.geometry.crown.shape === "simple-curve" || self.geometry.crown.shape === "simple-bezier"){
 					let color = self.geometry.crown.color;
 					let borderColor = self.geometry.crown.borderColor;
+					let spikeRadius = self.geometry.crown.spikeRadius;
 					context.save();
-					context.strokeStyle = borderColor;
-					context.fillStyle = color;
+					let centralPt = drawingPositionGet(self.positionAbsolute);
+
+					var grd2 = context.createRadialGradient(centralPt.x, centralPt.y, 5,centralPt.x, centralPt.y, spikeRadius*0.6);
+					grd2.addColorStop(0, color);
+					grd2.addColorStop(1, "white");
+					context.strokeStyle = color;
+					context.fillStyle = grd2;
 					context.globalAlpha = self.geometry.crown.opacity;
 
 					context.beginPath();
@@ -1580,19 +1584,23 @@ function Plant(data) {
 
 				}
 				else if(self.geometry.crown.shape === "polygon" || self.geometry.crown.shape === "polygons-with-colors"){
-					let color = self.geometry.crown.color;
-					let borderColor = self.geometry.crown.borderColor;
+					let centralPt = drawingPositionGet(self.positionAbsolute);
+					let spikeRadius = self.geometry.crown.spikeRadius ;
 
 					context.save();
-					context.globalAlpha = 1;
-					strokeWeight(5);
-					context.strokeStyle = borderColor;
-					context.fillStyle = color;
+					context.globalAlpha = 0.9;
+					strokeWeight(1);
+					let minimumDiameter = self.geometry.crown.shape === "polygon" ? spikeRadius / 5 : spikeRadius / 3;
+					let gradientEndMultiple = self.geometry.crown.shape === "polygon" ? 0.8 : 6;
+					var grd = context.createRadialGradient(centralPt.x, centralPt.y, minimumDiameter,centralPt.x, centralPt.y, spikeRadius*gradientEndMultiple);
+					grd.addColorStop(0, '#00aa00');
+					grd.addColorStop(0.2, self.geometry.crown.colors[0]);
+					grd.addColorStop(0.9, self.geometry.crown.colors[self.geometry.crown.colors.length-1]);
+
 
 					self.geometry.crown.spikes.forEach((petal,index) => {
-						
 						context.strokeStyle = self.geometry.crown.colors[index];
-						context.fillStyle = self.geometry.crown.colors[index];
+						context.fillStyle = index === 0 ? grd : self.geometry.crown.colors[index];
 						context.beginPath();
 
 						if (self.animation && self.animation.length > 0) {
@@ -1615,36 +1623,15 @@ function Plant(data) {
 					});
 					context.restore();
 
-				}else if(self.geometry.crown.shape === "ellipse"){
-					let color = self.geometry.crown.color;
-					let centralPt = drawingPositionGet({ ...self.geometry.heart.center });
-					context.save();
-					context.globalAlpha = 0.9;
-					context.fillStyle = color;
-			
-					self.geometry.crown.spikes.forEach((petal) => {
-						if (self.animation && self.animation.length > 0) {
-							translate(self.animation[0], self.animation[0]);
-							self.animation.shift();
-						}
-						translate(0, 0);
-						context.beginPath();
-						ellipse(0, 0, petal.w, petal.h);
-						rotate(petal.r);
-						translate(width / 2 + centralPt.x, height / 2+centralPt.y)
-						context.closePath();
-						context.fill();
-					});
-
-					context.restore();
-
 				}
+
 				if (self.geometry.crown.shape === "lines") {
 					context.save();
-					context.strokeStyle = "white";
+					context.globalAlpha = 0.7;
+					context.strokeStyle = 'white';
 					context.fillStyle = color;
 					context.beginPath();
-					strokeWeight(1);
+					strokeWeight(2);
 					let centerPos = drawingPositionGet(self.geometry.heart.center);
 					self.geometry.crown.spikes.forEach((pt) => {
 						if (self.animation && self.animation.length > 0) {
@@ -1767,10 +1754,15 @@ function Plant(data) {
 			isVisible = true;
 
 			if (!isVisible) return;
+			let centralPt = drawingPositionGet(self.positionAbsolute);
+			var grd = context.createRadialGradient(centralPt.x, centralPt.y, 20,centralPt.x, centralPt.y, self.half);
+			grd.addColorStop(0.1, self.colors[0]);
+			grd.addColorStop(0.9, self.colors[self.colors.length-1]);
+
 			self.geometry.data2D.forEach((arr, index) => {
 				context.save();
 				context.globalAlpha = self.opacity;
-				context.fillStyle = self.colors[index];
+				context.fillStyle = index === 0 ? grd : self.colors[index];
 				context.strokeStyle = index === 0 ? self.borderColor : self.colors[index];
 				context.beginPath();
 				let drawPos = drawingPositionGet(arr[0]);
