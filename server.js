@@ -615,30 +615,6 @@ io.on('connection', (socket) => {
                   model:x.model,
                   stage: 0
                 }
-                  if(x.specific){
-                    seed.specific = {...x.specific};
-                  }
-                  if(model.petals){
-                    if(Math.random()<= 0.05){
-                      let amount = 20 + Math.floor(Math.random() * 40);
-                      if(seed.specific){
-                        seed.specific.petals.leafModel.color = shuffleColor(seed.specific.petals.leafModel.color,amount);
-                        if(seed.specific.petals.shape === 'simple_bezier'){
-                          let r1 = (Math.random() -0.5) /1;
-                          seed.specific.petals.leafModel.matrix[1].x += r1;
-                          seed.specific.petals.leafModel.matrix[1].y += r1;
-                          let r2 = (Math.random() -0.5) /1;
-                          seed.specific.petals.leafModel.matrix[2].x += r2;
-                          seed.specific.petals.leafModel.matrix[2].y += r2;
-
-                        }
-                        console.log(`Seed ${seed.name} has re-mutated...`)
-                      }else{
-                        seed.specific = {petals:{leafModel:{color:shuffleColor(model.petals.leafModel.color,amount)}}};
-                        console.log(`Seed ${seed.name} has mutated...`)
-                      }
-                    }
-                  }
                   newPlants.push(seed);
                 }
               }

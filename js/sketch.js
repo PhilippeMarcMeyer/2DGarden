@@ -11,8 +11,6 @@ let keys = {
 }
 let framerate = 30;
 let emiteveryNframe = 5;
-let autoGardens = null;
-let isAutoGardensSet = false;
 const camOverPlantLimit = 32;
 let playerColors = '#4e3d28,#2f1b0c,#303030,#2f4f4f,#5a5e6b,#1d4851,#132e18,#2c0020,#172b3b'.split(',');
 let otherPlayersIndex = 0;
@@ -32,6 +30,8 @@ let socket = io();
 let plantsBag = [];
 let backgroundIsReady = false;
 let backgroundImage;
+let playerDesign = null;
+let playerDesignLoaded = false;
 
 function mouseClicked() {
 	if (keys.shift && gameLoaded) {
@@ -84,6 +84,11 @@ function preloadBg() {
 		});
 	}
 
+	function preloadPLayersMatrix(data){
+		playerDesign = {...data};
+		playerDesignLoaded = true;
+	}
+
 function setup() {
 	pixelDensity(1);
 	debugMode = false;
@@ -92,6 +97,7 @@ function setup() {
 	loadJSON('/files/world1.json', result => {
 		worldModel = { ...result };
 		preloadBg();
+		preloadPLayersMatrix(worldModel.data.mobs.ladyBug);
 		things = setNotMobs(worldModel);
 		createCanvas(windowWidth, windowHeight);
 		setUtilValues();
@@ -113,40 +119,6 @@ function serverSendPlayerPosition() {
 		message(_camera.positionsTransmitter[posNr - 1]);
 		_camera.positionsTransmitter.length = 0;
 	}
-}
-
-function setAutoGardens(){
-	autoGardens.forEach((garden) => {
-		garden.collider = {};
-		garden.collider.shape = 'poly';
-		let w = garden.buildingInfos.width;
-		let h = garden.buildingInfos.height;
-		let topLeft = { ...garden.buildingInfos.topLeft };
-		let topRight = {
-			x: topLeft.x + w,
-			y: topLeft.y
-		};
-		let bottomLeft = {
-			x: topLeft.x,
-			y: topLeft.y + h
-		};
-		let bottomRight = {
-			x: topLeft.x + w,
-			y: topLeft.y + h
-		};
-		garden.collider.data = [topLeft, topRight, bottomRight, bottomLeft, topLeft];
-		garden.workers.forEach((w) => {
-			let models = worldModel.data.robotModels.filter((x) => {
-				return x.name === w.model;
-			});
-			if (models.length === 1) {
-				w.matrix = [...models[0].matrix];
-			} else {
-				w.matrix = null;
-			}
-		})
-	});
-	isAutoGardensSet = true;
 }
 
 function draw() {
@@ -214,8 +186,6 @@ function draw() {
 		});
 		if (_camera && !_camera.isFlying) _camera.draw();
 
-		if (isAutoGardensSet) drawAutoGardens();
-
 	things
 		.filter((t) => {
 			return (t instanceof Plant && t.collider.dim2 >= camOverPlantLimit);
@@ -227,58 +197,6 @@ function draw() {
 		if (_camera && _camera.isFlying) _camera.draw();
 
 	drawInformations();
-}
-
-function drawAutoGardens() {
-	autoGardens.forEach((garden) => {
-		// Building with charging stations
-		let topLeft = drawingPositionGet(garden.buildingInfos.topLeft);
-		let buildingHeight = garden.buildingInfos.height;
-		let buildingWidth = garden.buildingInfos.width;
-		context.beginPath();
-		context.strokeStyle = "silver";
-		strokeWeight(3);
-		line(topLeft.x, topLeft.y + buildingHeight, topLeft.x, topLeft.y);
-		line(topLeft.x, topLeft.y, topLeft.x + buildingWidth, topLeft.y);
-		line(topLeft.x + buildingWidth, topLeft.y, topLeft.x + buildingWidth, topLeft.y + buildingHeight);
-		strokeWeight(1);
-		let interBoxesWidth = buildingWidth / (garden.buildingInfos.boxes)
-		for (let i = 1; i <= garden.buildingInfos.boxes; i++) {
-			line(topLeft.x + (interBoxesWidth * i), topLeft.y, topLeft.x + (interBoxesWidth * i), topLeft.y + buildingHeight);
-		}
-		context.closePath();
-		context.stroke();
-		// text(`${topLeft.x}`, topLeft.x, topLeft.y + 30);
-		// text(`,${topLeft.y}`, topLeft.x, topLeft.y + 60);
-		// Robots
-		garden.workers.forEach((w, index) => {
-			if (w.matrix) {
-				let multiplier = w.innerSize * 0.6;
-				let center = drawingPositionGet(w.currentPosition);
-				let pts = [];
-				pts = w.matrix.map((pt) => {
-					return simpleRotate(pt, w.currentOrientation);
-				});
-
-				pts.forEach((pt) => {
-					pt.x = center.x + (multiplier * pt.x);
-					pt.y = center.y + (multiplier * pt.y);
-				});
-
-				//context.save();
-				context.beginPath();
-				context.strokeStyle = "#333";
-				context.fillStyle = playerColors[index % (playerColors.length)];
-				context.moveTo(pts[0].x, pts[0].y);
-				pts.forEach((pt) => {
-					context.lineTo(pt.x, pt.y);
-				})
-				context.closePath();
-				context.fill();
-				context.stroke();
-			}
-		});
-	});
 }
 
 // Utilities
@@ -362,8 +280,7 @@ socket.on("info", (msg) => {
 		let cookieInfos = { "name": playerName, "color": playerColor, position: playerPosition, rotation: playerRotation };
 		document.cookie = "garden=" + JSON.stringify(cookieInfos);
 	} else if (msg.what === 'auto-gardens') {
-		autoGardens = [...msg.data];
-		isAutoGardensSet = false;
+		console.log(`${msg.what} are not implemented and won't be !`)
 	} else if (msg.what === 'player-disconnected') {
 		_otherPlayers = _otherPlayers.filter((u) => {
 			return u.playerId !== msg.playerId;
@@ -663,18 +580,6 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 	this.checkCollisions = function () {
 		let self = this;
 		let stopped = false;
-		if (autoGardens && isAutoGardensSet) {
-			autoGardens.forEach((garden) => {
-				if (garden.collider) {
-					if (collideCirclePoly(self.position.x, self.position.y, self.bodyRadius * 2, garden.collider.data)) {
-						self.restorePosition();
-						self.isMoving = false;
-						stopped = true;
-					}
-				}
-			});
-		}
-
 		if (stopped) return;
 
 		for (let i = 0; i < things.length; i++) {
@@ -1592,15 +1497,28 @@ function Plant(data) {
 					strokeWeight(1);
 					let minimumDiameter = self.geometry.crown.shape === "polygon" ? spikeRadius / 5 : spikeRadius / 3;
 					let gradientEndMultiple = self.geometry.crown.shape === "polygon" ? 0.8 : 6;
-					var grd = context.createRadialGradient(centralPt.x, centralPt.y, minimumDiameter,centralPt.x, centralPt.y, spikeRadius*gradientEndMultiple);
-					grd.addColorStop(0, '#00aa00');
-					grd.addColorStop(0.2, self.geometry.crown.colors[0]);
-					grd.addColorStop(0.9, self.geometry.crown.colors[self.geometry.crown.colors.length-1]);
+					var grdLeaves = context.createRadialGradient(centralPt.x, centralPt.y, minimumDiameter,centralPt.x, centralPt.y, spikeRadius*gradientEndMultiple);
+					grdLeaves.addColorStop(0, '#00aa00');
+					grdLeaves.addColorStop(0.2, self.geometry.crown.colors[0]);
+					grdLeaves.addColorStop(0.9, self.geometry.crown.colors[self.geometry.crown.colors.length-1]);
 
+					var grdPetals = context.createRadialGradient(centralPt.x, centralPt.y, minimumDiameter,centralPt.x, centralPt.y, spikeRadius*1.1);
+					grdPetals.addColorStop(0, self.geometry.crown.colors[0]);
+					grdPetals.addColorStop(0.8, '#ffffff');
+					
+					let petalColor = self.geometry.crown.colors[0];
 
 					self.geometry.crown.spikes.forEach((petal,index) => {
 						context.strokeStyle = self.geometry.crown.colors[index];
-						context.fillStyle = index === 0 ? grd : self.geometry.crown.colors[index];
+						if(index === 0){
+							context.fillStyle = grdLeaves;
+						}else {
+							if(petalColor ===  self.geometry.crown.colors[index]){
+								context.fillStyle = grdPetals;
+							}else{
+								context.fillStyle = self.geometry.crown.colors[index];
+							}
+						}
 						context.beginPath();
 
 						if (self.animation && self.animation.length > 0) {
