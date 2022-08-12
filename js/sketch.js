@@ -84,11 +84,6 @@ function preloadBg() {
 		});
 	}
 
-	function preloadPLayersMatrix(data){
-		playerDesign = {...data};
-		playerDesignLoaded = true;
-	}
-
 function setup() {
 	pixelDensity(1);
 	debugMode = false;
@@ -97,7 +92,6 @@ function setup() {
 	loadJSON('/files/world1.json', result => {
 		worldModel = { ...result };
 		preloadBg();
-		preloadPLayersMatrix(worldModel.data.mobs.ladyBug);
 		things = setNotMobs(worldModel);
 		createCanvas(windowWidth, windowHeight);
 		setUtilValues();
@@ -152,7 +146,6 @@ function draw() {
 	if(backgroundIsReady){
 		let diameter = worldModel.radius * 2;
 		clear();
-		let self = this;
 		context.save();
 		context.beginPath();
 		context.fillStyle = worldModel.baseColor;
@@ -260,7 +253,6 @@ function applyConnectionState(state) {
 
 	} else {
 		onLine = false;
-		//_otherPlayers = [];	
 	}
 }
 
@@ -279,8 +271,6 @@ socket.on("info", (msg) => {
 		_camera = new Kamera(framerate / 350, 350 / framerate, playerRotation, playerPosition, playerName, playerColor, playerGeneration, playerDotsNumber, playerDotsColor);
 		let cookieInfos = { "name": playerName, "color": playerColor, position: playerPosition, rotation: playerRotation };
 		document.cookie = "garden=" + JSON.stringify(cookieInfos);
-	} else if (msg.what === 'auto-gardens') {
-		console.log(`${msg.what} are not implemented and won't be !`)
 	} else if (msg.what === 'player-disconnected') {
 		_otherPlayers = _otherPlayers.filter((u) => {
 			return u.playerId !== msg.playerId;
@@ -382,7 +372,7 @@ function Floor(worldModel) {
 
 		self.elements.forEach((elem) => {
 			if (elem.shape === "circle") {
-/* 				context.save();
+			 /* context.save();
 				context.beginPath();
 				let centralPt = drawingPositionGet({ ...elem.center });
 				context.fillStyle = elem.color;
@@ -981,6 +971,8 @@ function Plant(data) {
 	this.isPrime = false;
 	this.position = data.position ?? getPosition(this.distance, this.angleToOrigine)
 	this.positionAbsolute = data.position || null;
+	this.isOnRock = data.isOnRock;
+	this.rockHouse = data.rockHouse;
 	this.collider = {
 		shape: "circle",
 		center: null,
@@ -1026,6 +1018,7 @@ function Plant(data) {
 		
 		// 4 leaves clovers provide a protection radius to ladybugs (will provide !)
 		let spikesRadius = Math.min(self.age * self.petals.leafModel.size.growthPerDay + self.petals.leafModel.size.min, self.petals.leafModel.size.max);
+		if(self.isOnRock) spikesRadius /= 3;
 
 		if (self.protectRadius !== null) {
 			self.protectRadius.radius = Math.min((self.age * self.protectRadius.growthPerDay) + self.protectRadius.min, self.protectRadius.max);
@@ -1050,7 +1043,9 @@ function Plant(data) {
 
 			self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size, center: null,borderColor: LightenDarkenColor(self.color,-30) };
 			self.geometry.crown = { shape: self.petals.shape, color: color, colors : colors , number: self.petals.number, radius: spikesRadius,opacity : self.petals.opacity || 1 };
+
 			self.geometry.crown.spikeRadius = spikesRadius;
+
 			if (self.specific && self.specific.petals && self.specific.petals.leafModel && self.specific.petals.leafModel.color) {
 				self.geometry.crown.color = self.specific.petals.leafModel.color;
 			}
@@ -1213,6 +1208,7 @@ function Plant(data) {
 		self.geometry.leaves = null;
 		if (self.leaves !== null) {
 			let spikesRadius = Math.min(self.age * self.leaves.leafModel.size.growthPerDay + self.leaves.leafModel.size.min, self.leaves.leafModel.size.max);
+			if(self.isOnRock) spikesRadius /= 3;
 
 			self.geometry.leaves = { shape: self.leaves.shape, color: self.leaves.leafModel.color, number: self.leaves.number, radius: spikesRadius, opacity : self.leaves.opacity || 1 };
 			self.geometry.leaves.borderColor = LightenDarkenColor(self.geometry.leaves.color, 40);
@@ -1255,6 +1251,7 @@ function Plant(data) {
 			}else if (self.geometry.leaves.shape === "simple-curve" || self.geometry.leaves.shape === "simple-bezier") {
 
 				let spikesRadius = Math.min(self.age * self.leaves.leafModel.size.growthPerDay + self.leaves.leafModel.size.min, self.leaves.leafModel.size.max);
+				if(self.isOnRock) spikesRadius /= 3;
 
 				self.geometry.leaves = { shape: self.leaves.shape, color: self.leaves.leafModel.color, number: self.leaves.number, radius: spikesRadius };
 				self.geometry.leaves.borderColor = LightenDarkenColor(self.geometry.leaves.color, 40);

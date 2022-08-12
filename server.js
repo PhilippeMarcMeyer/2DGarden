@@ -18,9 +18,7 @@ let limitingCirles = [];
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
 const dayLengthConnection = 5 * 60 * 1000; // m minutes
-const autoGardensTiming = 5000;
 let dayLength = dayLengthConnection;
-let intervalDays;
 let serverLoaded = false;
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -58,22 +56,14 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
      });
 
     serverLoaded = true;
+ 
     console.log( `World model loaded at ${new Date().toISOString()}`);
-
-   // tidyGarden();
-
-    //autoGardens = manageGardens(worldModel.data.floor.shapes);
 
     intervalPlayersSaving = setInterval(function(){
       savePlayers();
     },3*60*1000)
 
     maxPlantDistance = worldModel.radius * 1;
-
-    intervalAutoGardens = setInterval(() => {
-      if(worldOnHold) return;
-        autoGardensManage();
-    },autoGardensTiming);
 
     intervalDays = setInterval(function () {
       worldOnHold = true;
@@ -170,7 +160,6 @@ io.on('connection', (socket) => {
     console.log('player-identity')
     let data = { playerId: idconnected, what: "player-identity", name: p.name, color: p.color, position: p.position, rotation: p.rotation ,generation : p.generation ,dotsColor : p.dotsColor,dotsNumber : p.dotsNumber};
     socket.emit('info',data);
-   // p.socket.emit('info', { playerId: idconnected, data: autoGardens, what: "auto-gardens"});
     if(otherPlayers.length > 0){
       data.what = "player-connected";
       // Tell other players, there's a new kid in town !
@@ -240,6 +229,14 @@ io.on('connection', (socket) => {
             p.distance = plantPosInfos.distance;
             p.angleToOrigine = plantPosInfos.angleToOrigine;
             p.parentCircle = null;
+            p.isOnRock = false;
+            p.rockHouse = "";
+            worldModel.data.rocks.forEach((rock) => {
+              if (!p.isOnRock && pointIsInsidePoly(p.position, rock.position,rock.size)){
+                p.isOnRock = true;
+                p.rockHouse = rock.name;
+              }
+            });
           if(worldOnHold || worldLoading){
               // toDo : keep it for moving later
             } else {
@@ -381,36 +378,6 @@ io.on('connection', (socket) => {
     saveWorld();
   }
 
-  function tidyGarden(){
-    console.log('tidy garden');
-    worldModel.data.rocks.forEach((rock) => {
-      let radius = Math.floor(rock.size);
-      console.log(radius);
-      worldModel.data.plants = worldModel.data.plants.filter((p) => {
-        return getDistance(rock.position, p.position) > radius;
-      });
-    });
-
-    let findLake = worldModel.data.floor.shapes.filter((x) => {
-      return x.name && x.name === "south-lake";
-    });
-    if (findLake.length === 1) {
-      let lakePosition = findLake[0].position;
-      let lakeRadius = Math.floor(findLake[0].size[0]);
-      console.log(`Lake radius ${lakeRadius}`);
-      console.log(worldModel.data.plants.length);
-
-      worldModel.data.plants = worldModel.data.plants.filter((p) => {
-        let dist = getDistance(lakePosition, p.position);
-        console.log(dist);
-        return dist > lakeRadius;
-      });
-      console.log(worldModel.data.plants.length);
-
-    }
-    saveWorld();
-  }
-
   function deduplicateGarden(){
     let duplicateNr = 0;
     worldModel.data.plants.sort((a,b) => {
@@ -522,13 +489,6 @@ io.on('connection', (socket) => {
       if(!found) currentNrOutOfCircles++;
     });
 
-/*     worldModel.data.plants.forEach((p) => {
-      if(p.parentCircle != null && p.distance >= maxPlantDistance){
-        p.distance = Math.floor(Math.random() * maxPlantDistance);
-        p.position = getPosition(p.distance ,p.angleToOrigine);
-      }
-    }); */
-
     let maxPlantsOutsideCircles = 25; // Plants outside circles
     let maxPlants = maxPlantsOutsideCircles;
 
@@ -588,33 +548,26 @@ io.on('connection', (socket) => {
               let n = 0
               while (n < seedsNr) {
                 n++;
-                if (Math.random() <= model.evolution.seedSuccesRate){
-                  // todo : cacl true distance and angle !!!
+                if (Math.random() <= model.evolution.seedSuccesRate) {
                   let seedAngle = (Math.random() * Math.PI * 2);
-                  let seedDistance =  model.evolution.seedDistance.min + Math.floor(((model.evolution.seedDistance.max - model.evolution.seedDistance.min) * Math.random()) + 0.5);
-                  let newPt = getPosition(seedDistance,seedAngle);
+                  let seedDistance = model.evolution.seedDistance.min + Math.floor(((model.evolution.seedDistance.max - model.evolution.seedDistance.min) * Math.random()) + 0.5);
+                  let newPt = getPosition(seedDistance, seedAngle);
                   newPt.x += x.position.x;
                   newPt.y += x.position.y;
                   let seedPosInfos = getAngleAndDistance(newPt);
-                  /*
-                  if(seedPosInfos.distance > maxPlantDistance){
-                    seedPosInfos.distance = Math.floor(Math.random() * maxPlantDistance);
-                    newPt = getPosition(seedPosInfos.distance ,seedPosInfos.angleToOrigine);
+                  let seed = {
+                    birth: worldModel.gardenDay,
+                    distance: seedPosInfos.distance,
+                    angleToOrigine: seedPosInfos.angleToOrigine,
+                    position: newPt,
+                    color: x.color,
+                    shape: x.shape,
+                    size: { ...x.size },
+                    name: x.name.split("-")[0] + "-" + worldModel.gardenDay + "*" + (n + 1),
+                    innerRotation: (Math.random() * Math.PI * 2),
+                    model: x.model,
+                    stage: 0
                   }
-                  */
-                 let seed = {
-                  birth: worldModel.gardenDay,
-                  distance: seedPosInfos.distance,
-                  angleToOrigine: seedPosInfos.angleToOrigine,
-                  position : newPt,
-                  color: x.color,
-                  shape: x.shape,
-                  size: {... x.size},
-                  name : x.name.split("-")[0] + "-" + worldModel.gardenDay + "*" + (n + 1),
-                  innerRotation : (Math.random() * Math.PI * 2),
-                  model:x.model,
-                  stage: 0
-                }
                   newPlants.push(seed);
                 }
               }
@@ -657,22 +610,21 @@ io.on('connection', (socket) => {
         console.log(`${seedsBefore - seedsAfter} seed(s) have fallen into the lake...`);
       }
     }
-/*
-    if (newPlants.length > 0) {
-      let seedsBefore = newPlants.length;
-      worldModel.data.rocks.forEach((rock) => {
-        let radius = Math.floor(rock.size) ;
-        newPlants = newPlants.filter((seed) => {
-          return getDistance(rock.position, seed.position) > radius;
-        });
-      });
-
-      let seedsAfter = newPlants.length;
-      console.log(`${seedsBefore - seedsAfter} seed(s) have fallen onto a rock...`);
-    }
-    */
 
     console.log(`Adding ${newPlants.length} seeds to the garden...`);
+
+    if (newPlants.length > 0) {
+      newPlants.forEach((p) => {
+        p.isOnRock = false;
+        p.rockHouse = "";
+        worldModel.data.rocks.forEach((rock) => {
+          if (!p.isOnRock && pointIsInsidePoly(p.position, rock.position,rock.size)){
+            p.isOnRock = true;
+            p.rockHouse = rock.name;
+          }
+        });
+      });
+    }
 
     if(newPlants.length > 0){
       worldModel.data.plants = [... worldModel.data.plants,...newPlants];
@@ -861,91 +813,13 @@ function LightenDarkenColor(col, amt) {
   return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
 }
 
-// -- agents
-function manageGardens (floorZones){
-  let gardenZones = floorZones.filter((floorZone) => {
-       return floorZone.specific && floorZone.specific === "auto-garden";
-  });
-
-  let gardenManagers = [];
-
-   gardenZones.forEach(zone => {
-       gardenManagers.push(new gardenFactory(zone))
-   });
-   return gardenManagers;
-}
-
-function gardenFactory(zone) {
-  this.name = zone.name;
-  this.circlesOfPlants = zone.circlesOfPlants;
-  this.workerOuterSize = zone.workerOuterSize;
-  this.workerInnerSize = zone.workerInnerSize;
-  this.position = { ...zone.position };
-  this.radius = zone.size[0];
-  this.workers = [];
-  this.nrWorkers = zone.nrWorkers ?? Math.floor(Math.cbrt(this.zone.size[0]) + 0.5);
-  this.buildingInfos = {
-    width: this.workerOuterSize * this.nrWorkers,
-    height: this.workerOuterSize,
-    topLeft: {
-      x: this.position.x - Math.floor((this.workerOuterSize * this.nrWorkers) / 2),
-      y: this.position.y + this.radius + 10
-    },
-    boxes: this.nrWorkers,
-    orientation: zone.orientation ?? toradians(90)
-  };
-  let data = { ...this };
-  for (let i = 0; i < this.nrWorkers; i++) {
-    let workerPosition = {... this.buildingInfos.topLeft};
-    workerPosition.x += (this.workerOuterSize * i);
-    let worker = new gardenWorker(data, i + 1, workerPosition);
-    this.workers.push(worker);
-  }
-}
-
-function autoGardensManage(){
-  autoGardens.forEach((garden) => {
-    garden.workers.forEach((worker, index) => {
-        if((worker.action.status === "powering" && worker.battery.current === worker.battery.capacity) || worker.action.status === "idle" ){
-          worker.action.status = "active";
-          worker.action.missionType = "cleaning";
-          worker.action.objectiveType = "objectiveType";
-          worker.action.objective = "active";
-
-        }
-    });
-  });
-}
-
-function gardenWorker(data, index, pos) {
-  this.outerSize = data.workerOuterSize;
-  this.innerSize = data.workerInnerSize;
-  this.model = 'gardener';
-  this.rank = index;
-  this.autoGarden = data.name;
-  this.name = `Worker ${index}`;
-  this.refillPosition = { ...pos };
-  let multiplier = this.innerSize * 0.6;
-
-  this.refillPosition.y += multiplier + 2;
-  this.refillPosition.x += this.outerSize / 2;
-  this.refillPosition.x = Math.floor(this.refillPosition.x);
-  this.refillPosition.y = Math.floor(this.refillPosition.y); 
-  this.currentPosition = { ...this.refillPosition };
-  this.refillOrientation = toradians(270);
-  this.currentOrientation = this.refillOrientation;
-  this.speed = 50; // millisec per pixel
-  this.spots = [null, null, null, null, null]; // "pockets" to carry seeds
-  this.battery = { capacity: 200, current: 200, costPer100Pixels: 1, chargingTimePerUnit: 5000 };
-  this.pixelsSpent = 0;
-  this.action = {
-    status : "powering",
-    missionType : null,
-    objective : null,
-    objectiveType : null
-  }
-}
-
 function toradians(degrees) {
 	return degrees * Math.PI / 180;
+}
+
+
+function pointIsInsidePoly(checkPoint, polyCenter,polySize) {
+  // very approximative : should make only round rocks !!!
+ let checkPointDistanceToCenter = getDistance(checkPoint,polyCenter);
+  return checkPointDistanceToCenter < (polySize /2) ;
 }
