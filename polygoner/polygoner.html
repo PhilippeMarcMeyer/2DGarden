@@ -73,21 +73,27 @@
 	
 	  </style>
  </head>
- <body>
+<body>
 	<div id="container">
 		<h5>Tiny polygon designer for p5.js</h5>
-		<div id="canvasZone" >
-		</div>
-	</div>	
-			<div class="controls">
-			<input type="button" id="saveRelative" value="Save relative" class="cool">
-			<input type="button" id="close" value="close polygon" class="cool">
-			<br/>
-			<input type="button" id="eraseLast" class="danger" value="Erase last pt">
-			<input type="button" id="eraseAll" class="danger" value="Erase All">
-			<br /><br />
-            <div id="formulas"></div>
-		</div>
+		<div id="canvasZone"></div>
+
 	</div>
- </body>
+	<div class="controls">
+		<input type="checkbox" id="autoMode" value="auto">Automatic Mode</input>
+		<br />
+		<input type="button" id="saveRelative" value="Save relative" class="cool">
+		<input type="button" id="close" value="close polygon" class="cool">
+		<input type="button" id="PtBPtA" value="PtB == PtA" class="cool">
+		<input type="number" id="nrRot" min="3" max="23" value="3"/>
+		<input type="button" id="multiply" value="multiply" class="cool">
+		<input type="button" id="toPolygon" value="to polygon" class="cool">
+		<input type="button" id="shake" value="shake" class="cool">
+		<br />
+		<input type="button" id="eraseLast" class="danger" value="Erase last pt">
+		<input type="button" id="eraseAll" class="danger" value="Erase All">
+		<br /><br />
+		<div id="formulas"></div>
+	</div>
+</body>
 </html>

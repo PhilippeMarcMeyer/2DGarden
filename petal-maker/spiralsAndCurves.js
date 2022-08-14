@@ -85,7 +85,6 @@ function setListeners(){
 		var formula = null;
 		if(globals.curveType=="bezier"){
 			formula = "bezier("+ptA.x+","+ptA.y+","+CrtlPt1.x+","+CrtlPt1.y+","+CrtlPt2.x+","+CrtlPt2.y+","+ptB.x+","+ptB.y+");"
-			
 		}
 		if(globals.curveType=="curve"){
 			formula = "curve("+CrtlPt1.x+","+CrtlPt1.y+","+ptA.x+","+ptA.y+","+ptB.x+","+ptB.y+","+CrtlPt2.x+","+CrtlPt2.y+");"
@@ -136,7 +135,6 @@ function setListeners(){
 		
 	},false);
 	
-		
 	document.getElementById("toggleState").addEventListener("click",function(){
 			globals.state = globals.state == "design" ? "play" : "design";
 			updateUI();
@@ -289,22 +287,23 @@ function mouseReleased() {
 }
 
 function stayInside(pt,x,y){
- if(x < 0){
-	  x = pt.radius;
-  }
-    if(y < 0){
-	  y = pt.radius;
-  }
-    if(x > globals.mainWidth){
-	  x = globals.mainWidth - pt.radius;
-  }
-    if(y > globals.mainHeight){
-	  y = globals.mainHeight - pt.radius;
-  }
-  pt.x = round(x);
-  pt.y = round(y);
-  return pt;
-}
+	if(x < 0){
+		 x = pt.radius;
+	 }
+	   if(y < 0){
+		 y = pt.radius;
+	 }
+	   if(x > globals.mainWidth){
+		 x = globals.mainWidth - pt.radius;
+	 }
+	   if(y > globals.mainHeight){
+		 y = globals.mainHeight - pt.radius;
+	 }
+	 pt.x = round(x);
+	 pt.y = round(y);
+	 return pt;
+   }
+
 
 function getStokeWeight(){
 	var strokeWht = globals.strokeWeight;

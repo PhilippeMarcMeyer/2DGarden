@@ -7,6 +7,13 @@ const io = require('socket.io')(server, { cookie: true })
 const cookieParser = require('cookie-parser')
 const cookieName = "garden";
 const fs = require('fs');
+/* const { createCanvas } = require('canvas')
+
+const width = 600
+const height = 600
+
+const canvas = createCanvas(width, height)
+const context = canvas.getContext('2d') */
 
 let users = [];
 let worldModel = null;
