@@ -13,7 +13,7 @@ var arrObjects = [];
 let can;
 
 function setup() {
-	var selectedImage = null;
+	var selectedImage = "anthill.png";
 	can = createCanvas(size, size);
 	can.parent('canvasZone');
 	can.mouseReleased(function () {
@@ -180,13 +180,17 @@ function setListeners() {
 	}, false);
 
 	document.getElementById("shake").addEventListener("click", function () {
+		let xoff = 0;
+		let yoff = 0;
 		pointsList.forEach((pt,i) => {
+			xoff += 0.01;
+			yoff += 0.02;
 			if(i%2){
-				pt.x += Math.floor(Math.random()*3)
-				pt.y -= Math.floor(Math.random()*3)
+				pt.x += noise(xoff);
+				pt.y -= noise(yoff);
 			}else{
-				pt.x -= Math.floor(Math.random()*3)
-				pt.y += Math.floor(Math.random()*3)	
+				pt.x -= noise(xoff);
+				pt.y += noise(yoff);
 			}
 
 		})

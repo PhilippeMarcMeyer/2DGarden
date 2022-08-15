@@ -368,7 +368,7 @@ function Floor(worldModel) {
 		context.closePath();
 		context.fill();
 		context.stroke();
-		context.restore();
+		context.restore(); 
 
 		self.elements.forEach((elem) => {
 			if (elem.shape === "circle") {

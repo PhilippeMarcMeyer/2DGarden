@@ -24,7 +24,7 @@ let autoGardens = [];
 let limitingCirles = [];
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 5 * 60 * 1000; // m minutes
+const dayLengthConnection = 10 * 60 * 1000; // m minutes
 let dayLength = dayLengthConnection;
 let serverLoaded = false;
 app.use(bodyParser.json())
