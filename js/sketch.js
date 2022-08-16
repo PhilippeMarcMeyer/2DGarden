@@ -1493,9 +1493,9 @@ function Plant(data) {
 					context.globalAlpha = 0.9;
 					strokeWeight(1);
 					let minimumDiameter = self.geometry.crown.shape === "polygon" ? spikeRadius / 5 : spikeRadius / 3;
-					let gradientEndMultiple = self.geometry.crown.shape === "polygon" ? 0.8 : 6;
+					let gradientEndMultiple = self.geometry.crown.shape === "polygon" ? 0.8 : 8;
 					var grdLeaves = context.createRadialGradient(centralPt.x, centralPt.y, minimumDiameter,centralPt.x, centralPt.y, spikeRadius*gradientEndMultiple);
-					grdLeaves.addColorStop(0, '#00aa00');
+					grdLeaves.addColorStop(0, '#008800');
 					grdLeaves.addColorStop(0.2, self.geometry.crown.colors[0]);
 					grdLeaves.addColorStop(0.9, self.geometry.crown.colors[self.geometry.crown.colors.length-1]);
 

@@ -24,7 +24,7 @@ let autoGardens = [];
 let limitingCirles = [];
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 10 * 60 * 1000; // m minutes
+const dayLengthConnection = 5 * 60 * 1000; // m minutes
 let dayLength = dayLengthConnection;
 let serverLoaded = false;
 app.use(bodyParser.json())
@@ -94,12 +94,17 @@ fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
 
 function saveWorld() {
   worldLoading = true;
-  fs.writeFile("./files/world1.json", JSON.stringify(worldModel, null, 2), err => {
+  fs.writeFile("./files/world1.json", "", err => {
     if (err) {
-      console.log("Error writing world file:", err);
-    }else{
-      worldLoading = false;
+      console.log("Error emptying world file:", err);
     }
+    fs.writeFile("./files/world1.json", JSON.stringify(worldModel, null, 2), err => {
+      if (err) {
+        console.log("Error writing world file:", err);
+      } else {
+        worldLoading = false;
+      }
+    });
   });
 }
 
