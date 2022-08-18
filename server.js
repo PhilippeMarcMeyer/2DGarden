@@ -20,7 +20,6 @@ let worldModel = null;
 let worldOnHold = false;
 let worldLoading = false;
 let maxPlantDistance = 1600; 
-let autoGardens = [];
 let limitingCirles = [];
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
@@ -415,6 +414,7 @@ io.on('connection', (socket) => {
   }
 
   function saveSpecies(){
+    let savedNames = [];
     worldModel.data.models.forEach((m) => {
       let nr = worldModel.data.plants.filter((p)=>{
         return p.model === m.name;
@@ -436,8 +436,10 @@ io.on('connection', (socket) => {
           "model": `${m.name}`,
           "stage": 0
         })
+        savedNames.push(m.name);
       }
     });
+    return savedNames;
   }
 
   function getSeedsChance(modelName){
@@ -685,14 +687,11 @@ io.on('connection', (socket) => {
       return x.distance < 0.9 * worldModel.radius;
     });
 
-    let beforeSaveSpecies = worldModel.data.plants.length;
 
-    console.log(`plants after : ${beforeSaveSpecies}`);
-   saveSpecies();
-    let afterSaveSpecies = worldModel.data.plants.length;
-    let savedSpecies = afterSaveSpecies - beforeSaveSpecies;
-    if(savedSpecies > 0){
-      console.log(`Saved species : ${savedSpecies}`);
+    let savedSpeciesList = saveSpecies();
+
+    if(savedSpeciesList.length > 0){
+      console.log(`${savedSpeciesList.length} saved specie(s) : ${savedSpeciesList.join(',')}`);
     }
     console.log( `Stop Checking plants at ${new Date().toISOString()}`);
   }

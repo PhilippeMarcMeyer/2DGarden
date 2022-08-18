@@ -48,7 +48,7 @@ function mouseClicked() {
 		})
 
 		let plantsClicked = plants.filter((p) => {
-			return getDistance(p.position, pointClicked) < 20;
+			return getDistance(p.position, pointClicked) < 30;
 		});
 
 		if (plantsClicked.length > 0) {
@@ -1490,17 +1490,17 @@ function Plant(data) {
 					let spikeRadius = self.geometry.crown.spikeRadius ;
 
 					context.save();
-					context.globalAlpha = 0.9;
+					context.globalAlpha = self.petals.opacity ?? 1;
 					strokeWeight(1);
 					let minimumDiameter = self.geometry.crown.shape === "polygon" ? spikeRadius / 5 : spikeRadius / 3;
 					let gradientEndMultiple = self.geometry.crown.shape === "polygon" ? 0.8 : 8;
 					var grdLeaves = context.createRadialGradient(centralPt.x, centralPt.y, minimumDiameter,centralPt.x, centralPt.y, spikeRadius*gradientEndMultiple);
-					grdLeaves.addColorStop(0, '#008800');
+					grdLeaves.addColorStop(0, '#228811');
 					grdLeaves.addColorStop(0.2, self.geometry.crown.colors[0]);
 					grdLeaves.addColorStop(0.9, self.geometry.crown.colors[self.geometry.crown.colors.length-1]);
 
 					var grdPetals = context.createRadialGradient(centralPt.x, centralPt.y, minimumDiameter,centralPt.x, centralPt.y, spikeRadius*1.1);
-					grdPetals.addColorStop(0, self.geometry.crown.colors[0]);
+					grdPetals.addColorStop(0.2, self.geometry.crown.colors[0]);
 					grdPetals.addColorStop(0.8, '#ffffff');
 					
 					let petalColor = self.geometry.crown.colors[0];
@@ -1976,3 +1976,5 @@ function Plant(data) {
 		  y: Math.floor(sin * distance)
 		}
 	  }
+
+	  
