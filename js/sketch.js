@@ -1042,7 +1042,15 @@ function Plant(data) {
 			}
 
 			self.geometry.heart = { shape: self.shape, color: self.color, diameter: self.size, center: null,borderColor: LightenDarkenColor(self.color,-30) };
-			self.geometry.crown = { shape: self.petals.shape, color: color, colors : colors , number: self.petals.number, radius: spikesRadius,opacity : self.petals.opacity || 1 };
+			self.geometry.crown = {
+				shape: self.petals.shape,
+				color: color,
+				colors: colors,
+				number: self.petals.number,
+				radius: spikesRadius,
+				opacity: self.petals.opacity || 1,
+				noLeaf : self.petals.leafModel.noLeaf ? true : false
+			};
 
 			self.geometry.crown.spikeRadius = spikesRadius;
 
@@ -1495,6 +1503,7 @@ function Plant(data) {
 					let minimumDiameter = self.geometry.crown.shape === "polygon" ? spikeRadius / 5 : spikeRadius / 3;
 					let gradientEndMultiple = self.geometry.crown.shape === "polygon" ? 0.8 : 8;
 					var grdLeaves = context.createRadialGradient(centralPt.x, centralPt.y, minimumDiameter,centralPt.x, centralPt.y, spikeRadius*gradientEndMultiple);
+
 					grdLeaves.addColorStop(0, '#228811');
 					grdLeaves.addColorStop(0.2, self.geometry.crown.colors[0]);
 					grdLeaves.addColorStop(0.9, self.geometry.crown.colors[self.geometry.crown.colors.length-1]);
@@ -1507,7 +1516,7 @@ function Plant(data) {
 
 					self.geometry.crown.spikes.forEach((petal,index) => {
 						context.strokeStyle = self.geometry.crown.colors[index];
-						if(index === 0){
+						if(index === 0 && !self.geometry.crown.noLeaf ){
 							context.fillStyle = grdLeaves;
 						}else {
 							if(petalColor ===  self.geometry.crown.colors[index]){

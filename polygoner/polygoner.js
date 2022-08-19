@@ -13,7 +13,7 @@ var arrObjects = [];
 let can;
 
 function setup() {
-	var selectedImage = "chicoree.png";
+	var selectedImage = null;
 	can = createCanvas(size, size);
 	can.parent('canvasZone');
 	can.mouseReleased(function () {
@@ -172,6 +172,9 @@ function setListeners() {
 			let maximizedArr = maximize(rotatedArr);
 			result = result.concat(maximizedArr);
 		}
+		result = result.filter((p) => {
+			return p.x < size && p.y < size && p.x > 0 && p.y > 0;
+		});
 		pointsList = [...result];
 	}, false);
 
