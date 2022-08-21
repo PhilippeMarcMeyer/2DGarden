@@ -33,75 +33,103 @@ app.use(express.json())
 app.use(express.static(__dirname));
 
 worldLoading = true;
-fs.readFile("./files/world1.json", "utf8", (err, rawdata) => {
-  if (err) {
-    console.log("World model file reading failed:", err);
-    return;
-  }
-  fs.readFile("./files/players.json", "utf8", (err, rawplayers) => {
-    if (err) {
-      console.log("Players file reading failed:", err);
-      return;
-    }
-    worldModel = JSON.parse(rawdata);
-    worldLoading = false;
-    if (rawplayers === null || rawplayers === '') {
-      usersMemory = {};
-    } else {
-      usersMemory = JSON.parse(rawplayers);
-    }
 
-    limitingCirles = worldModel.data.floor.shapes.filter((x) => {
-      return x.type && x.type === "auto-limit";
-    });
-
-    limitingCirles.forEach((circle) => {
-      if(!circle.position) {
-        circle.position = getPosition(circle.distance ,circle.angleToOrigine);
+loadFile('tinyIsland.json')
+.then(function (data) {
+  if(data && "error" in data){
+    console.log(`${data.filename} could not be loaded due to error ${data.error}.`);
+  }else{
+    worldModel = {...data};
+    loadFile(worldModel.plantsFile)
+    .then(function (plants) {
+      if(plants && "error" in plants){
+        console.log(`${plants.filename} could not be loaded due to error ${plants.error}.`);
+      }else{
+        if(plants === null){
+          worldModel.data.plants = [];
+        }else{
+          worldModel.data.plants = [...plants];
+        }
+        loadFile('players.json')
+        .then(function(players){
+          if(players && "error" in players){
+            console.log(`${players.filename} could not be loaded due to error ${players.error}.`);
+          }else{
+            if (players === null) {
+              usersMemory = {};
+            } else{
+              usersMemory = {...players};
+            }
+            worldLoading = false;
+            limitingCirles = worldModel.data.floor.shapes.filter((x) => {
+              return x.type && x.type === "auto-limit";
+            });
+        
+            limitingCirles.forEach((circle) => {
+              if(!circle.position) {
+                circle.position = getPosition(circle.distance ,circle.angleToOrigine);
+              }
+             });
+        
+            serverLoaded = true;
+         
+            console.log( `World model loaded at ${new Date().toISOString()}`);
+        
+            intervalPlayersSaving = setInterval(function(){
+              savePlayers();
+            },3*60*1000)
+        
+            maxPlantDistance = worldModel.radius * 1;
+            intervalDays = setInterval(function () {
+              worldOnHold = true;
+              worldModel.gardenDay++;
+              checkLakeAndRocks();
+              checkGenerations();
+              checkPlants();
+              saveWorld();
+              io.emit('info', { what: 'world-day', day: worldModel.gardenDay }); // call also to reload ?
+            }, dayLength);
+          }
+        })
       }
-     });
+    })
+  }
+})
 
-    serverLoaded = true;
- 
-    console.log( `World model loaded at ${new Date().toISOString()}`);
-
-    intervalPlayersSaving = setInterval(function(){
-      savePlayers();
-    },3*60*1000)
-
-    maxPlantDistance = worldModel.radius * 1;
-
-    intervalDays = setInterval(function () {
-      worldOnHold = true;
-      worldModel.gardenDay++;
-
-      // commanded by the server only
-      // check the evolution in the plant models to see if the begin to make seeds and later perish
-      // later add bonuses or maluses according to weather, water, soil, animals attack
-      // it would mean than a little part of the evolution is set in the plant itself and not in its model
-      // some plants could give protection to the ladybug on a radius egal to their size (4 petals clovers !)
-      // check if a lady bug is too old, then add 1 to the generation in the players.json aka usersMemory
-      checkLakeAndRocks();
-      checkGenerations();
-      checkPlants();
-      saveWorld();
-      worldOnHold = false;
-      io.emit('info', { what: 'world-day', day: worldModel.gardenDay }); // call also to reload ?
-    }, dayLength);
-  });
-});
-
-function saveWorld() {
-  worldLoading = true;
-  fs.writeFile("./files/world1.json", "", err => {
-    if (err) {
-      console.log("Error emptying world file:", err);
-    }
-    fs.writeFile("./files/world1.json", JSON.stringify(worldModel, null, 2), err => {
+function loadFile(filename) {
+  return new Promise(function (resolve, reject) {
+    fs.readFile(`./files/${filename}`, "utf8", (err, fileContent) => {
       if (err) {
-        console.log("Error writing world file:", err);
+        reject({ "filename": filename, "error": err });
+      } else {
+        try {
+          if(fileContent === ''){
+            resolve(null);
+          }else{
+            let data = JSON.parse(fileContent);
+            resolve(data);
+          }
+        } catch (e) {
+          reject({ "filename": filename, "error": "invalid json" });
+        }
+      }
+    });
+  });
+}
+
+function saveWorld(callback) {
+  worldLoading = true;
+  fs.writeFile(`./files/${worldModel.plantsFile}`, "", err => {
+    if (err) {
+      console.log("Error emptying plants file:", err);
+    }
+    fs.writeFile(`./files/${worldModel.plantsFile}`, JSON.stringify(worldModel.data.plants, null, 2), err => {
+      if (err) {
+        console.log("Error writing plants file:", err);
       } else {
         worldLoading = false;
+        worldOnHold = false;
+        if(callback) callback();
       }
     });
   });
@@ -252,16 +280,11 @@ io.on('connection', (socket) => {
               // toDo : keep it for moving later
             } else {
               worldLoading = true;
-              fs.writeFile("./files/world1.json", JSON.stringify(worldModel, null, 2), err => {
-                if (err) {
-                  console.log("Error writing world file:", err);
-                }else{
-                  worldLoading = false;
-                  users
-                  .forEach((u) => {
-                    u.socket.emit('info', { what: "plant-moved" });
-                  })
-                }
+              saveWorld(function(){
+                users
+                .forEach((u) => {
+                  u.socket.emit('info', { what: "plant-moved" });
+                })
               });
             }
           }

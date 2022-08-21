@@ -89,21 +89,26 @@ function setup() {
 	debugMode = false;
 	gameLoaded = false;
 	frameRate(framerate);
-	loadJSON('/files/world1.json', result => {
+	loadJSON('/files/tinyIsland.json', result => {
 		worldModel = { ...result };
 		preloadBg();
-		things = setNotMobs(worldModel);
-		createCanvas(windowWidth, windowHeight);
-		setUtilValues();
-		translate(width / 2, height / 2);
-		context = drawingContext;
-		setKeyDown();
-		setKeyUp();
-		floor = new Floor(worldModel);
-		gameLoaded = true;
-		socket.on('news', function (msg) {
-			console.log(msg)
+		loadJSON(`/files/${worldModel.plantsFile}`,result =>{
+			worldModel.data.plants = [...result];
+			things = setNotMobs(worldModel);
+			createCanvas(windowWidth, windowHeight);
+			setUtilValues();
+			translate(width / 2, height / 2);
+			context = drawingContext;
+			setKeyDown();
+			setKeyUp();
+			floor = new Floor(worldModel);
+			gameLoaded = true;
+			socket.on('news', function (msg) {
+				console.log(msg)
+			});
+
 		});
+
 	});
 }
 
