@@ -986,7 +986,8 @@ function Plant(data) {
 	}
 	this.init = function (arrOfPlants) {
 		const petalNoise = 0.03;
-		const petalNoiseCtrl = 0.05;
+		const petalLowNoise = 0.01;
+		const petalNoiseCtrl = 0.15;
 		const polyNoise = 0.03;
 
 		let self = this;
@@ -1094,8 +1095,11 @@ function Plant(data) {
 				let modelArray = JSON.stringify(self.geometry.crown.matrix);
 				for (let i = 0; i < self.geometry.crown.number; i++) {
 
-					let rand1 = random(-petalNoiseCtrl, petalNoiseCtrl);
-					let rand2 = random(-petalNoiseCtrl, petalNoiseCtrl);
+					let rand1 = random(-petalLowNoise, petalLowNoise);
+					let rand2 = random(-petalLowNoise, petalLowNoise);
+					let rand3= random(-petalNoiseCtrl, petalNoiseCtrl);
+					let rand4= random(-petalNoiseCtrl, petalNoiseCtrl);
+
 
 					let matrix = JSON.parse(modelArray);
 					let curveLeft = {
@@ -1111,10 +1115,15 @@ function Plant(data) {
 						ctrlPt2: matrix[7]
 					}
 
-					curveLeft.ctrlPt1.x += rand1;
-					curveLeft.ctrlPt1.y += rand2;
-					curveRight.ctrlPt2.x += rand1;
-					curveRight.ctrlPt2.y += rand2;
+					curveLeft.ctrlPt1.x += rand3;
+					curveLeft.ctrlPt1.y += rand3;
+					curveRight.ctrlPt2.x += rand4;
+					curveRight.ctrlPt2.y += rand4;
+
+					curveLeft.pt1.x += rand1;
+					curveLeft.pt1.y += rand1;
+					curveRight.pt2.x += rand2;
+					curveRight.pt2.y += rand2;
 
 					self.geometry.crown.spikes.push({
 						curveLeft: curveLeft,
@@ -1235,7 +1244,7 @@ function Plant(data) {
 					let rand1 = random(-polyNoise, polyNoise);
 					let rand2 = random(-polyNoise, polyNoise);
 					matrix.forEach((pt,i) => {
-						if (i % 3) {
+						if (i % 5) {
 							pt.x += rand1;
 							pt.y += rand2;
 						}

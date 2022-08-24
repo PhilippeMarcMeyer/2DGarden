@@ -4,7 +4,7 @@
   "baseColor": "#031F8D",
   "perimeterColor": "#031F8D",
   "backgroundImage": "BG4.png",
-  "gardenDay": 5175,
+  "gardenDay": 5224,
   "plantsFile": "tinyIslandPlants.json",
   "currentCenter": {
     "x": 0,
@@ -32,7 +32,7 @@
         "petals": {
           "shape": "polygons-with-colors",
           "number": 1,
-          "opacity": 0.9,
+          "opacity": 1,
           "leafModel": {
             "size": {
               "min": 20,
@@ -26571,7 +26571,7 @@
             "x": 0,
             "y": 0
           },
-          "currentNr": 28
+          "currentNr": 30
         },
         {
           "name": "limit-north-west",
@@ -26591,7 +26591,7 @@
             "x": -1000,
             "y": -1119
           },
-          "currentNr": 32
+          "currentNr": 31
         },
         {
           "name": "limit-north-est",
@@ -26611,7 +26611,7 @@
             "x": 1109,
             "y": -935
           },
-          "currentNr": 16
+          "currentNr": 19
         },
         {
           "name": "limit-south-west",
@@ -26651,7 +26651,7 @@
             "x": 920,
             "y": 1120
           },
-          "currentNr": 35
+          "currentNr": 34
         },
         {
           "name": "west-anthill",
