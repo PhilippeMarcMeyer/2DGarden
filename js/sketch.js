@@ -48,7 +48,7 @@ function mouseClicked() {
 		})
 
 		let plantsClicked = plants.filter((p) => {
-			return getDistance(p.position, pointClicked) < 30;
+			return getDistance(p.position, pointClicked) < 20;
 		});
 
 		if (plantsClicked.length > 0) {
@@ -954,7 +954,7 @@ function setNotMobs(world) {
 function Plant(data) {
 	this.birth = data.birth;
 	this.today = new Date();
-	this.age = worldModel.gardenDay - data.birth + 1;
+	this.age = Math.max(worldModel.gardenDay - data.birth + 1,1);
 	this.size = Math.min(this.age * data.size.growthPerDay + data.size.min, data.size.max);
 	this.distance = data.distance;
 	this.angleToOrigine = data.angleToOrigine;
@@ -985,6 +985,10 @@ function Plant(data) {
 		dim2: null
 	}
 	this.init = function (arrOfPlants) {
+		const petalNoise = 0.03;
+		const petalNoiseCtrl = 0.05;
+		const polyNoise = 0.03;
+
 		let self = this;
 		let modelQueryResult = null;
 
@@ -1087,21 +1091,34 @@ function Plant(data) {
 			}
 			self.geometry.crown.spikes = [];
 			if (self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier") {
+				let modelArray = JSON.stringify(self.geometry.crown.matrix);
 				for (let i = 0; i < self.geometry.crown.number; i++) {
-					let matrix = [...self.geometry.crown.matrix];
+
+					let rand1 = random(-petalNoiseCtrl, petalNoiseCtrl);
+					let rand2 = random(-petalNoiseCtrl, petalNoiseCtrl);
+
+					let matrix = JSON.parse(modelArray);
+					let curveLeft = {
+						ctrlPt1: matrix[0],
+						pt1: matrix[1],
+						pt2: matrix[2],
+						ctrlPt2: matrix[3]
+					}
+					let curveRight = {
+						ctrlPt1: matrix[4],
+						pt1: matrix[5],
+						pt2: matrix[6],
+						ctrlPt2: matrix[7]
+					}
+
+					curveLeft.ctrlPt1.x += rand1;
+					curveLeft.ctrlPt1.y += rand2;
+					curveRight.ctrlPt2.x += rand1;
+					curveRight.ctrlPt2.y += rand2;
+
 					self.geometry.crown.spikes.push({
-						curveLeft: {
-							ctrlPt1: matrix[0],
-							pt1: matrix[1],
-							pt2: matrix[2],
-							ctrlPt2: matrix[3]
-						},
-						curveRight: {
-							ctrlPt1: matrix[4],
-							pt1: matrix[5],
-							pt2: matrix[6],
-							ctrlPt2: matrix[7]
-						}
+						curveLeft: curveLeft,
+						curveRight: curveRight
 					})
 				}
 
@@ -1124,18 +1141,29 @@ function Plant(data) {
 					}
 				});
 			} else if (self.geometry.crown.shape === "simple-curve" || self.geometry.crown.shape === "simple-bezier") {
+				let modelArray = JSON.stringify(self.geometry.crown.matrix);
+
 				for (let i = 0; i < self.geometry.crown.number; i++) {
-					let matrix = [...self.geometry.crown.matrix];
-					self.geometry.crown.spikes.push({
+					let matrix = JSON.parse(modelArray);
+
+					let rand1 = random(-petalNoise, petalNoise);
+					let rand2 = random(-petalNoise, petalNoise);
+					let curve = {
 						curveUnique: {
 							pt1: matrix[0],
 							ctrlPt1: matrix[1],
 							ctrlPt2: matrix[2],
 							pt2: matrix[3]
 						}
-					})
-				}
+					}
+					curve.curveUnique.pt1.x += rand1;
+					curve.curveUnique.pt2.x += rand1;
+					curve.curveUnique.pt1.y += rand2;
+					curve.curveUnique.pt2.y += rand2;
 
+					self.geometry.crown.spikes.push(curve)
+
+				}
 				self.geometry.heart.center = { x: self.positionAbsolute.x, y: self.positionAbsolute.y };
 				self.collider.center = { x: self.positionAbsolute.x, y: self.positionAbsolute.y };
 				const spikeRadius = self.geometry.crown.radius;
@@ -1203,7 +1231,15 @@ function Plant(data) {
 				const spikeRadius = self.geometry.crown.radius;
 				self.collider.dim2 = spikeRadius;
 				for (let i = 0; i < self.geometry.crown.matrix.length; i++) {
-					let matrix = [...self.geometry.crown.matrix[i]];
+					let matrix = JSON.parse(JSON.stringify(self.geometry.crown.matrix[i]));
+					let rand1 = random(-polyNoise, polyNoise);
+					let rand2 = random(-polyNoise, polyNoise);
+					matrix.forEach((pt,i) => {
+						if (i % 3) {
+							pt.x += rand1;
+							pt.y += rand2;
+						}
+					})
 					self.geometry.crown.spikes.push(matrix);
 				}
 				for (let index = 0; index < self.geometry.crown.spikes.length; index++) {
@@ -1398,6 +1434,7 @@ function Plant(data) {
 					});
 					context.closePath();
 					context.fill();
+					context.stroke();
 					context.restore();
 				}
 			}
@@ -1489,7 +1526,7 @@ function Plant(data) {
 							curve(curvePts.ctrlPt1.x, curvePts.ctrlPt1.y, curvePts.pt1.x, curvePts.pt1.y, curvePts.pt2.x, curvePts.pt2.y, curvePts.ctrlPt2.x, curvePts.ctrlPt2.y);
 						}
 						if (self.geometry.crown.shape === "simple-bezier") {
-							bezier(curvePts.pt1.x, curvePts.pt1.y, curvePts.ctrlPt1.x, curvePts.ctrlPt1.y, curvePts.ctrlPt2.x, curvePts.ctrlPt2.y, curvePts.pt2.x, curvePts.pt2.y);
+							bezier(curvePts.pt1.x , curvePts.pt1.y, curvePts.ctrlPt1.x, curvePts.ctrlPt1.y, curvePts.ctrlPt2.x, curvePts.ctrlPt2.y, curvePts.pt2.x, curvePts.pt2.y);
 						}
 					});
 					context.closePath();
@@ -1742,7 +1779,7 @@ function Plant(data) {
 	}
 
 	function getDistance(ptA, ptB) {
-		if(!(ptA && ptA.x && ptA.y && ptB && ptB.x && ptB.y )) return -1;
+		if(!(ptA && ptA.x && ptA.y && ptB && ptB.x && ptB.y )) return 99999;
 		return Math.sqrt(Math.pow(ptB.x - ptA.x, 2) + Math.pow(ptB.y - ptA.y, 2));
 	  }
 	

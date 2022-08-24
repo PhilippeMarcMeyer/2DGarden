@@ -13,7 +13,7 @@ var arrObjects = [];
 let can;
 
 function setup() {
-	var selectedImage = null;
+	var selectedImage = "hairyFairie.png";
 	can = createCanvas(size, size);
 	can.parent('canvasZone');
 	can.mouseReleased(function () {
@@ -151,7 +151,7 @@ function setListeners() {
 	document.getElementById("toPolygon").addEventListener("click", function () {
 		if(autoMode){
 			pointsList = [];
-			let steps = 20;
+			let steps = document.querySelector("#nrPts").value;
 			for (let i = 0; i <= steps; i++) {
 			  let t = i / steps;
 			  let x = bezierPoint(ptA.x, CrtlPt1.x, CrtlPt2.x, ptB.x, t);

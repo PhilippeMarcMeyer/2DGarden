@@ -23,7 +23,7 @@ let maxPlantDistance = 1600;
 let limitingCirles = [];
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 5 * 60 * 1000; // m minutes
+const dayLengthConnection = 3 * 60 * 1000; // m minutes
 let dayLength = dayLengthConnection;
 let serverLoaded = false;
 app.use(bodyParser.json())
@@ -34,7 +34,9 @@ app.use(express.static(__dirname));
 
 worldLoading = true;
 
-loadFile('tinyIsland.json')
+const worldFileName = 'tinyIsland.json';
+
+loadFile(worldFileName)
 .then(function (data) {
   if(data && "error" in data){
     console.log(`${data.filename} could not be loaded due to error ${data.error}.`);
@@ -86,6 +88,7 @@ loadFile('tinyIsland.json')
               checkLakeAndRocks();
               checkGenerations();
               checkPlants();
+              savePlants();
               saveWorld();
               io.emit('info', { what: 'world-day', day: worldModel.gardenDay }); // call also to reload ?
             }, dayLength);
@@ -117,15 +120,62 @@ function loadFile(filename) {
   });
 }
 
-function saveWorld(callback) {
+function savePlants(callback) {
+  let plants = null;
+
+  if(worldModel.data.plants){
+    try{
+      plants = JSON.stringify(worldModel.data.plants, null, 2);
+    }
+    catch(e){
+      console.error(e);
+    } 
+  }
+
+  if(!plants){
+    return;
+  }
+
   worldLoading = true;
+
   fs.writeFile(`./files/${worldModel.plantsFile}`, "", err => {
     if (err) {
       console.log("Error emptying plants file:", err);
     }
-    fs.writeFile(`./files/${worldModel.plantsFile}`, JSON.stringify(worldModel.data.plants, null, 2), err => {
+    fs.writeFile(`./files/${worldModel.plantsFile}`, plants, err => {
       if (err) {
         console.log("Error writing plants file:", err);
+      } else {
+        worldLoading = false;
+        worldOnHold = false;
+        if(callback) callback();
+      }
+    });
+  });
+}
+
+function saveWorld(callback) {
+  // todo : put changing dara like fardenDay in a separate file
+  // Give the data complete to the front which should not load data directly
+  worldLoading = true;
+  let model = JSON.parse(JSON.stringify(worldModel));
+  if(model.data.plants) model.data.plants = [];
+  try{
+    modelJson = JSON.stringify(model, null, 2);
+  }
+  catch(e){
+    console.error(e);
+  } 
+
+  if (!modelJson) return;
+
+  fs.writeFile(`./files/${worldFileName}`, "", err => {
+    if (err) {
+      console.log("Error emptying world file:", err);
+    }
+    fs.writeFile(`./files/${worldFileName}`, modelJson, err => {
+      if (err) {
+        console.log("Error writing world file:", err);
       } else {
         worldLoading = false;
         worldOnHold = false;
@@ -145,7 +195,9 @@ app.get('/', function (req, res) {
 
 app.get('/plants', function (req, res) {
   if (serverLoaded) {
-    res.status(200).json(worldModel.data.plants);
+    if(arePlantsReady()){
+      res.status(200).json(worldModel.data.plants);
+    }
   } else {
     res.status(202).json({ "error": "Server is still loading ! Try later" });
   }
@@ -261,34 +313,38 @@ io.on('connection', (socket) => {
           })
       }else if(msg.what === 'plant-moved'){
         console.log(msg);
-        worldModel.data.plants.forEach((p) => {
-          if(p.name === msg.target){
-            p.position = msg.position;
-            let plantPosInfos = getAngleAndDistance(p.position);
-            p.distance = plantPosInfos.distance;
-            p.angleToOrigine = plantPosInfos.angleToOrigine;
-            p.parentCircle = null;
-            p.isOnRock = false;
-            p.rockHouse = "";
-            worldModel.data.rocks.forEach((rock) => {
-              if (!p.isOnRock && pointIsInsidePoly(p.position, rock.position,rock.size)){
-                p.isOnRock = true;
-                p.rockHouse = rock.name;
-              }
-            });
-          if(worldOnHold || worldLoading){
-              // toDo : keep it for moving later
-            } else {
-              worldLoading = true;
-              saveWorld(function(){
-                users
-                .forEach((u) => {
-                  u.socket.emit('info', { what: "plant-moved" });
-                })
+        if(arePlantsReady()){
+          worldModel.data.plants.forEach((p) => {
+            if(p.name === msg.target){
+              p.position = msg.position;
+              let plantPosInfos = getAngleAndDistance(p.position);
+              p.distance = plantPosInfos.distance;
+              p.angleToOrigine = plantPosInfos.angleToOrigine;
+              p.parentCircle = null;
+              p.isOnRock = false;
+              p.rockHouse = "";
+              worldModel.data.rocks.forEach((rock) => {
+                if (!p.isOnRock && pointIsInsidePoly(p.position, rock.position,rock.size)){
+                  p.isOnRock = true;
+                  p.rockHouse = rock.name;
+                }
               });
+            if(worldOnHold || worldLoading){
+                // toDo : keep it for moving later
+              } else {
+                worldLoading = true;
+                savePlants(function(){
+                  users
+                  .forEach((u) => {
+                    u.socket.emit('info', { what: "plant-moved" });
+                  })
+                });
+              }
             }
-          }
-        });
+          });
+        }else{
+          console.log("plants are not ready !");
+        }
       }
     });
 })
@@ -404,15 +460,17 @@ io.on('connection', (socket) => {
     });
   }
 
-  function destroy(){
-    worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
-      let test = Math.random();
-      return test < 0.3;
-    });
-    saveWorld();
-  }
+function destroy() {
+  if (!arePlantsReady()) return;
+  worldModel.data.plants = worldModel.data.plants.filter((x) => {
+    let test = Math.random();
+    return test < 0.3;
+  });
+  savePlants();
+}
 
   function deduplicateGarden(){
+    if (!arePlantsReady()) return;
     let duplicateNr = 0;
     worldModel.data.plants.sort((a,b) => {
       if (a.name < b.name) { return -1; }
@@ -432,27 +490,28 @@ io.on('connection', (socket) => {
       worldModel.data.plants =  worldModel.data.plants.filter((x)=>{
         return x.name !== "toDelete";
       });
-      saveWorld();
+      savePlants();
     }
   }
 
   function saveSpecies(){
+    if (!arePlantsReady()) return;
     let savedNames = [];
     worldModel.data.models.forEach((m) => {
       let nr = worldModel.data.plants.filter((p)=>{
         return p.model === m.name;
       }).length;
       if(nr === 0){
-        worldModel.data.plants.push( {
+        worldModel.data.plants.push({
           "birth": worldModel.gardenDay,
           "distance": 15 + Math.floor(Math.random() * 40) + Math.floor(Math.random() * 80),
           "angleToOrigine": 0.6472761753028762,
           "color": `${LightenDarkenColor(m.petals.leafModel.color,20)}`,
           "shape": "circle",
           "size": {
-            "min": parseInt(Math.floor(m.petals.leafModel.size.min/5)),
-            "max": Math.min(parseInt(Math.floor(m.petals.leafModel.size.max/5)),9),
-            "growthPerDay": 1
+            "min": m.heartLess ? 0 : parseInt(Math.floor(m.petals.leafModel.size.min/5)),
+            "max": m.heartLess ? 0 : Math.min(parseInt(Math.floor(m.petals.leafModel.size.max/5)),9),
+            "growthPerDay": m.heartLess ? 0 : 1
           },
           "name": `${m.name}-${worldModel.gardenDay}*1`,
           "innerRotation": Math.random() * Math.PI * 2,
@@ -466,6 +525,7 @@ io.on('connection', (socket) => {
   }
 
   function getSeedsChance(modelName){
+    if (!arePlantsReady()) return;
       let nr = worldModel.data.plants.filter((x)=>{
         return x.model === modelName;
       }).length;
@@ -474,17 +534,20 @@ io.on('connection', (socket) => {
   }
 
   function getModelExpansion(modelName) {
+    if (!arePlantsReady()) return;
     return worldModel.data.plants.filter((x) => {
       return x.model === modelName;
     }).length;
   }
 
   function checkPlants(){
-    
-    if(worldLoading) return;
 
-      deduplicateGarden();
-    
+    if (worldLoading) return;
+
+    if (!arePlantsReady()) return;
+
+    deduplicateGarden();
+
     // removing dead plants :-(
     console.log( `Beginning Checking plants at ${new Date().toISOString()}`);
 
@@ -849,6 +912,10 @@ function LightenDarkenColor(col, amt) {
 
 function toradians(degrees) {
 	return degrees * Math.PI / 180;
+}
+
+function arePlantsReady(){
+  return worldModel && worldModel.data && worldModel.data.plants && Array.isArray(worldModel.data.plants);
 }
 
 
