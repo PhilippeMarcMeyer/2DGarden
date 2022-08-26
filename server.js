@@ -41,83 +41,87 @@ loadFile(worldFileName)
     if (data && "error" in data) {
       console.log(`${data.filename} could not be loaded due to error ${data.error}.`);
     } else {
-      worldModel = {...data};
-      loadFile(worldModel.plantsFile)
-        .then(function (plants) {
-          if (plants && "error" in plants) {
-            console.log(`${plants.filename} could not be loaded due to error ${plants.error}.`);
-          } else {
-            if (plants === null) {
-              worldModel.data.plants = [];
-            } else {
-              worldModel.data.plants = [...plants];
-            }
-            loadFile('players.json')
-              .then(function (players) {
-                if (players && "error" in players) {
-                  console.log(`${players.filename} could not be loaded due to error ${players.error}.`);
-                } else {
-                  if (players === null) {
-                    usersMemory = {};
-                  } else {
-                    usersMemory = {
-                      ...players
-                    };
-                  }
-                  worldLoading = false;
-                  limitingCirles = worldModel.data.floor.shapes.filter((x) => {
-                    return x.type && x.type === "auto-limit";
-                  });
-
-                  limitingCirles.forEach((circle) => {
-                    if (!circle.position) {
-                      circle.position = getPosition(circle.distance, circle.angleToOrigine);
-                    }
-                  });
-
-                  serverLoaded = true;
-
-                  console.log(`World model loaded at ${new Date().toISOString()}`);
-
-                  intervalPlayersSaving = setInterval(function () {
-                    savePlayers();
-                  }, 3 * 60 * 1000)
-
-                  maxPlantDistance = worldModel.radius * 1;
-
-                  loadFile(worldModel.mobsFiles)
-                  .then(function (mobs) {
-                    if (mobs && "error" in mobs) {
-                      console.log(`players.json could not be loaded due to error ${players.error}.`);
-                    } else {
-                      if (mobs === null) {
-                        mobsList = [];
-                      } else {
-                        mobsList = [...mobs];
-                      }
-                    }
-                  });
-
-                  intervalDays = setInterval(function () {
-                    worldOnHold = true;
-                    worldModel.gardenDay++;
-                    checkLakeAndRocks();
-                    checkGenerations();
-                    checkPlants();
-                    checkMobs();
-                    savePlants();
-                    saveWorld();
-                    io.emit('info', {
-                      what: 'world-day',
-                      day: worldModel.gardenDay
-                    }); // call also to reload ?
-                  }, dayLength);
-                }
-              })
-          }
-        })
+      worldModel = {
+        ...data
+      };
+      return loadFile(worldModel.plantsFile);
     }
   })
+  .then(function (plants) {
+    if (plants && "error" in plants) {
+      console.log(`${plants.filename} could not be loaded due to error ${plants.error}.`);
+    } else {
+      if (plants === null) {
+        worldModel.data.plants = [];
+      } else {
+        worldModel.data.plants = [...plants];
+      }
+      return loadFile('players.json');
+    }
+  })
+  .then(function (players) {
+    if (players && "error" in players) {
+      console.log(`${players.filename} could not be loaded due to error ${players.error}.`);
+    } else {
+      if (players === null) {
+        usersMemory = {};
+      } else {
+        usersMemory = {
+          ...players
+        };
+      }
+      worldLoading = false;
+      limitingCirles = worldModel.data.floor.shapes.filter((x) => {
+        return x.type && x.type === "auto-limit";
+      });
+
+      limitingCirles.forEach((circle) => {
+        if (!circle.position) {
+          circle.position = getPosition(circle.distance, circle.angleToOrigine);
+        }
+      });
+
+      serverLoaded = true;
+
+      console.log(`World model loaded at ${new Date().toISOString()}`);
+
+      intervalPlayersSaving = setInterval(function () {
+        savePlayers();
+      }, 3 * 60 * 1000)
+
+      maxPlantDistance = worldModel.radius * 1;
+      return loadFile(worldModel.mobsFiles)
+    }
+  })
+  .then(function (mobs) {
+    if (mobs && "error" in mobs) {
+      console.log(`players.json could not be loaded due to error ${players.error}.`);
+    } else {
+      if (mobs === null) {
+        mobsList = [];
+      } else {
+        mobsList = [...mobs];
+      }
+      setDailySequence();
+    }
+  });
+
+function setDailySequence() {
+  intervalDays = setInterval(function () {
+    worldOnHold = true;
+    worldModel.gardenDay++;
+    checkLakeAndRocks();
+    checkGenerations();
+    checkPlants();
+    checkMobs();
+    savePlants();
+    saveWorld();
+    io.emit('info', {
+      what: 'world-day',
+      day: worldModel.gardenDay
+    }); // call also to reload ?
+  }, dayLength);
+}
 
 function loadFile(filename) {
   return new Promise(function (resolve, reject) {
@@ -133,8 +137,8 @@ function loadFile(filename) {
             resolve(null);
           } else {
             let offset = fileContent.indexOf(endOfFileTag);
-            if(offset !== -1){
-              fileContent = fileContent.substring(0,offset);
+            if (offset !== -1) {
+              fileContent = fileContent.substring(0, offset);
             }
             let data = JSON.parse(fileContent);
             resolve(data);
@@ -152,7 +156,7 @@ function loadFile(filename) {
 
 function saveMobs(callback) {
   let mobs = null;
-  if(!mobsList) mobsList = [];
+  if (!mobsList) mobsList = [];
   if (mobsList) {
     try {
       mobs = JSON.stringify(mobsList, null, 2);
@@ -167,7 +171,7 @@ function saveMobs(callback) {
 
   worldLoading = true;
 
-  fs.truncate(`./files/${worldModel.mobsFiles}`,0, err => {
+  fs.truncate(`./files/${worldModel.mobsFiles}`, 0, err => {
     if (err) {
       console.log("Error emptying mobs file:", err);
     }
@@ -200,7 +204,7 @@ function savePlants(callback) {
 
   worldLoading = true;
 
-  fs.truncate(`./files/${worldModel.plantsFile}`,0, err => {
+  fs.truncate(`./files/${worldModel.plantsFile}`, 0, err => {
     if (err) {
       console.log("Error emptying plants file:", err);
     }
@@ -317,8 +321,8 @@ io.on('connection', (socket) => {
       },
       rotation: identity.rotation ? identity.rotation : 0,
       generation: identity.generation || 1,
-        dotsColor : identity.dotsColor || '#000000',
-        dotsNumber : identity.dotsNumber || 3
+      dotsColor: identity.dotsColor || '#000000',
+      dotsNumber: identity.dotsNumber || 3
     });
   }
 
@@ -771,16 +775,16 @@ function getModelExpansion(modelName) {
   }).length;
 }
 
-function checkMobs(){
+function checkMobs() {
   if (worldLoading) return;
   if (!areMobsReady()) return;
-  if(worldModel.data.mobsModels && worldModel.data.mobsModels && Array.isArray(worldModel.data.mobsModels) && worldModel.data.mobsModels.length > 0){
+  if (worldModel.data.mobsModels && worldModel.data.mobsModels && Array.isArray(worldModel.data.mobsModels) && worldModel.data.mobsModels.length > 0) {
     worldModel.data.mobsModels.forEach((model) => {
-      if(model.active){
+      if (model.active) {
         let mobsOfType = mobsList.filter((type) => {
           return mobsList.model = type.name;
         })
-        
+
       }
     });
   }
