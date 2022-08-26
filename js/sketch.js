@@ -33,6 +33,8 @@ let backgroundImage;
 let playerDesign = null;
 let playerDesignLoaded = false;
 
+things = [];
+
 function mouseClicked() {
 	if (keys.shift && gameLoaded) {
 		let pointClicked = {
@@ -92,8 +94,9 @@ function setup() {
 	loadJSON('/files/tinyIsland.json', result => {
 		worldModel = { ...result };
 		preloadBg();
-		loadJSON(`/files/${worldModel.plantsFile}`,result =>{
-			worldModel.data.plants = [...result];
+		plantsUpdate()
+		.then(function (plants) {
+			worldModel.data.plants = [...plants];
 			things = setNotMobs(worldModel);
 			createCanvas(windowWidth, windowHeight);
 			setUtilValues();
@@ -106,9 +109,7 @@ function setup() {
 			socket.on('news', function (msg) {
 				console.log(msg)
 			});
-
 		});
-
 	});
 }
 
@@ -903,7 +904,7 @@ function drawPlayer(playerData){
 	context.restore();
 }
 
-function updatePlants() {
+function updatePlants(callBack) {
 	let plants;
 	plantsUpdate()
 		.then(function (data) {
@@ -1043,7 +1044,11 @@ function Plant(data) {
 		} else {
 			let color;
 			let colors;
-			if(self.petals.leafModel.colors){
+			if(self.evolution && self.evolution.colors){
+				colors = [... self.evolution.colors];
+				color = colors[0];
+			}
+			else if(self.petals.leafModel.colors){
 				colors = [... self.petals.leafModel.colors ];
 				color = colors[0];
 			}else if(self.petals.leafModel.color){

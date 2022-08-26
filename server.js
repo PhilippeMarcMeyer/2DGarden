@@ -9,13 +9,7 @@ const io = require('socket.io')(server, {
 const cookieParser = require('cookie-parser')
 const cookieName = "garden";
 const fs = require('fs');
-/* const { createCanvas } = require('canvas')
-
-const width = 600
-const height = 600
-
-const canvas = createCanvas(width, height)
-const context = canvas.getContext('2d') */
+const endOfFileTag = "#end of file#"
 
 let users = [];
 let worldModel = null;
@@ -23,6 +17,7 @@ let worldOnHold = false;
 let worldLoading = false;
 let maxPlantDistance = 1600;
 let limitingCirles = [];
+let mobsList = null;
 let evolutionChance = 0.1;
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
@@ -46,9 +41,7 @@ loadFile(worldFileName)
     if (data && "error" in data) {
       console.log(`${data.filename} could not be loaded due to error ${data.error}.`);
     } else {
-      worldModel = {
-        ...data
-      };
+      worldModel = {...data};
       loadFile(worldModel.plantsFile)
         .then(function (plants) {
           if (plants && "error" in plants) {
@@ -91,12 +84,27 @@ loadFile(worldFileName)
                   }, 3 * 60 * 1000)
 
                   maxPlantDistance = worldModel.radius * 1;
+
+                  loadFile(worldModel.mobsFiles)
+                  .then(function (mobs) {
+                    if (mobs && "error" in mobs) {
+                      console.log(`players.json could not be loaded due to error ${players.error}.`);
+                    } else {
+                      if (mobs === null) {
+                        mobsList = [];
+                      } else {
+                        mobsList = [...mobs];
+                      }
+                    }
+                  });
+
                   intervalDays = setInterval(function () {
                     worldOnHold = true;
                     worldModel.gardenDay++;
                     checkLakeAndRocks();
                     checkGenerations();
                     checkPlants();
+                    checkMobs();
                     savePlants();
                     saveWorld();
                     io.emit('info', {
@@ -124,6 +132,10 @@ function loadFile(filename) {
           if (fileContent === '') {
             resolve(null);
           } else {
+            let offset = fileContent.indexOf(endOfFileTag);
+            if(offset !== -1){
+              fileContent = fileContent.substring(0,offset);
+            }
             let data = JSON.parse(fileContent);
             resolve(data);
           }
@@ -133,6 +145,39 @@ function loadFile(filename) {
             "error": "invalid json"
           });
         }
+      }
+    });
+  });
+}
+
+function saveMobs(callback) {
+  let mobs = null;
+  if(!mobsList) mobsList = [];
+  if (mobsList) {
+    try {
+      mobs = JSON.stringify(mobsList, null, 2);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  if (!mobs) {
+    return;
+  }
+
+  worldLoading = true;
+
+  fs.truncate(`./files/${worldModel.mobsFiles}`,0, err => {
+    if (err) {
+      console.log("Error emptying mobs file:", err);
+    }
+    fs.writeFile(`./files/${worldModel.mobsFiles}`, mobs + endOfFileTag, err => {
+      if (err) {
+        console.log("Error writing mobs file:", err);
+      } else {
+        worldLoading = false;
+        worldOnHold = false;
+        if (callback) callback();
       }
     });
   });
@@ -155,11 +200,11 @@ function savePlants(callback) {
 
   worldLoading = true;
 
-  fs.writeFile(`./files/${worldModel.plantsFile}`, "", err => {
+  fs.truncate(`./files/${worldModel.plantsFile}`,0, err => {
     if (err) {
       console.log("Error emptying plants file:", err);
     }
-    fs.writeFile(`./files/${worldModel.plantsFile}`, plants, err => {
+    fs.writeFile(`./files/${worldModel.plantsFile}`, plants + endOfFileTag, err => {
       if (err) {
         console.log("Error writing plants file:", err);
       } else {
@@ -217,6 +262,18 @@ app.get('/plants', function (req, res) {
   if (serverLoaded) {
     if (arePlantsReady()) {
       res.status(200).json(worldModel.data.plants);
+    }
+  } else {
+    res.status(202).json({
+      "error": "Server is still loading ! Try later"
+    });
+  }
+});
+
+app.get('/mobs', function (req, res) {
+  if (serverLoaded) {
+    if (areMobsReady()) {
+      res.status(200).json(mobsList);
     }
   } else {
     res.status(202).json({
@@ -714,6 +771,21 @@ function getModelExpansion(modelName) {
   }).length;
 }
 
+function checkMobs(){
+  if (worldLoading) return;
+  if (!areMobsReady()) return;
+  if(worldModel.data.mobsModels && worldModel.data.mobsModels && Array.isArray(worldModel.data.mobsModels) && worldModel.data.mobsModels.length > 0){
+    worldModel.data.mobsModels.forEach((model) => {
+      if(model.active){
+        let mobsOfType = mobsList.filter((type) => {
+          return mobsList.model = type.name;
+        })
+        
+      }
+    });
+  }
+}
+
 function checkPlants() {
 
   if (worldLoading) return;
@@ -851,9 +923,9 @@ function checkPlants() {
                   growthPerDay: 0
                 }
               }
-              if (Math.random() <= model.evolution.seedSuccesRate) {
+              if (Math.random() <= evolutionChance) {
                 seed.evolution = {};
-                if (x.evolution) {
+                if (x.evolution && x.evolution.colors) {
                   seed.evolution.colors = [...x.evolution.colors];
                 } else if (model.petals && model.petals.shape === "polygons-with-colors") {
                   seed.evolution.colors = [...model.petals.leafModel.colors];
@@ -1114,6 +1186,10 @@ function toradians(degrees) {
 
 function arePlantsReady() {
   return worldModel && worldModel.data && worldModel.data.plants && Array.isArray(worldModel.data.plants);
+}
+
+function areMobsReady() {
+  return mobsList && Array.isArray(mobsList);
 }
 
 
