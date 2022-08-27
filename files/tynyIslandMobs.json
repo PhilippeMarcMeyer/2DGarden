@@ -1,0 +1,132 @@
+[
+  {
+    "birth": 5890,
+    "model": "ant",
+    "name": "ant-5890*1",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 30,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1144,
+      "y": -520
+    },
+    "innerRotation": 6.04,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1144,
+      "y": -520
+    }
+  },
+  {
+    "birth": 5890,
+    "model": "ant",
+    "name": "ant-5890*2",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 30,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1075,
+      "y": -470
+    },
+    "innerRotation": 6.09,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1075,
+      "y": -470
+    }
+  },
+  {
+    "birth": 5890,
+    "model": "ant",
+    "name": "ant-5890*3",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 30,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1136,
+      "y": -485
+    },
+    "innerRotation": 3.65,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1136,
+      "y": -485
+    }
+  },
+  {
+    "birth": 5890,
+    "model": "ant",
+    "name": "ant-5890*4",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 30,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1139,
+      "y": -539
+    },
+    "innerRotation": 4.52,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1139,
+      "y": -539
+    }
+  },
+  {
+    "birth": 5890,
+    "model": "ant",
+    "name": "ant-5890*5",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 30,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1107,
+      "y": -489
+    },
+    "innerRotation": 0.06,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1107,
+      "y": -489
+    }
+  }
+]#end of file#

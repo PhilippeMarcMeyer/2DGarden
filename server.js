@@ -9,6 +9,7 @@ const io = require('socket.io')(server, {
 const cookieParser = require('cookie-parser')
 const cookieName = "garden";
 const fs = require('fs');
+const { moveMessagePortToContext } = require('worker_threads');
 const endOfFileTag = "#end of file#"
 
 let users = [];
@@ -21,7 +22,7 @@ let mobsList = null;
 let evolutionChance = 0.1;
 
 //const dayLengthNoConnection = 2 * 3600 * 1000; // 2 heures
-const dayLengthConnection = 3 * 60 * 1000; // m minutes
+const dayLengthConnection = 4 * 60 * 1000; // m minutes
 let dayLength = dayLengthConnection;
 let serverLoaded = false;
 app.use(bodyParser.json())
@@ -103,8 +104,18 @@ loadFile(worldFileName)
         mobsList = [...mobs];
       }
       setDailySequence();
+      setMobsSequence();
+      checkMobs();
     }
   });
+
+  function setMobsSequence(){
+    intervalDays = setInterval(function () {
+      if(mobsList){
+      
+      }
+    }, 100);
+  }
 
 function setDailySequence() {
   intervalDays = setInterval(function () {
@@ -784,10 +795,79 @@ function checkMobs() {
         let mobsOfType = mobsList.filter((type) => {
           return mobsList.model = type.name;
         })
-
+        if(!mobsOfType || mobsOfType.length === 0 ){
+          restoreMobs(model);
+        }
       }
     });
+    saveMobs();
   }
+}
+
+function restoreMobs(model){
+  let minPop = model.generation && model.generation.minPop ? model.generation.minPop : 5;
+  let maxPop = model.generation && model.generation.minPop ? model.generation.maxPop : 15;
+  let popNr = Math.floor((Math.random() * maxPop) + 0.5);
+  if(popNr < minPop) {
+    popNr = minPop;
+  }else if(popNr > maxPop){
+    popNr = maxPop;
+  }
+  let home = null;
+  if(model.home){
+    home = worldModel.data.floor.shapes.filter((sh) => {
+      return sh.name === model.home;
+    });
+    if(home.length === 0){
+      home = null;
+    }
+  }
+  for (let i = 0; i < popNr; i++) {
+    let aMob = {
+      birth : worldModel.gardenDay,
+      model : model.name,
+      name : `${model.name}-${worldModel.gardenDay}*${(i+1)}`,
+      maxLife : model.energy ? model.energy.life : 1,
+      currentLife : model.energy ? model.energy.life : 1,
+      mealCapacity : model.energy ? model.energy.capacity : 1,
+      hungerLevel :  model.energy ? model.energy.hungerLevel : 0,
+      currentMeal : model.energy ? model.energy.capacity : 1,
+      spendingByCycle : model.energy ? model.energy.spendingByCycle : 0,
+      move : model.characteristics ? model.characteristics.move : 1,
+      size : model.characteristics ? model.characteristics.size : 3,
+      color : model.characteristics ? model.characteristics.color : "#cccc66",
+      home : model.home,
+      basePosition : home ? getAroundLocation(home[0].position,home[0].size[0]) : getRandomLocation(),
+      innerRotation : getRandomRotation(),
+      destination : null,
+      huntsForCommunity : model.community && model.community.huntsForCommunity ? model.community.huntsForCommunity : 0
+    }
+    aMob.position = aMob.basePosition;
+    mobsList.push(aMob);
+  }
+}
+
+function getRandomRotation(){
+  return Math.floor((Math.random() * Math.PI * 2) * 100) / 100;
+}
+
+function getAroundLocation(pt,diameter){
+  let radius = diameter / 2;
+  console.log(radius)
+  let centralPoint = {...pt};
+  centralPoint.x += Math.floor((Math.random() - 0.5) * radius);
+  centralPoint.y += Math.floor((Math.random() - 0.5) * radius);
+  console.log(centralPoint)
+
+  return centralPoint;
+}
+
+
+function getRandomLocation(){
+ let position =  {x : Math.floor((Math.random() * worldModel.radius) + 0.5), y : Math.floor((Math.random() * worldModel.radius) + 0.5)}
+ position.x -= Math.floor((Math.random() * worldModel.radius) + 0.5);
+ position.y -= Math.floor((Math.random() * worldModel.radius) + 0.5);
+return position;
 }
 
 function checkPlants() {
@@ -936,7 +1016,7 @@ function checkPlants() {
                 }
                 if (seed.evolution.colors) {
                   let darker = Math.random() < 0.5;
-                  let amount = darker ? -20 : 20;
+                  let amount = darker ? -50 : 50;
                   seed.evolution.colors.forEach((c) => {
                     c = LightenDarkenColor(c, amount);
                   });

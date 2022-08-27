@@ -32,6 +32,8 @@ let backgroundIsReady = false;
 let backgroundImage;
 let playerDesign = null;
 let playerDesignLoaded = false;
+let mobsList = null;
+let mobModels = null;
 
 things = [];
 
@@ -105,10 +107,17 @@ function setup() {
 			setKeyDown();
 			setKeyUp();
 			floor = new Floor(worldModel);
-			gameLoaded = true;
 			socket.on('news', function (msg) {
 				console.log(msg)
 			});
+			return mobsUpdate();
+		})
+		.then(function (mobs) {
+			if(mobs && Array.isArray(mobs) && mobs.length > 0){
+				mobsList = [...mobs];
+				console.log(mobsList);
+			}
+			gameLoaded = true;
 		});
 	});
 }
@@ -195,7 +204,67 @@ function draw() {
 
 		if (_camera && _camera.isFlying) _camera.draw();
 
+		if(mobsList){
+			mobsList.forEach((mob) => {
+				drawMob(mob);
+			});
+		}
+
 	drawInformations();
+}
+
+function drawMob(mob){
+	let mobModel = null;
+	if(mobModels){
+		let arrItem = mobModels.filter((model) => {
+			return model.name === mob.model;
+		});
+		if(arrItem.length === 1){
+			mobModel = {...arrItem[0]};
+		}
+	}
+	if(!mobModel){
+		let arrItem = worldModel.data.mobsModels.filter((model) => {
+			return model.name === mob.model;
+		});
+		if(arrItem.length === 1){
+			mobModel = {...arrItem[0]};
+			if(!mobModels){
+				mobModels = [];
+			}
+			mobModels.push(mobModel);
+		}
+	}
+	if(mobModel){
+		context.save();
+		context.strokeStyle = mob.color;
+		let center = drawingPositionGet(mob.position);
+
+		if(mobModel.geometry.shape === "polygons-with-colors"){
+			mobModel.geometry.matrix.forEach((poly,index) => {
+				context.fillStyle = mobModel.geometry.colors[index];
+				context.beginPath();
+
+				let mobPoly = [...poly];
+				let mobPts = mobPoly.map((pt) => {
+					pt = simpleRotate(pt, mob.innerRotation);
+					pt.x *= mob.size;
+					pt.y *= mob.size;
+					pt.x += center.x;
+					pt.y += center.y;
+					return pt;
+				});
+				context.moveTo(mobPts[0].x, mobPts[0].y);
+				mobPts.forEach((pt) => {
+					context.lineTo(pt.x, pt.y);
+				});
+				context.closePath();
+				context.stroke();
+				context.fill();
+			});
+		}
+		context.restore(); 
+	}
 }
 
 // Utilities
@@ -2013,6 +2082,30 @@ function Plant(data) {
 		return new Promise(function (resolve, reject) {
 			var xhr = new XMLHttpRequest();
 			xhr.open("GET", "plants", true);
+			xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+			xhr.onload = function () {
+				if (this.status >= 200 && this.status < 300) {
+					try {
+						let data = JSON.parse(xhr.response);
+						resolve(data);
+					} catch (e) {
+						reject({ "error": "invalid json" });
+					}
+				} else {
+					reject({ "error": xhr.statusText });
+				}
+			};
+			xhr.onerror = function () {
+				reject({ "error": xhr.statusText });
+			};
+			xhr.send();
+		});
+	}
+
+	function mobsUpdate() {
+		return new Promise(function (resolve, reject) {
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "mobs", true);
 			xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 			xhr.onload = function () {
 				if (this.status >= 200 && this.status < 300) {
