@@ -13,7 +13,7 @@ var arrObjects = [];
 let can;
 
 function setup() {
-	var selectedImage = "pavot2.png";
+	var selectedImage = "antModel.png";
 	can = createCanvas(size, size);
 	can.parent('canvasZone');
 	can.mouseReleased(function () {

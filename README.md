@@ -36,3 +36,4 @@ greater goals to find, agriculture ? houses to build ? underground passages ?
 
 ![result for step 1](https://raw.githubusercontent.com/PhilippeMarcMeyer/2DGarden/master/img/garden_130622.png)
 
+This in-progress auto-game uses node v14.17.6 (probably does not require this specific version)

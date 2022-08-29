@@ -843,6 +843,29 @@ function restoreMobs(model){
       huntsForCommunity : model.community && model.community.huntsForCommunity ? model.community.huntsForCommunity : 0
     }
     aMob.position = aMob.basePosition;
+    let found = false;
+    for(let i = 0; i < model.identColors.length;i++){
+      if(mobsList.length === 0){
+        aMob.identColor = model.identColors[i];
+        found = true;
+        break; 
+      }else{
+        let available = true;
+        for(let j = 0; j < mobsList.length;j++){
+          if(mobsList[j].identColor === model.identColors[i]){
+            available = false;
+          }
+        }
+        if(available){
+          aMob.identColor = model.identColors[i];
+          found = true;
+          break;
+        }
+      }
+    }
+    if(!found) {
+      aMob.identColor = "#ffffff";
+    }
     mobsList.push(aMob);
   }
 }

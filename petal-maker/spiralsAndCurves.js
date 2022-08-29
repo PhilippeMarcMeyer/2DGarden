@@ -21,11 +21,17 @@ let debut = { x: 320,    y: 600  };
 let cp1 =   { x: 400,   y: 20  };
 let cp2 =   { x: 240,   y: 20  };
 let fin =   { x: 320,   y: 600 };
+let size = 640;
+let imageLoaded = false;
+let imageSize = {w:0,h:0};
+let leftTop =  {x:0,y:100};
+
 let ctx;
 var CrtlPt1,CrtlPt2,ptA,ptB;
 var arrObjects = [];
 
 function setup() {
+	var selectedImage = "antModel.png";
     var mode = (globals.mode == "WEBGL") ? WEBGL : P2D;
 	var cnv = createCanvas(globals.mainWidth,globals.mainHeight,mode);
     cnv.parent('canvasZone');
@@ -44,6 +50,26 @@ function setup() {
 	CrtlPt1 = {x:400,y:20,isDragged:false,radius:10,name:"1",color:"#0000ff",shape:"ellipse"};
 	CrtlPt2 = {x:240,y:20,isDragged:false,radius:10,name:"2",color:"#0000ff",shape:"ellipse"};
 	arrObjects = [CrtlPt1,CrtlPt2,ptA,ptB];
+
+	
+	if (selectedImage) {
+		loadImage(selectedImage, function (temp) {
+			originalImage = temp.get();
+			if (originalImage) {
+				imageSize.w = originalImage.width;
+				imageSize.h = originalImage.height;
+				if (imageSize.w < size) {
+					leftTop.x = (size - imageSize.w) / 2;
+				}
+				if (imageSize.h < size) {
+					leftTop.y = (size - imageSize.h+100) / 2;
+				}
+				imageLoaded = true;
+			}
+		}, function (event) {
+			console.log(event);
+		});
+	}
 }
 
 function updateUI(){
@@ -162,6 +188,11 @@ function setListeners(){
 function draw() {
 	background(globals.backgroundColor.r,globals.backgroundColor.g,globals.backgroundColor.b);
 	stroke(globals.strokeColor.r,globals.strokeColor.g,globals.strokeColor.b);
+	
+	if(imageLoaded){
+		image(originalImage,leftTop.x,leftTop.y,imageSize.w, imageSize.h);
+	}
+
 	noFill();
 	strokeWeight(getStokeWeight());
 

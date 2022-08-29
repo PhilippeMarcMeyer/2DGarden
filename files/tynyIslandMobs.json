@@ -1,8 +1,8 @@
 [
   {
-    "birth": 5890,
+    "birth": 6040,
     "model": "ant",
-    "name": "ant-5890*1",
+    "name": "ant-6040*1",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -10,25 +10,26 @@
     "currentMeal": 20,
     "spendingByCycle": 1,
     "move": 6,
-    "size": 30,
+    "size": 60,
     "color": "#000000",
     "home": "west-anthill",
     "basePosition": {
-      "x": -1144,
-      "y": -520
+      "x": -1098,
+      "y": -511
     },
-    "innerRotation": 6.04,
+    "innerRotation": 1.5,
     "destination": null,
     "huntsForCommunity": 0.5,
     "position": {
-      "x": -1144,
-      "y": -520
-    }
+      "x": -1098,
+      "y": -511
+    },
+    "identColor": "#00b5ff"
   },
   {
-    "birth": 5890,
+    "birth": 6040,
     "model": "ant",
-    "name": "ant-5890*2",
+    "name": "ant-6040*2",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -36,25 +37,26 @@
     "currentMeal": 20,
     "spendingByCycle": 1,
     "move": 6,
-    "size": 30,
+    "size": 60,
     "color": "#000000",
     "home": "west-anthill",
     "basePosition": {
-      "x": -1075,
-      "y": -470
+      "x": -1168,
+      "y": -504
     },
-    "innerRotation": 6.09,
+    "innerRotation": 5.91,
     "destination": null,
     "huntsForCommunity": 0.5,
     "position": {
-      "x": -1075,
-      "y": -470
-    }
+      "x": -1168,
+      "y": -504
+    },
+    "identColor": "#00ffff"
   },
   {
-    "birth": 5890,
+    "birth": 6040,
     "model": "ant",
-    "name": "ant-5890*3",
+    "name": "ant-6040*3",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -62,25 +64,26 @@
     "currentMeal": 20,
     "spendingByCycle": 1,
     "move": 6,
-    "size": 30,
+    "size": 60,
     "color": "#000000",
     "home": "west-anthill",
     "basePosition": {
-      "x": -1136,
-      "y": -485
+      "x": -1192,
+      "y": -466
     },
-    "innerRotation": 3.65,
+    "innerRotation": 1.02,
     "destination": null,
     "huntsForCommunity": 0.5,
     "position": {
-      "x": -1136,
-      "y": -485
-    }
+      "x": -1192,
+      "y": -466
+    },
+    "identColor": "#85ff00"
   },
   {
-    "birth": 5890,
+    "birth": 6040,
     "model": "ant",
-    "name": "ant-5890*4",
+    "name": "ant-6040*4",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -88,25 +91,26 @@
     "currentMeal": 20,
     "spendingByCycle": 1,
     "move": 6,
-    "size": 30,
+    "size": 60,
     "color": "#000000",
     "home": "west-anthill",
     "basePosition": {
-      "x": -1139,
-      "y": -539
+      "x": -1102,
+      "y": -495
     },
-    "innerRotation": 4.52,
+    "innerRotation": 2.5,
     "destination": null,
     "huntsForCommunity": 0.5,
     "position": {
-      "x": -1139,
-      "y": -539
-    }
+      "x": -1102,
+      "y": -495
+    },
+    "identColor": "#ff8000"
   },
   {
-    "birth": 5890,
+    "birth": 6040,
     "model": "ant",
-    "name": "ant-5890*5",
+    "name": "ant-6040*5",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -114,19 +118,290 @@
     "currentMeal": 20,
     "spendingByCycle": 1,
     "move": 6,
-    "size": 30,
+    "size": 60,
     "color": "#000000",
     "home": "west-anthill",
     "basePosition": {
-      "x": -1107,
-      "y": -489
+      "x": -1129,
+      "y": -428
     },
-    "innerRotation": 0.06,
+    "innerRotation": 2.53,
     "destination": null,
     "huntsForCommunity": 0.5,
     "position": {
-      "x": -1107,
-      "y": -489
-    }
+      "x": -1129,
+      "y": -428
+    },
+    "identColor": "#ff85ff"
+  },
+  {
+    "birth": 6040,
+    "model": "ant",
+    "name": "ant-6040*6",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 60,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1138,
+      "y": -535
+    },
+    "innerRotation": 4.99,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1138,
+      "y": -535
+    },
+    "identColor": "#ff3155"
+  },
+  {
+    "birth": 6040,
+    "model": "ant",
+    "name": "ant-6040*7",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 60,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1103,
+      "y": -507
+    },
+    "innerRotation": 4.23,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1103,
+      "y": -507
+    },
+    "identColor": "#ffaf42"
+  },
+  {
+    "birth": 6040,
+    "model": "ant",
+    "name": "ant-6040*8",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 60,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1166,
+      "y": -522
+    },
+    "innerRotation": 4.88,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1166,
+      "y": -522
+    },
+    "identColor": "#ffed5e"
+  },
+  {
+    "birth": 6040,
+    "model": "ant",
+    "name": "ant-6040*9",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 60,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1067,
+      "y": -523
+    },
+    "innerRotation": 2.99,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1067,
+      "y": -523
+    },
+    "identColor": "#49f770"
+  },
+  {
+    "birth": 6040,
+    "model": "ant",
+    "name": "ant-6040*10",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 60,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1068,
+      "y": -427
+    },
+    "innerRotation": 2.1,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1068,
+      "y": -427
+    },
+    "identColor": "#2daefd"
+  },
+  {
+    "birth": 6040,
+    "model": "ant",
+    "name": "ant-6040*11",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 60,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1124,
+      "y": -499
+    },
+    "innerRotation": 1.43,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1124,
+      "y": -499
+    },
+    "identColor": "#ff0085"
+  },
+  {
+    "birth": 6040,
+    "model": "ant",
+    "name": "ant-6040*12",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 60,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1167,
+      "y": -531
+    },
+    "innerRotation": 1.26,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1167,
+      "y": -531
+    },
+    "identColor": "#b6fcf5"
+  },
+  {
+    "birth": 6040,
+    "model": "ant",
+    "name": "ant-6040*13",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 60,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1134,
+      "y": -474
+    },
+    "innerRotation": 5.76,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1134,
+      "y": -474
+    },
+    "identColor": "#0ed5ee"
+  },
+  {
+    "birth": 6040,
+    "model": "ant",
+    "name": "ant-6040*14",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 60,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1175,
+      "y": -475
+    },
+    "innerRotation": 5.87,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1175,
+      "y": -475
+    },
+    "identColor": "#d189f9"
+  },
+  {
+    "birth": 6040,
+    "model": "ant",
+    "name": "ant-6040*15",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 60,
+    "color": "#000000",
+    "home": "west-anthill",
+    "basePosition": {
+      "x": -1083,
+      "y": -550
+    },
+    "innerRotation": 4.2,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "position": {
+      "x": -1083,
+      "y": -550
+    },
+    "identColor": "#b98501"
   }
 ]#end of file#

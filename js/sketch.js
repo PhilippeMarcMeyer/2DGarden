@@ -207,7 +207,7 @@ function draw() {
 		if(mobsList){
 			mobsList.forEach((mob) => {
 				drawMob(mob);
-			});
+			}); 
 		}
 
 	drawInformations();
@@ -240,24 +240,35 @@ function drawMob(mob){
 		context.strokeStyle = mob.color;
 		let center = drawingPositionGet(mob.position);
 
-		if(mobModel.geometry.shape === "polygons-with-colors"){
-			mobModel.geometry.matrix.forEach((poly,index) => {
-				context.fillStyle = mobModel.geometry.colors[index];
+		if(mobModel.geometry.type === "multiShapes"){
+			mobModel.geometry.matrix.forEach((element) => {
+				context.fillStyle = element.part === "identification" ? mob.identColor : element.color;
 				context.beginPath();
-
-				let mobPoly = [...poly];
-				let mobPts = mobPoly.map((pt) => {
-					pt = simpleRotate(pt, mob.innerRotation);
+				if (element.shape == "polygon") {
+					let mobPoly = [...element.data];
+					let mobPts = mobPoly.map((pt) => {
+						pt = simpleRotate(pt, mob.innerRotation);
+						pt.x *= mob.size;
+						pt.y *= mob.size ;
+						pt.x += center.x;
+						pt.y += center.y;
+						return pt;
+					});
+					context.moveTo(mobPts[0].x, mobPts[0].y);
+					mobPts.forEach((pt) => {
+						context.lineTo(pt.x, pt.y);
+					});
+				}else if (element.shape == "circle"){
+					let partCenter = {...element.center};
+					let pt = simpleRotate(partCenter, mob.innerRotation);
+					let d = element.diameter * mob.size * 2;
 					pt.x *= mob.size;
-					pt.y *= mob.size;
 					pt.x += center.x;
+					pt.y *= mob.size;
 					pt.y += center.y;
-					return pt;
-				});
-				context.moveTo(mobPts[0].x, mobPts[0].y);
-				mobPts.forEach((pt) => {
-					context.lineTo(pt.x, pt.y);
-				});
+					context.arc(pt.x, pt.y, d/3, 0, 2 * Math.PI);
+					context.arc(pt.x, pt.y, 1, 0, 2 * Math.PI);
+				}
 				context.closePath();
 				context.stroke();
 				context.fill();
