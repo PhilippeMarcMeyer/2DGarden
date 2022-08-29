@@ -837,6 +837,7 @@ function restoreMobs(model){
       size : model.characteristics ? model.characteristics.size : 3,
       color : model.characteristics ? model.characteristics.color : "#cccc66",
       home : model.home,
+      bag : model.characteristics && model.characteristics.bagSize ? new Array(model.characteristics.bagSize) : null,
       basePosition : home ? getAroundLocation(home[0].position,home[0].size[0]) : getRandomLocation(),
       innerRotation : getRandomRotation(),
       destination : null,
@@ -884,7 +885,6 @@ function getAroundLocation(pt,diameter){
 
   return centralPoint;
 }
-
 
 function getRandomLocation(){
  let position =  {x : Math.floor((Math.random() * worldModel.radius) + 0.5), y : Math.floor((Math.random() * worldModel.radius) + 0.5)}

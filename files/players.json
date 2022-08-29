@@ -1,12 +1,12 @@
 {
   "Elrond": {
     "position": {
-      "x": -892,
-      "y": -688
+      "x": -678,
+      "y": -745
     },
-    "rotation": 5.983185307179587,
+    "rotation": 5.183185307179589,
     "color": "#FF0000",
-    "birth": 6040,
+    "birth": 6050,
     "dotsNumber": 3,
     "dotsColor": "#000000",
     "maxAge": 450,

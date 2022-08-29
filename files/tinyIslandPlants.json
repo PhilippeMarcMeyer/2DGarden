@@ -70,11 +70,11 @@
   },
   {
     "birth": 6014,
-    "distance": 514.7319690868248,
-    "angleToOrigine": -2.4070447015521794,
+    "distance": 884.8372731751302,
+    "angleToOrigine": -2.908948891156521,
     "position": {
-      "x": -382,
-      "y": -345
+      "x": -861,
+      "y": -204
     },
     "color": "#888888",
     "shape": "circle",
@@ -87,32 +87,9 @@
     "innerRotation": 3.50893569007247,
     "model": "Campanule",
     "stage": 1,
-    "isOnRock": true,
-    "rockHouse": "squiddy",
-    "parentCircle": "center"
-  },
-  {
-    "birth": 5942,
-    "distance": 1048.8855991003022,
-    "angleToOrigine": -2.2270732469313153,
-    "position": {
-      "x": -640,
-      "y": -831
-    },
-    "color": "#ffffff",
-    "shape": "circle",
-    "size": {
-      "min": 1,
-      "max": 1,
-      "growthPerDay": 0
-    },
-    "name": "Chicoree-5940*2",
-    "innerRotation": 4.267589898053122,
-    "model": "Chicoree",
-    "stage": 1,
     "isOnRock": false,
     "rockHouse": "",
-    "parentCircle": "limit-north-west"
+    "parentCircle": null
   },
   {
     "birth": 5948,
@@ -228,28 +205,6 @@
     "rockHouse": ""
   },
   {
-    "birth": 6025,
-    "distance": 1038.0876648915544,
-    "angleToOrigine": -2.8734818705199663,
-    "position": {
-      "x": -1001,
-      "y": -275
-    },
-    "color": "#ffffff",
-    "shape": "circle",
-    "size": {
-      "min": 1,
-      "max": 1,
-      "growthPerDay": 0
-    },
-    "name": "Chicoree-6023*3",
-    "innerRotation": 4.636291288500298,
-    "model": "Chicoree",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": ""
-  },
-  {
     "birth": 6026,
     "distance": 1588.8955283466562,
     "angleToOrigine": -2.655707719765275,
@@ -286,7 +241,7 @@
     },
     "isOnRock": false,
     "rockHouse": "",
-    "parentCircle": null
+    "parentCircle": "limit-north-west"
   },
   {
     "birth": 6026,
@@ -368,7 +323,7 @@
     "name": "Clover-5947*2",
     "innerRotation": 2.521352243492726,
     "model": "Clover-4",
-    "stage": 1,
+    "stage": 3,
     "isOnRock": false,
     "rockHouse": "",
     "parentCircle": "center"
@@ -510,122 +465,6 @@
     "isOnRock": false,
     "rockHouse": "",
     "parentCircle": "limit-north-est"
-  },
-  {
-    "birth": 5939,
-    "distance": 1419.759134501342,
-    "angleToOrigine": 2.3990396397251157,
-    "position": {
-      "x": -1046,
-      "y": 960
-    },
-    "color": "#bd87f8",
-    "shape": "circle",
-    "size": {
-      "min": 4,
-      "max": 9,
-      "growthPerDay": 1
-    },
-    "name": "Ellipse-5935*3",
-    "innerRotation": 1.331015377555611,
-    "model": "Ellipse-10",
-    "stage": 3,
-    "isOnRock": false,
-    "rockHouse": "",
-    "parentCircle": "limit-south-west"
-  },
-  {
-    "birth": 5941,
-    "distance": 686.8660713705402,
-    "angleToOrigine": 2.3839937120986243,
-    "position": {
-      "x": -499,
-      "y": 472
-    },
-    "color": "#bd87f8",
-    "shape": "circle",
-    "size": {
-      "min": 4,
-      "max": 9,
-      "growthPerDay": 1
-    },
-    "name": "Ellipse-5937*2",
-    "innerRotation": 4.720242990022208,
-    "model": "Ellipse-10",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": "",
-    "parentCircle": "center"
-  },
-  {
-    "birth": 5943,
-    "distance": 836.1393424543543,
-    "angleToOrigine": 2.6153260544335577,
-    "position": {
-      "x": -723,
-      "y": 420
-    },
-    "color": "#bd87f8",
-    "shape": "circle",
-    "size": {
-      "min": 4,
-      "max": 9,
-      "growthPerDay": 1
-    },
-    "name": "Ellipse-5939*2",
-    "innerRotation": 1.216485877451451,
-    "model": "Ellipse-10",
-    "stage": 1,
-    "evolution": {},
-    "isOnRock": false,
-    "rockHouse": "",
-    "parentCircle": "limit-south-west"
-  },
-  {
-    "birth": 5946,
-    "distance": 1494.1248274491659,
-    "angleToOrigine": -2.1381928610921985,
-    "position": {
-      "x": -803,
-      "y": -1260
-    },
-    "color": "#bd87f8",
-    "shape": "circle",
-    "size": {
-      "min": 4,
-      "max": 9,
-      "growthPerDay": 1
-    },
-    "name": "Ellipse-5942*2",
-    "innerRotation": 1.5527529037161343,
-    "model": "Ellipse-10",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": "",
-    "parentCircle": "limit-north-west"
-  },
-  {
-    "birth": 5946,
-    "distance": 1574.5659719427447,
-    "angleToOrigine": -2.1508723744957603,
-    "position": {
-      "x": -863,
-      "y": -1317
-    },
-    "color": "#bd87f8",
-    "shape": "circle",
-    "size": {
-      "min": 4,
-      "max": 9,
-      "growthPerDay": 1
-    },
-    "name": "Ellipse-5942*3",
-    "innerRotation": 5.64054442091522,
-    "model": "Ellipse-10",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": "",
-    "parentCircle": "limit-north-west"
   },
   {
     "birth": 5950,
@@ -1316,28 +1155,6 @@
     "parentCircle": "limit-south-east"
   },
   {
-    "birth": 6022,
-    "distance": 1433.2218948927623,
-    "angleToOrigine": 2.0890770150350626,
-    "position": {
-      "x": -710,
-      "y": 1245
-    },
-    "color": "#bd87f8",
-    "shape": "circle",
-    "size": {
-      "min": 4,
-      "max": 9,
-      "growthPerDay": 1
-    },
-    "name": "Ellipse-6018*2",
-    "innerRotation": 4.53484152303497,
-    "model": "Ellipse-10",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": ""
-  },
-  {
     "birth": 6021,
     "distance": 813.956387038028,
     "angleToOrigine": 1.1153902894319734,
@@ -1521,29 +1338,7 @@
     "parentCircle": "limit-south-west"
   },
   {
-    "birth": 6035,
-    "distance": 916.1970312110818,
-    "angleToOrigine": 2.9782383399410963,
-    "position": {
-      "x": -904,
-      "y": 149
-    },
-    "color": "#bd87f8",
-    "shape": "circle",
-    "size": {
-      "min": 4,
-      "max": 9,
-      "growthPerDay": 1
-    },
-    "name": "Ellipse-6031*2",
-    "innerRotation": 5.393994797051954,
-    "model": "Ellipse-10",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": ""
-  },
-  {
-    "birth": 6038,
+    "birth": 6042,
     "distance": 727.4957044546724,
     "angleToOrigine": 2.5577836968266157,
     "position": {
@@ -1560,12 +1355,12 @@
     "name": "Ellipse-6038*2",
     "innerRotation": 2.4401967245809617,
     "model": "Ellipse-10",
-    "stage": 0,
+    "stage": 1,
     "isOnRock": false,
     "rockHouse": ""
   },
   {
-    "birth": 6040,
+    "birth": 6042,
     "distance": 1693.9574965151871,
     "angleToOrigine": 0.906750163968212,
     "position": {
@@ -1582,55 +1377,125 @@
     "name": "Ellipse-6040*2",
     "innerRotation": 5.310002046363437,
     "model": "Ellipse-11",
+    "stage": 1,
+    "isOnRock": false,
+    "rockHouse": "",
+    "parentCircle": "limit-south-east"
+  },
+  {
+    "birth": 6046,
+    "distance": 1635.0305807537668,
+    "angleToOrigine": -2.039093792874438,
+    "position": {
+      "x": -738,
+      "y": -1459
+    },
+    "color": "#bd87f8",
+    "shape": "circle",
+    "size": {
+      "min": 4,
+      "max": 9,
+      "growthPerDay": 1
+    },
+    "name": "Ellipse-6042*2",
+    "innerRotation": 3.5174551139407955,
+    "model": "Ellipse-10",
+    "stage": 1,
+    "isOnRock": false,
+    "rockHouse": "",
+    "parentCircle": "limit-north-west"
+  },
+  {
+    "birth": 6047,
+    "distance": 1221.556793603965,
+    "angleToOrigine": 2.741322999281571,
+    "position": {
+      "x": -1125,
+      "y": 476
+    },
+    "color": "#bd87f8",
+    "shape": "circle",
+    "size": {
+      "min": 4,
+      "max": 9,
+      "growthPerDay": 1
+    },
+    "name": "Ellipse-6047*2",
+    "innerRotation": 2.3140889649331853,
+    "model": "Ellipse-10",
+    "stage": 0,
+    "isOnRock": false,
+    "rockHouse": "",
+    "parentCircle": "limit-south-west"
+  },
+  {
+    "birth": 6047,
+    "distance": 1144.9423566276164,
+    "angleToOrigine": 2.3716348936829297,
+    "position": {
+      "x": -822,
+      "y": 797
+    },
+    "color": "#bd87f8",
+    "shape": "circle",
+    "size": {
+      "min": 4,
+      "max": 9,
+      "growthPerDay": 1
+    },
+    "name": "Ellipse-6047*3",
+    "innerRotation": 2.0547778170685254,
+    "model": "Ellipse-10",
+    "stage": 0,
+    "isOnRock": true,
+    "rockHouse": "roundy",
+    "parentCircle": "limit-south-west"
+  },
+  {
+    "birth": 6048,
+    "distance": 1724.4083043177448,
+    "angleToOrigine": 0.6917682819593712,
+    "position": {
+      "x": 1328,
+      "y": 1100
+    },
+    "color": "#f87bbc",
+    "shape": "circle",
+    "size": {
+      "min": 6,
+      "max": 9,
+      "growthPerDay": 1
+    },
+    "name": "Ellipse-6048*2",
+    "innerRotation": 5.084303635008245,
+    "model": "Ellipse-11",
     "stage": 0,
     "isOnRock": false,
     "rockHouse": "",
     "parentCircle": "limit-south-east"
   },
   {
-    "birth": 5942,
-    "distance": 1048.0276713904075,
-    "angleToOrigine": 0.7988926208756607,
+    "birth": 6049,
+    "distance": 1622.7704705225567,
+    "angleToOrigine": 1.1451888251543585,
     "position": {
-      "x": 731,
-      "y": 751
+      "x": 670,
+      "y": 1478
     },
-    "color": "#E467A8",
+    "color": "#f87bbc",
     "shape": "circle",
     "size": {
-      "min": 4,
+      "min": 6,
       "max": 9,
       "growthPerDay": 1
     },
-    "name": "Funny-5938*2",
-    "innerRotation": 4.861884807097246,
-    "model": "Funny-7",
-    "stage": 1,
+    "name": "Ellipse-6049*3",
+    "innerRotation": 0.42970259864547466,
+    "model": "Ellipse-11",
+    "stage": 0,
     "isOnRock": false,
     "rockHouse": "",
     "parentCircle": "limit-south-east"
-  },
-  {
-    "birth": 5956,
-    "distance": 954.8952822168512,
-    "angleToOrigine": -0.19390409734802858,
-    "position": {
-      "x": 937,
-      "y": -184
-    },
-    "color": "#E467A8",
-    "shape": "circle",
-    "size": {
-      "min": 4,
-      "max": 9,
-      "growthPerDay": 1
-    },
-    "name": "Funny-5952*2",
-    "innerRotation": 4.337523439157825,
-    "model": "Funny-7",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": ""
   },
   {
     "birth": 5979,
@@ -1702,7 +1567,7 @@
     "parentCircle": "limit-south-east"
   },
   {
-    "birth": 6041,
+    "birth": 6045,
     "distance": 1192.461739428146,
     "angleToOrigine": 0.3942105495159907,
     "position": {
@@ -1719,7 +1584,7 @@
     "name": "Funny-6041*2",
     "innerRotation": 1.685146166905081,
     "model": "Funny-7",
-    "stage": 0,
+    "stage": 1,
     "isOnRock": false,
     "rockHouse": "",
     "parentCircle": "limit-south-east"
@@ -1959,58 +1824,12 @@
     "parentCircle": "limit-north-est"
   },
   {
-    "birth": 5919,
-    "distance": 1756.6801074754617,
-    "angleToOrigine": 0.7527878994535437,
-    "position": {
-      "x": 1282,
-      "y": 1201
-    },
-    "color": "#888888",
-    "shape": "circle",
-    "size": {
-      "min": 0,
-      "max": 0,
-      "growthPerDay": 0
-    },
-    "name": "Mauve_Sylvestre-5917*3",
-    "innerRotation": 3.5703759252786678,
-    "model": "Mauve_Sylvestre",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": "",
-    "parentCircle": "limit-south-east"
-  },
-  {
-    "birth": 5922,
-    "distance": 1730.4542756166659,
-    "angleToOrigine": -2.82788286157241,
-    "position": {
-      "x": -1646,
-      "y": -534
-    },
-    "color": "#888888",
-    "shape": "circle",
-    "size": {
-      "min": 0,
-      "max": 0,
-      "growthPerDay": 0
-    },
-    "name": "Mauve_Sylvestre-5920*2",
-    "innerRotation": 4.390138119137887,
-    "model": "Mauve_Sylvestre",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": "",
-    "parentCircle": null
-  },
-  {
     "birth": 5930,
-    "distance": 968.4709598124251,
-    "angleToOrigine": -2.2655346029916,
+    "distance": 1134.0282183437942,
+    "angleToOrigine": -2.2072428788966705,
     "position": {
-      "x": -620,
-      "y": -744
+      "x": -674,
+      "y": -912
     },
     "color": "#888888",
     "shape": "circle",
@@ -2023,8 +1842,8 @@
     "innerRotation": 3.8190455025048755,
     "model": "Mauve_Sylvestre",
     "stage": 1,
-    "isOnRock": true,
-    "rockHouse": "squiddy",
+    "isOnRock": false,
+    "rockHouse": "",
     "parentCircle": "limit-north-west"
   },
   {
@@ -2196,28 +2015,6 @@
     "parentCircle": "limit-north-west"
   },
   {
-    "birth": 5959,
-    "distance": 1444.5684476687147,
-    "angleToOrigine": 0.32919349926532876,
-    "position": {
-      "x": 1367,
-      "y": 467
-    },
-    "color": "#888888",
-    "shape": "circle",
-    "size": {
-      "min": 0,
-      "max": 0,
-      "growthPerDay": 0
-    },
-    "name": "Mauve_Sylvestre-5957*2",
-    "innerRotation": 2.0006905893007763,
-    "model": "Mauve_Sylvestre",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": ""
-  },
-  {
     "birth": 5962,
     "distance": 1538.0052015516721,
     "angleToOrigine": -2.2168982099583325,
@@ -2364,11 +2161,11 @@
   },
   {
     "birth": 5983,
-    "distance": 993.4852792064913,
-    "angleToOrigine": -2.356906233844402,
+    "distance": 1081.593731490711,
+    "angleToOrigine": -2.384310035734276,
     "position": {
-      "x": -703,
-      "y": -702
+      "x": -786,
+      "y": -743
     },
     "color": "#888888",
     "shape": "circle",
@@ -2381,32 +2178,9 @@
     "innerRotation": 5.86140208768305,
     "model": "Mauve_Sylvestre",
     "stage": 1,
-    "isOnRock": true,
-    "rockHouse": "squiddy",
+    "isOnRock": false,
+    "rockHouse": "",
     "parentCircle": "limit-north-west"
-  },
-  {
-    "birth": 5985,
-    "distance": 671.1788137299925,
-    "angleToOrigine": -2.3361760898390336,
-    "position": {
-      "x": -465,
-      "y": -484
-    },
-    "color": "#888888",
-    "shape": "circle",
-    "size": {
-      "min": 0,
-      "max": 0,
-      "growthPerDay": 0
-    },
-    "name": "Mauve_Sylvestre-5983*2",
-    "innerRotation": 5.209151923720468,
-    "model": "Mauve_Sylvestre",
-    "stage": 1,
-    "isOnRock": true,
-    "rockHouse": "squiddy",
-    "parentCircle": "center"
   },
   {
     "birth": 5988,
@@ -2479,11 +2253,11 @@
   },
   {
     "birth": 5996,
-    "distance": 896.3955600068532,
-    "angleToOrigine": -2.2701053467646184,
+    "distance": 898.159228644899,
+    "angleToOrigine": -1.8263066016139982,
     "position": {
-      "x": -577,
-      "y": -686
+      "x": -227,
+      "y": -869
     },
     "color": "#888888",
     "shape": "circle",
@@ -2504,9 +2278,9 @@
         "#92608F"
       ]
     },
-    "isOnRock": true,
-    "rockHouse": "squiddy",
-    "parentCircle": "limit-north-west"
+    "isOnRock": false,
+    "rockHouse": "",
+    "parentCircle": null
   },
   {
     "birth": 6005,
@@ -2624,11 +2398,11 @@
   },
   {
     "birth": 6026,
-    "distance": 1160.8380593347204,
-    "angleToOrigine": -2.4899938582540244,
+    "distance": 1246.2816696076372,
+    "angleToOrigine": -2.409552884146285,
     "position": {
-      "x": -923,
-      "y": -704
+      "x": -927,
+      "y": -833
     },
     "color": "#888888",
     "shape": "circle",
@@ -2655,11 +2429,11 @@
   },
   {
     "birth": 6031,
-    "distance": 1156.7735301259274,
-    "angleToOrigine": -2.322568026448637,
+    "distance": 1295.4786760113036,
+    "angleToOrigine": -2.321800630906701,
     "position": {
-      "x": -790,
-      "y": -845
+      "x": -884,
+      "y": -947
     },
     "color": "#888888",
     "shape": "circle",
@@ -2752,6 +2526,51 @@
     "isOnRock": true,
     "rockHouse": "squiddy",
     "parentCircle": "center"
+  },
+  {
+    "birth": 6044,
+    "distance": 1636.4000122219506,
+    "angleToOrigine": 2.2492593361973614,
+    "position": {
+      "x": -1027,
+      "y": 1274
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 0,
+      "max": 0,
+      "growthPerDay": 0
+    },
+    "name": "Mauve_Sylvestre-6042*2",
+    "innerRotation": 3.078618877034703,
+    "model": "Mauve_Sylvestre",
+    "stage": 1,
+    "isOnRock": false,
+    "rockHouse": "",
+    "parentCircle": "limit-south-west"
+  },
+  {
+    "birth": 6049,
+    "distance": 1372.6547271619327,
+    "angleToOrigine": 3.0430838411004757,
+    "position": {
+      "x": -1366,
+      "y": 135
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 0,
+      "max": 0,
+      "growthPerDay": 0
+    },
+    "name": "Mauve_Sylvestre-6049*2",
+    "innerRotation": 5.428056629416534,
+    "model": "Mauve_Sylvestre",
+    "stage": 0,
+    "isOnRock": false,
+    "rockHouse": ""
   },
   {
     "birth": 5945,
@@ -2925,8 +2744,120 @@
     "rockHouse": ""
   },
   {
-    "birth": 6040,
-    "distance": 52,
+    "birth": 6048,
+    "distance": 867.2744663599868,
+    "angleToOrigine": 0.09932445792008239,
+    "position": {
+      "x": 863,
+      "y": 86
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 0,
+      "max": 0,
+      "growthPerDay": 0
+    },
+    "name": "Pavotine-6048*2",
+    "innerRotation": 3.426507661101815,
+    "model": "Pavotine",
+    "stage": 0,
+    "evolution": {
+      "colors": [
+        "#D792EF",
+        "#D792DF",
+        "#D792EF",
+        "#D792DF",
+        "#D792EF",
+        "#D792DF",
+        "#851142",
+        "#FFFCFD"
+      ]
+    },
+    "isOnRock": false,
+    "rockHouse": ""
+  },
+  {
+    "birth": 6049,
+    "distance": 509.65969038172915,
+    "angleToOrigine": 0.5171991709776589,
+    "position": {
+      "x": 443,
+      "y": 252
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 0,
+      "max": 0,
+      "growthPerDay": 0
+    },
+    "name": "Pavotine-6049*2",
+    "innerRotation": 0.4866135323703876,
+    "model": "Pavotine",
+    "stage": 0,
+    "evolution": {
+      "colors": [
+        "#D792EF",
+        "#D792DF",
+        "#D792EF",
+        "#D792DF",
+        "#D792EF",
+        "#D792DF",
+        "#851142",
+        "#FFFCFD"
+      ]
+    },
+    "isOnRock": true,
+    "rockHouse": "bigOne",
+    "parentCircle": "center"
+  },
+  {
+    "birth": 6049,
+    "distance": 809.6048418827545,
+    "angleToOrigine": -0.28033562497378556,
+    "position": {
+      "x": 778,
+      "y": -224
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 0,
+      "max": 0,
+      "growthPerDay": 0
+    },
+    "name": "Pavotine-6049*3",
+    "innerRotation": 3.523119339690865,
+    "model": "Pavotine",
+    "stage": 0,
+    "isOnRock": true,
+    "rockHouse": "shell"
+  },
+  {
+    "birth": 6049,
+    "distance": 64,
+    "angleToOrigine": 0.6472761753028762,
+    "color": "#ff61d1",
+    "shape": "circle",
+    "size": {
+      "min": 4,
+      "max": 9,
+      "growthPerDay": 1
+    },
+    "name": "Pelium-6-6049*1",
+    "innerRotation": 2.4016017078135214,
+    "model": "Pelium-6",
+    "stage": 0,
+    "position": {
+      "x": 51,
+      "y": -39
+    },
+    "parentCircle": "center"
+  },
+  {
+    "birth": 6049,
+    "distance": 41,
     "angleToOrigine": 0.6472761753028762,
     "color": "#888888",
     "shape": "circle",
@@ -2935,19 +2866,19 @@
       "max": 9,
       "growthPerDay": 1
     },
-    "name": "Queen-6040*1",
-    "innerRotation": 6.131569366319653,
+    "name": "Queen-6049*1",
+    "innerRotation": 5.616447932135718,
     "model": "Queen",
     "stage": 0,
     "position": {
-      "x": 41,
-      "y": -32
+      "x": 32,
+      "y": -25
     },
     "parentCircle": "center"
   },
   {
-    "birth": 5971,
-    "distance": 124,
+    "birth": 6048,
+    "distance": 81,
     "angleToOrigine": 0.6472761753028762,
     "color": "#9cade0",
     "shape": "circle",
@@ -2956,13 +2887,13 @@
       "max": 9,
       "growthPerDay": 1
     },
-    "name": "Spirula-10-5968*1",
-    "innerRotation": 5.986170444965901,
+    "name": "Spirula-10-6048*1",
+    "innerRotation": 1.2662657545762477,
     "model": "Spirula-10",
-    "stage": 1,
+    "stage": 0,
     "position": {
-      "x": 98,
-      "y": -75
+      "x": 64,
+      "y": -49
     },
     "parentCircle": "center"
   },
@@ -2991,11 +2922,11 @@
   },
   {
     "birth": 5965,
-    "distance": 454.1200281863816,
-    "angleToOrigine": -2.574356764939233,
+    "distance": 271.5363695713707,
+    "angleToOrigine": -1.2094394553936687,
     "position": {
-      "x": -383,
-      "y": -244
+      "x": 96,
+      "y": -254
     },
     "color": "#888888",
     "shape": "circle",
@@ -3008,8 +2939,8 @@
     "innerRotation": 2.948665312514007,
     "model": "Stella",
     "stage": 1,
-    "isOnRock": true,
-    "rockHouse": "squiddy",
+    "isOnRock": false,
+    "rockHouse": "",
     "parentCircle": "center"
   },
   {
@@ -3035,8 +2966,53 @@
     "rockHouse": ""
   },
   {
-    "birth": 6040,
-    "distance": 42,
+    "birth": 6044,
+    "distance": 1498.7277938304874,
+    "angleToOrigine": 3.039998628361606,
+    "position": {
+      "x": -1491,
+      "y": 152
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 4,
+      "max": 9,
+      "growthPerDay": 1
+    },
+    "name": "Stella-6042*2",
+    "innerRotation": 6.271448995787684,
+    "model": "Stella",
+    "stage": 1,
+    "isOnRock": false,
+    "rockHouse": ""
+  },
+  {
+    "birth": 6044,
+    "distance": 1542.472041886011,
+    "angleToOrigine": 2.6053981670939854,
+    "position": {
+      "x": -1326,
+      "y": 788
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 4,
+      "max": 9,
+      "growthPerDay": 1
+    },
+    "name": "Stella-6042*3",
+    "innerRotation": 3.247574119427596,
+    "model": "Stella",
+    "stage": 1,
+    "isOnRock": false,
+    "rockHouse": "",
+    "parentCircle": "limit-south-west"
+  },
+  {
+    "birth": 6049,
+    "distance": 84,
     "angleToOrigine": 0.6472761753028762,
     "color": "#e647e6",
     "shape": "circle",
@@ -3045,13 +3021,13 @@
       "max": 8,
       "growthPerDay": 1
     },
-    "name": "Tiny-6-6040*1",
-    "innerRotation": 1.401368805248974,
+    "name": "Tiny-6-6049*1",
+    "innerRotation": 3.253688067484114,
     "model": "Tiny-6",
     "stage": 0,
     "position": {
-      "x": 33,
-      "y": -26
+      "x": 67,
+      "y": -51
     },
     "parentCircle": "center"
   },
@@ -3146,33 +3122,35 @@
     "parentCircle": "limit-south-east"
   },
   {
-    "birth": 6041,
-    "distance": 40,
-    "angleToOrigine": 0.6472761753028762,
-    "color": "#888888",
+    "birth": 6049,
+    "distance": 1274.803906489151,
+    "angleToOrigine": 1.1932032699180843,
+    "position": {
+      "x": 470,
+      "y": 1185
+    },
+    "color": "#ffbbff",
     "shape": "circle",
     "size": {
-      "min": 3,
+      "min": 4,
       "max": 9,
       "growthPerDay": 1
     },
-    "name": "cherry-6041*1",
-    "innerRotation": 5.2797085267155905,
-    "model": "cherry",
+    "name": "Xelium-6049*3",
+    "innerRotation": 3.5137680939141123,
+    "model": "Xelium-8",
     "stage": 0,
-    "position": {
-      "x": 31,
-      "y": -25
-    },
-    "parentCircle": "center"
+    "isOnRock": false,
+    "rockHouse": "",
+    "parentCircle": "limit-south-east"
   },
   {
     "birth": 5973,
-    "distance": 679.856602527327,
-    "angleToOrigine": -2.6614991590189714,
+    "distance": 1058.7927087017554,
+    "angleToOrigine": -2.5171710354687367,
     "position": {
-      "x": -603,
-      "y": -314
+      "x": -859,
+      "y": -619
     },
     "color": "#E467A8",
     "shape": "circle",
@@ -3185,54 +3163,32 @@
     "innerRotation": 3.101184328822227,
     "model": "cloverType",
     "stage": 1,
-    "isOnRock": true,
-    "rockHouse": "squiddy",
-    "parentCircle": "center"
-  },
-  {
-    "birth": 5944,
-    "distance": 1560.9051861019618,
-    "angleToOrigine": 0.2294398983358668,
-    "position": {
-      "x": 1520,
-      "y": 355
-    },
-    "color": "#888888",
-    "shape": "circle",
-    "size": {
-      "min": 0,
-      "max": 0,
-      "growthPerDay": 0
-    },
-    "name": "lazy-5942*2",
-    "innerRotation": 3.921485043230838,
-    "model": "lazy",
-    "stage": 1,
-    "isOnRock": false,
-    "rockHouse": ""
-  },
-  {
-    "birth": 5945,
-    "distance": 1399.2887479001608,
-    "angleToOrigine": 1.278655022875031,
-    "position": {
-      "x": 403,
-      "y": 1340
-    },
-    "color": "#888888",
-    "shape": "circle",
-    "size": {
-      "min": 0,
-      "max": 0,
-      "growthPerDay": 0
-    },
-    "name": "lazy-5943*3",
-    "innerRotation": 5.810263894909757,
-    "model": "lazy",
-    "stage": 1,
     "isOnRock": false,
     "rockHouse": "",
-    "parentCircle": "limit-south-east"
+    "parentCircle": "limit-north-west"
+  },
+  {
+    "birth": 6049,
+    "distance": 1092.5831776116636,
+    "angleToOrigine": -2.274558148063275,
+    "position": {
+      "x": -707,
+      "y": -833
+    },
+    "color": "#E467A8",
+    "shape": "circle",
+    "size": {
+      "min": 0,
+      "max": 0,
+      "growthPerDay": 0
+    },
+    "name": "cloverType-6049*2",
+    "innerRotation": 4.851552724938217,
+    "model": "cloverType",
+    "stage": 0,
+    "isOnRock": false,
+    "rockHouse": "",
+    "parentCircle": "limit-north-west"
   },
   {
     "birth": 5965,
@@ -3531,12 +3487,12 @@
     "parentCircle": "center"
   },
   {
-    "birth": 6032,
-    "distance": 995.5204668915652,
-    "angleToOrigine": -0.055275626773896094,
+    "birth": 6048,
+    "distance": 456.6847928276132,
+    "angleToOrigine": 0.05476973093042763,
     "position": {
-      "x": 994,
-      "y": -55
+      "x": 456,
+      "y": 25
     },
     "color": "#888888",
     "shape": "circle",
@@ -3545,10 +3501,33 @@
       "max": 0,
       "growthPerDay": 0
     },
-    "name": "lazy-6030*2",
-    "innerRotation": 1.2069526094705287,
+    "name": "lazy-6048*2",
+    "innerRotation": 1.130023790345819,
     "model": "lazy",
-    "stage": 1,
+    "stage": 0,
+    "isOnRock": true,
+    "rockHouse": "bigOne",
+    "parentCircle": "center"
+  },
+  {
+    "birth": 6048,
+    "distance": 801.4312197562558,
+    "angleToOrigine": 0.4714599500609072,
+    "position": {
+      "x": 714,
+      "y": 364
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 0,
+      "max": 0,
+      "growthPerDay": 0
+    },
+    "name": "lazy-6048*3",
+    "innerRotation": 4.5788088924423995,
+    "model": "lazy",
+    "stage": 0,
     "isOnRock": false,
     "rockHouse": ""
   },
@@ -3645,7 +3624,7 @@
     "parentCircle": "limit-south-east"
   },
   {
-    "birth": 6041,
+    "birth": 6043,
     "distance": 512.6421754011271,
     "angleToOrigine": -0.11927398334836671,
     "position": {
@@ -3662,7 +3641,7 @@
     "name": "shaken-6041*2",
     "innerRotation": 5.022715358429666,
     "model": "shaken",
-    "stage": 0,
+    "stage": 1,
     "isOnRock": false,
     "rockHouse": "",
     "parentCircle": "center"
@@ -3714,12 +3693,80 @@
     "parentCircle": "center"
   },
   {
-    "birth": 6042,
-    "distance": 1635.0305807537668,
-    "angleToOrigine": -2.039093792874438,
+    "birth": 6049,
+    "distance": 612.2099313144143,
+    "angleToOrigine": -2.2508943606282967,
     "position": {
-      "x": -738,
-      "y": -1459
+      "x": -385,
+      "y": -476
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 1,
+      "max": 9,
+      "growthPerDay": 1
+    },
+    "name": "violet-6049*2",
+    "innerRotation": 5.165942603999514,
+    "model": "violet",
+    "stage": 0,
+    "isOnRock": true,
+    "rockHouse": "squiddy",
+    "parentCircle": "center"
+  },
+  {
+    "birth": 6049,
+    "distance": 173.62603491412224,
+    "angleToOrigine": -1.9545112490465462,
+    "position": {
+      "x": -65,
+      "y": -161
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 1,
+      "max": 9,
+      "growthPerDay": 1
+    },
+    "name": "violet-6049*3",
+    "innerRotation": 4.31876969113443,
+    "model": "violet",
+    "stage": 0,
+    "isOnRock": false,
+    "rockHouse": "",
+    "parentCircle": "center"
+  },
+  {
+    "birth": 6049,
+    "distance": 787.20835869546,
+    "angleToOrigine": -1.6611111881323921,
+    "position": {
+      "x": -71,
+      "y": -784
+    },
+    "color": "#888888",
+    "shape": "circle",
+    "size": {
+      "min": 1,
+      "max": 9,
+      "growthPerDay": 1
+    },
+    "name": "violet-6049*4",
+    "innerRotation": 4.996610984408077,
+    "model": "violet",
+    "stage": 0,
+    "isOnRock": false,
+    "rockHouse": ""
+  },
+  {
+    "birth": 6050,
+    "distance": 1473.654301388219,
+    "angleToOrigine": -1.7973408642902042,
+    "position": {
+      "x": -331,
+      "y": -1436
     },
     "color": "#bd87f8",
     "shape": "circle",
@@ -3728,64 +3775,20 @@
       "max": 9,
       "growthPerDay": 1
     },
-    "name": "Ellipse-6042*2",
-    "innerRotation": 3.5174551139407955,
+    "name": "Ellipse-6050*2",
+    "innerRotation": 4.332062644265585,
     "model": "Ellipse-10",
     "stage": 0,
     "isOnRock": false,
     "rockHouse": ""
   },
   {
-    "birth": 6042,
-    "distance": 1636.4000122219506,
-    "angleToOrigine": 2.2492593361973614,
+    "birth": 6049,
+    "distance": 1526.7144461227842,
+    "angleToOrigine": 1.511155854900358,
     "position": {
-      "x": -1027,
-      "y": 1274
-    },
-    "color": "#888888",
-    "shape": "circle",
-    "size": {
-      "min": 0,
-      "max": 0,
-      "growthPerDay": 0
-    },
-    "name": "Mauve_Sylvestre-6042*2",
-    "innerRotation": 3.078618877034703,
-    "model": "Mauve_Sylvestre",
-    "stage": 0,
-    "isOnRock": false,
-    "rockHouse": ""
-  },
-  {
-    "birth": 6042,
-    "distance": 1074.8478962160182,
-    "angleToOrigine": 2.568298666665724,
-    "position": {
-      "x": -903,
-      "y": 583
-    },
-    "color": "#888888",
-    "shape": "circle",
-    "size": {
-      "min": 0,
-      "max": 0,
-      "growthPerDay": 0
-    },
-    "name": "Mauve_Sylvestre-6042*2",
-    "innerRotation": 5.506975565389372,
-    "model": "Mauve_Sylvestre",
-    "stage": 0,
-    "isOnRock": false,
-    "rockHouse": ""
-  },
-  {
-    "birth": 6042,
-    "distance": 1498.7277938304874,
-    "angleToOrigine": 3.039998628361606,
-    "position": {
-      "x": -1491,
-      "y": 152
+      "x": 91,
+      "y": 1524
     },
     "color": "#888888",
     "shape": "circle",
@@ -3794,49 +3797,27 @@
       "max": 9,
       "growthPerDay": 1
     },
-    "name": "Stella-6042*2",
-    "innerRotation": 6.271448995787684,
-    "model": "Stella",
-    "stage": 0,
+    "name": "shaken-6047*2",
+    "innerRotation": 0.10699242544826873,
+    "model": "shaken",
+    "stage": 1,
     "isOnRock": false,
     "rockHouse": ""
   },
   {
-    "birth": 6042,
-    "distance": 1542.472041886011,
-    "angleToOrigine": 2.6053981670939854,
-    "position": {
-      "x": -1326,
-      "y": 788
-    },
-    "color": "#888888",
-    "shape": "circle",
-    "size": {
-      "min": 4,
-      "max": 9,
-      "growthPerDay": 1
-    },
-    "name": "Stella-6042*3",
-    "innerRotation": 3.247574119427596,
-    "model": "Stella",
-    "stage": 0,
-    "isOnRock": false,
-    "rockHouse": ""
-  },
-  {
-    "birth": 6042,
-    "distance": 85,
+    "birth": 6050,
+    "distance": 63,
     "angleToOrigine": 0.6472761753028762,
-    "color": "#ff61d1",
+    "color": "#888888",
     "shape": "circle",
     "size": {
-      "min": 4,
+      "min": 3,
       "max": 9,
       "growthPerDay": 1
     },
-    "name": "Pelium-6-6042*1",
-    "innerRotation": 0.10195634911877745,
-    "model": "Pelium-6",
+    "name": "cherry-6050*1",
+    "innerRotation": 5.41470572405768,
+    "model": "cherry",
     "stage": 0
   }
 ]#end of file#

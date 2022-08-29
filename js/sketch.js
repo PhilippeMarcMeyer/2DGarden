@@ -214,6 +214,10 @@ function draw() {
 }
 
 function drawMob(mob){
+	let center = drawingPositionGet(mob.position);
+	if(!isPointInCanvas(center)){
+		return;
+	}
 	let mobModel = null;
 	if(mobModels){
 		let arrItem = mobModels.filter((model) => {
@@ -238,7 +242,6 @@ function drawMob(mob){
 	if(mobModel){
 		context.save();
 		context.strokeStyle = mob.color;
-		let center = drawingPositionGet(mob.position);
 
 		if(mobModel.geometry.type === "multiShapes"){
 			mobModel.geometry.matrix.forEach((element) => {
@@ -697,6 +700,10 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 	}
 
 	this.drawCross = function () {
+		let centralPt = drawingPositionGet({x:0,y:0});
+		if(!isPointInCanvas(centralPt)){
+			return;
+		}
 		context.save();
 		context.globalAlpha = 0.4;
 		context.beginPath();
@@ -1429,14 +1436,15 @@ function Plant(data) {
 		}
 		this.draw = function () {
 			var self = this;
-			isVisible = true;
-			if (!isVisible) return;
+			let centralPt = drawingPositionGet(self.positionAbsolute);
+			if(!isPointInCanvas(centralPt)){
+				return;
+			}
 			if (self.stage === 0) {
 				context.save();
 				context.strokeStyle = "#CA6A0B";
 				context.fillStyle = "#CA6A0B";
 				context.beginPath();
-				let centralPt = drawingPositionGet(self.positionAbsolute);
 				circle(centralPt.x, centralPt.y, self.geometry.heart.diameter);
 				if (debugMode) {text(`${self.name} (seed)`, centralPt.x + 20, centralPt.y);text(`${self.positionAbsolute.x},${self.positionAbsolute.y}`, centralPt.x, centralPt.y + 20);};
 				context.closePath();
@@ -1451,7 +1459,6 @@ function Plant(data) {
 				context.fillStyle = self.protectRadius.color;
 				context.globalAlpha = 0.04;
 				context.beginPath();
-				let centralPt = drawingPositionGet(self.positionAbsolute);
 				circle(centralPt.x, centralPt.y, self.protectRadius.radius);
 				context.closePath();
 				context.stroke();
@@ -1483,7 +1490,6 @@ function Plant(data) {
 							rightPts[key] = drawingPositionGet(rightPts[key]);
 						}
 
-	
 						if (self.geometry.leaves.shape === "double-curve") {
 							curve(leftPts.ctrlPt1.x, leftPts.ctrlPt1.y, leftPts.pt1.x, leftPts.pt1.y, leftPts.pt2.x, leftPts.pt2.y, leftPts.ctrlPt2.x, leftPts.ctrlPt2.y);
 							curve(rightPts.ctrlPt1.x, rightPts.ctrlPt1.y, rightPts.pt1.x, rightPts.pt1.y, rightPts.pt2.x, rightPts.pt2.y, rightPts.ctrlPt2.x, rightPts.ctrlPt2.y);
@@ -1500,7 +1506,6 @@ function Plant(data) {
 
 				}else if(self.geometry.leaves.shape === "simple-curve" || self.geometry.leaves.shape === "simple-bezier"){
 					context.save();
-					let centralPt = drawingPositionGet(self.positionAbsolute);
 					let spikeRadius = self.geometry.leaves.spikeRadius;
 					var grd = context.createRadialGradient(centralPt.x, centralPt.y, 20,centralPt.x, centralPt.y, spikeRadius*3);
 					grd.addColorStop(0, self.geometry.leaves.color);
@@ -1535,7 +1540,6 @@ function Plant(data) {
 			if (self.geometry && self.geometry.crown) {
 				if (self.geometry.crown.shape === "double-curve" || self.geometry.crown.shape === "double-bezier" || self.geometry.crown.shape === "lines") {
 					context.save();
-					let centralPt = drawingPositionGet(self.positionAbsolute);
 					let spikeRadius = self.geometry.crown.spikeRadius;
 					var grd3 = context.createRadialGradient(centralPt.x, centralPt.y, 20,centralPt.x, centralPt.y, spikeRadius);
 					grd3.addColorStop(0, self.geometry.crown.color);
@@ -1576,9 +1580,8 @@ function Plant(data) {
 						if (self.geometry.crown.shape === "lines") {
 
 							strokeWeight(3);
-							let centerPos = drawingPositionGet(self.geometry.heart.center);
 							self.geometry.crown.spikes.forEach((pt) => {
-								context.moveTo(centerPos.x, centerPos.y);
+								context.moveTo(centralPt.x, centralPt.y);
 								let drawPos = drawingPositionGet(pt);
 								context.lineTo(drawPos.x, drawPos.y);
 							});
@@ -1594,10 +1597,8 @@ function Plant(data) {
 					
 				}else if(self.geometry.crown.shape === "simple-curve" || self.geometry.crown.shape === "simple-bezier"){
 					let color = self.geometry.crown.color;
-					let borderColor = self.geometry.crown.borderColor;
 					let spikeRadius = self.geometry.crown.spikeRadius;
 					context.save();
-					let centralPt = drawingPositionGet(self.positionAbsolute);
 
 					var grd2 = context.createRadialGradient(centralPt.x, centralPt.y, 5,centralPt.x, centralPt.y, spikeRadius*0.6);
 					grd2.addColorStop(0, color);
@@ -1630,7 +1631,6 @@ function Plant(data) {
 
 				}
 				else if(self.geometry.crown.shape === "polygon" || self.geometry.crown.shape === "polygons-with-colors"){
-					let centralPt = drawingPositionGet(self.positionAbsolute);
 					let spikeRadius = self.geometry.crown.spikeRadius ;
 
 					context.save();
@@ -1692,13 +1692,12 @@ function Plant(data) {
 					context.fillStyle = color;
 					context.beginPath();
 					strokeWeight(2);
-					let centerPos = drawingPositionGet(self.geometry.heart.center);
 					self.geometry.crown.spikes.forEach((pt) => {
 						if (self.animation && self.animation.length > 0) {
 							translate(self.animation[0], self.animation[0]);
 							self.animation.shift();
 						}
-						context.moveTo(centerPos.x, centerPos.y);
+						context.moveTo(centralPt.x, centralPt.y);
 						let drawPos = drawingPositionGet(pt);
 						context.lineTo(drawPos.x, drawPos.y);
 					})
@@ -1714,7 +1713,6 @@ function Plant(data) {
 					context.strokeStyle = self.geometry.heart.borderColor;
 					context.fillStyle = self.geometry.heart.color;
 					context.beginPath();
-					let centralPt = drawingPositionGet({ ...self.geometry.heart.center });
 					circle(centralPt.x, centralPt.y, self.geometry.heart.diameter);
 					if (debugMode) {text(self.name, centralPt.x + 20, centralPt.y);text(`${self.positionAbsolute.x},${self.positionAbsolute.y}`, centralPt.x, centralPt.y + 20);};
 					context.closePath();
@@ -1811,10 +1809,10 @@ function Plant(data) {
 		this.draw = function () {
 			// the _camera moves : the objects stay stationnary so the positionRelative == positionAbsolute
 			var self = this;
-			isVisible = true;
-
-			if (!isVisible) return;
 			let centralPt = drawingPositionGet(self.positionAbsolute);
+			if(!isPointInCanvas(centralPt)){
+				return;
+			}
 			var grd = context.createRadialGradient(centralPt.x, centralPt.y, 20,centralPt.x, centralPt.y, self.half);
 			grd.addColorStop(0.1, self.colors[0]);
 			grd.addColorStop(0.9, self.colors[self.colors.length-1]);
@@ -1875,6 +1873,11 @@ function Plant(data) {
 	function getDistance(ptA, ptB) {
 		if(!(ptA && ptA.x && ptA.y && ptB && ptB.x && ptB.y )) return 99999;
 		return Math.sqrt(Math.pow(ptB.x - ptA.x, 2) + Math.pow(ptB.y - ptA.y, 2));
+	  }
+
+	  function isPointInCanvas(pt){
+		let adjustment = 80;
+		return pt.x > (- width/2 -adjustment) && pt.x < (width/2 +adjustment) &&  pt.y > (- height/2 -adjustment) && pt.y < (height/2 +adjustment);
 	  }
 	
 	//Chris Coyier 

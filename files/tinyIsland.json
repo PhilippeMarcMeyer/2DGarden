@@ -4,7 +4,7 @@
   "baseColor": "#031F8D",
   "perimeterColor": "#031F8D",
   "backgroundImage": "BG4.png",
-  "gardenDay": 6040,
+  "gardenDay": 6050,
   "plantsFile": "tinyIslandPlants.json",
   "mobsFiles": "tynyIslandMobs.json",
   "currentCenter": {
@@ -16,13 +16,30 @@
       {
         "name": "ant",
         "active": true,
-        "identColors" : ["#00b5ff","#00ffff","#85ff00","#ff8000","#ff85ff","#ff3155","#ffaf42","#ffed5e","#49f770","#2daefd","#ff0085","#b6fcf5","#0ed5ee","#d189f9","#b98501"],
+        "identColors": [
+          "#FDFE0D",
+          "#FFCC00",
+          "#FC9A03",
+          "#FF6501",
+          "#FE0000",
+          "#AA1B49",
+          "#3E01A4",
+          "#0000FE",
+          "#00B3FE",
+          "#00FF01",
+          "#FE0000",
+          "#FF00FF",
+          "#C0C0C0",
+          "#339966",
+          "#800000"
+        ],
         "home": "west-anthill",
         "characteristics": {
           "maxAge": 180,
           "size": 60,
           "color": "#000000",
-          "move": 6
+          "move": 6,
+          "bagSize": 6
         },
         "community": {
           "strength": "high",
@@ -28478,7 +28495,7 @@
             "x": 920,
             "y": 1120
           },
-          "currentNr": 33
+          "currentNr": 34
         },
         {
           "name": "west-anthill",
