@@ -246,6 +246,7 @@ function drawMob(mob){
 		if(mobModel.geometry.type === "multiShapes"){
 			mobModel.geometry.matrix.forEach((element) => {
 				context.fillStyle = element.part === "identification" ? mob.identColor : element.color;
+				context.strokeStyle = element.shape === "polyline" ? element.color : "#dd0000";
 				context.beginPath();
 				if (element.shape == "polygon") {
 					let mobPoly = [...element.data];
@@ -261,6 +262,26 @@ function drawMob(mob){
 					mobPts.forEach((pt) => {
 						context.lineTo(pt.x, pt.y);
 					});
+					context.closePath();
+					context.stroke();
+					context.fill();
+				}else if (element.shape == "polyline") {
+					let mobPoly = [...element.data];
+					let mobPts = mobPoly.map((pt) => {
+						pt = simpleRotate(pt, mob.innerRotation);
+						pt.x *= mob.size;
+						pt.y *= mob.size ;
+						pt.x += center.x;
+						pt.y += center.y;
+						pt.x = Math.floor(pt.x + 0.5);
+						pt.y = Math.floor(pt.y + 0.5);
+						return pt;
+					});
+					for(let i = 1; i < mobPts.length; i++){
+						line(mobPts[i-1].x, mobPts[i-1].y,mobPts[i].x, mobPts[i].y)
+					}
+					context.closePath();
+					context.stroke();
 				}else if (element.shape == "circle"){
 					let partCenter = {...element.center};
 					let pt = simpleRotate(partCenter, mob.innerRotation);
@@ -271,10 +292,10 @@ function drawMob(mob){
 					pt.y += center.y;
 					context.arc(pt.x, pt.y, d/3, 0, 2 * Math.PI);
 					context.arc(pt.x, pt.y, 1, 0, 2 * Math.PI);
+					context.closePath();
+					context.stroke();
+					context.fill();
 				}
-				context.closePath();
-				context.stroke();
-				context.fill();
 			});
 		}
 		context.restore(); 
@@ -1066,6 +1087,9 @@ function Plant(data) {
 	this.positionAbsolute = data.position || null;
 	this.isOnRock = data.isOnRock;
 	this.rockHouse = data.rockHouse;
+	this.bugs = data.bugs !== undefined ? data.bugs : 0;
+	this.bugsList = [];
+
 	this.collider = {
 		shape: "circle",
 		center: null,
@@ -1125,6 +1149,15 @@ function Plant(data) {
 		}
 		self.geometry = {};
 		self.collider.data = self.size;
+
+		let centralPoint = { ...self.positionAbsolute };
+
+		let nrBugs = self.bugs ? self.bugs : 0;
+		for(let i = 0 ; i < nrBugs; i++){
+			let testX = Math.floor((Math.random() * 20) + 0.5) - 10;
+			let testY = Math.floor((Math.random() * 20) + 0.5) - 10;
+			self.bugsList.push({x : centralPoint.x + testX, y : centralPoint.y + testY})
+		}
 
 		if (self.petals === null) {
 			self.geometry.crown = null;
@@ -1229,13 +1262,11 @@ function Plant(data) {
 				self.collider.dim2 = spikeRadius;
 				self.geometry.crown.spikes.forEach((spike, index) => {
 					for (const key in spike.curveLeft) {
-						let centralPoint = { ...self.positionAbsolute };
 						spike.curveLeft[key] = simpleRotate(spike.curveLeft[key], self.innerRotation + self.petals.leafModel.angles[index]);
 						spike.curveLeft[key].x = Math.floor(centralPoint.x + (spike.curveLeft[key].x * spikeRadius));
 						spike.curveLeft[key].y = Math.floor(centralPoint.y + (spike.curveLeft[key].y * spikeRadius));
 					}
 					for (const key in spike.curveRight) {
-						let centralPoint = { ...self.positionAbsolute };
 						spike.curveRight[key] = simpleRotate(spike.curveRight[key], self.innerRotation + self.petals.leafModel.angles[index]);
 						spike.curveRight[key].x = Math.floor(centralPoint.x + (spike.curveRight[key].x * spikeRadius));
 						spike.curveRight[key].y = Math.floor(centralPoint.y + (spike.curveRight[key].y * spikeRadius));
@@ -1271,7 +1302,6 @@ function Plant(data) {
 				self.collider.dim2 = spikeRadius;
 				self.geometry.crown.spikes.forEach((spike, index) => {
 					for (const key in spike.curveUnique) {
-						let centralPoint = { ...self.positionAbsolute };
 						spike.curveUnique[key] = simpleRotate(spike.curveUnique[key], self.innerRotation + self.petals.leafModel.angles[index]);
 						spike.curveUnique[key].x = Math.floor(centralPoint.x + (spike.curveUnique[key].x * spikeRadius));
 						spike.curveUnique[key].y = Math.floor(centralPoint.y + (spike.curveUnique[key].y * spikeRadius));
@@ -1279,7 +1309,6 @@ function Plant(data) {
 				});
 			} else if (self.geometry.crown.shape === "lines") {
 
-				let centralPoint = { ...self.positionAbsolute };
 				self.geometry.heart.center = { ...self.positionAbsolute };;
 				self.collider.center = { ...self.positionAbsolute };
 
@@ -1296,7 +1325,6 @@ function Plant(data) {
 					self.geometry.crown.spikes.push(pt);
 				}
 			} else if (self.geometry.crown.shape === "polygon") {
-				let centralPoint = { ...self.positionAbsolute };
 				self.geometry.heart.center = { ...self.positionAbsolute };;
 				self.collider.center = { ...self.positionAbsolute };
 				const spikeRadius = self.geometry.crown.radius;
@@ -1326,7 +1354,6 @@ function Plant(data) {
 				};
 			}
 			else if (self.geometry.crown.shape === "polygons-with-colors") {
- 				let centralPoint = { ...self.positionAbsolute };
 				self.geometry.heart.center = { ...self.positionAbsolute };
 				self.collider.center = { ...self.positionAbsolute };
 				const spikeRadius = self.geometry.crown.radius;
@@ -1386,13 +1413,11 @@ function Plant(data) {
 				const spikeRadius = self.geometry.leaves.radius;
 				self.geometry.leaves.spikes.forEach((spike, index) => {
 					for (const key in spike.curveLeft) {
-						let centralPoint = { ...self.positionAbsolute };
 						spike.curveLeft[key] = simpleRotate(spike.curveLeft[key], self.innerRotation + self.leaves.leafModel.angles[index]);
 						spike.curveLeft[key].x = Math.floor(centralPoint.x + (spike.curveLeft[key].x * spikeRadius));
 						spike.curveLeft[key].y = Math.floor(centralPoint.y + (spike.curveLeft[key].y * spikeRadius));
 					}
 					for (const key in spike.curveRight) {
-						let centralPoint = { ...self.positionAbsolute };
 						spike.curveRight[key] = simpleRotate(spike.curveRight[key], self.innerRotation + self.leaves.leafModel.angles[index]);
 						spike.curveRight[key].x = Math.floor(centralPoint.x + (spike.curveRight[key].x * spikeRadius));
 						spike.curveRight[key].y = Math.floor(centralPoint.y + (spike.curveRight[key].y * spikeRadius));
@@ -1421,7 +1446,6 @@ function Plant(data) {
 				const spikeRadius = self.geometry.leaves.radius;
 				self.geometry.leaves.spikes.forEach((spike, index) => {
 					for (const key in spike.curveUnique) {
-						let centralPoint = { ...self.positionAbsolute };
 						spike.curveUnique[key] = simpleRotate(spike.curveUnique[key], self.innerRotation + self.leaves.leafModel.angles[index]);
 						spike.curveUnique[key].x = Math.floor(centralPoint.x + (spike.curveUnique[key].x * spikeRadius));
 						spike.curveUnique[key].y = Math.floor(centralPoint.y + (spike.curveUnique[key].y * spikeRadius));
@@ -1720,9 +1744,27 @@ function Plant(data) {
 					context.fill();
 					context.restore();
 				}
-
 			}
-		}
+			if(self.bugs){
+				console.log(self.bugs);
+			}
+			if(self.bugsList && self.bugsList.length>0){
+				context.save();
+				context.strokeStyle = "#ffaa00";
+				context.fillStyle = "#ffaa00";
+				strokeWeight(4);
+				context.beginPath();
+				self.bugsList.forEach((pt) => {
+					let pt2 = drawingPositionGet(pt)
+					circle(pt2.x, pt2.y,5);
+				});
+				context.closePath();
+				context.fill();
+				context.stroke();
+				context.restore();
+			}
+
+		}// end draw
 	}
 }
 

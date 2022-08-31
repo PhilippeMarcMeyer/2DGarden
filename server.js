@@ -779,6 +779,37 @@ function getSeedsChance(modelName) {
   return Math.max(1 - (nr * 0.3), 0.1);
 }
 
+
+function getNewBugs(plant){
+  let bugNaturalDeathChance = 0.1;
+  let bugChance = 0.05;
+  let nrBugs = 0;
+  let maxBugs = 12;
+  if(plant.bugs > 0){
+    nrBugs -= Math.floor((Math.random() * bugNaturalDeathChance * maxBugs) + 0.5);
+    if(nrBugs < 0){
+      nrBugs = 0;
+    }
+  }
+  if(plant.stage === 1){
+    if(plant.bugs === 0){
+      if(Math.random() <= bugChance){
+        nrBugs = Math.floor((Math.random() * maxBugs) + 0.5);
+      }
+    }else{
+      if(Math.random() <= bugChance*10){
+        nrBugs = Math.floor((Math.random() * maxBugs) + 0.5);
+        if(nrBugs + plant.bugs > maxBugs){
+          nrBugs = maxBugs;
+        }
+      }
+    }
+  }else{
+    nrBugs = 0;
+  }
+  return nrBugs;
+}
+
 function getModelExpansion(modelName) {
   if (!arePlantsReady()) return;
   return worldModel.data.plants.filter((x) => {
@@ -993,6 +1024,10 @@ function checkPlants() {
       }
     } else if (x.stage >= 1) { // flower
       if (age >= model.evolution.seedsDay) {
+        if(x.bugs === undefined){
+          x.bugs = 0;
+        }
+        x.bugs = getNewBugs(x);
         if (Math.random() <= getSeedsChance(x.model)) {
           console.log("seeds ?")
           let parentCircle = x.parentCircle || "outSideCircles";
@@ -1157,6 +1192,12 @@ function checkPlants() {
     console.log(`${savedSpeciesList.length} saved specie(s) : ${savedSpeciesList.join(',')}`);
   }
   console.log(`Stop Checking plants at ${new Date().toISOString()}`);
+  let nrBugs = 0;
+  worldModel.data.plants.forEach((x) => {
+    nrBugs += x.bugs ? x.bugs : 0;
+  });
+  console.log(`Nr of bugs in the garden : ${nrBugs}`);
+
 }
 
 function checkGenerations() {

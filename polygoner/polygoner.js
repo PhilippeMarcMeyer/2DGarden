@@ -13,7 +13,7 @@ var arrObjects = [];
 let can;
 
 function setup() {
-	var selectedImage = "antModel.png";
+	var selectedImage = "ant_tsilla.png";
 	can = createCanvas(size, size);
 	can.parent('canvasZone');
 	can.mouseReleased(function () {
