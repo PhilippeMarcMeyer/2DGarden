@@ -74,19 +74,20 @@ function mouseClicked() {
 	}
 	return false;
 }
+
 function preloadBg() {
-	let selectedImage = worldModel.backgroundImage;
-	let fullPath = "/img/"+ selectedImage;
-		loadImage(fullPath, function(temp) {
-			backgroundImage = temp.get();
-			if(backgroundImage){
-				backgroundIsReady = true;
-			}
-			
-		}, function(event) {
-			console.log(event);
-		});
-	}
+/* 	let selectedImage = worldModel.backgroundImage;
+	let fullPath = "/img/" + selectedImage;
+	loadImage(fullPath, function (temp) {
+		backgroundImage = temp.get();
+		if (backgroundImage) {
+			backgroundIsReady = true;
+		}
+
+	}, function (event) {
+		console.log(event);
+	}); */
+} 
 
 function setup() {
 	pixelDensity(1);
@@ -432,9 +433,11 @@ function Floor(worldModel) {
 					// the real position according to origin point
 					element.center = { x: Math.floor(cos * s.distance), y: Math.floor(sin * s.distance) };
 					element.shape = s.shape;
-					element.color = s.color === "baseColor" ? worldModel.baseColor : s.color;
 					element.opacity = s.opacity;
 					element.diameter = s.size[0];
+					element.color = s.color === "baseColor" ? worldModel.baseColor : s.color;
+					element.colors = s.colors || [];
+					element.colorStops = s.colorStops || [];
 					self.elements.push(element);
 				} else if (s.shape === "polygon") {
 					let cos = Math.cos(s.angleToOrigine);
@@ -445,7 +448,12 @@ function Floor(worldModel) {
 					element.shape = s.shape;
 					element.color = s.color === "baseColor" ? worldModel.baseColor : s.color;
 					element.opacity = s.opacity;
+					element.colors = s.colors || [];
+					element.colorStops = s.colorStops || [];
 					element.size = s.size[0];
+					element.timeTable = s.timeTable ? s.timeTable : 0;
+					element.timeTableColor = s.timeTableColor ? s.timeTableColor : "#000000";
+
 					element.points = s.matrix.map((pt) => {
 						return simpleRotate(pt, s.innerRotation);
 					});
@@ -482,33 +490,68 @@ function Floor(worldModel) {
 
 		self.elements.forEach((elem) => {
 			if (elem.shape === "circle") {
-			 /* context.save();
+/* 			    context.save();
 				context.beginPath();
 				let centralPt = drawingPositionGet({ ...elem.center });
-				context.fillStyle = elem.color;
-				context.strokeStyle = elem.color;
+				if(elem.colorStops.length){
+					let grd = context.createRadialGradient(centralPt.x, centralPt.y, 20,centralPt.x, centralPt.y, elem.diameter);
+					for(let i = 0; i < elem.colorStops.length; i++){
+						grd.addColorStop(elem.colorStops[i], elem.colors[i]);
+					}
+					context.fillStyle = grd;
+				}else{
+					context.fillStyle = elem.color;
+				}
 				context.globalAlpha = elem.opacity;
 				context.arc(centralPt.x, centralPt.y, elem.diameter, 0, 2 * Math.PI);
 				context.closePath();
 				context.fill();
-				context.stroke();
-				context.restore(); */
+				context.restore();  */
 			} else if (elem.shape === "polygon") {
 				context.save();
 				context.beginPath();
+				let centralPt = drawingPositionGet({ ...elem.center });
 				context.globalAlpha = elem.opacity;
-				context.fillStyle = elem.color;
 				context.strokeStyle = elem.color;
-				let drawPos = drawingPositionGet(elem.points[0]);
-				context.moveTo(drawPos.x, drawPos.y);
-				elem.points.forEach((pt) => {
-					drawPos = drawingPositionGet(pt);
-					context.lineTo(drawPos.x, drawPos.y);
-				})
+				if(elem.colorStops.length){
+					let grd = context.createRadialGradient(centralPt.x, centralPt.y, 20,centralPt.x, centralPt.y, elem.size);
+					for(let i = 0; i < elem.colorStops.length; i++){
+						grd.addColorStop(elem.colorStops[i], elem.colors[i]);
+					}
+					context.fillStyle = grd;
+				}else{
+					context.fillStyle = elem.color;
+				}
+
+				let pointsList = elem.points.map((pt) => {
+					return drawingPositionGet(pt);
+				});
+
+				context.moveTo(pointsList[0].x, pointsList[0].y);
+				pointsList.forEach((pt) => {
+					context.lineTo(pt.x, pt.y);
+				});
+
 				context.closePath();
 				context.stroke();
 				context.fill();
 				context.restore();
+
+				if (elem.timeTable) {
+					context.save();
+					context.beginPath();
+					context.strokeStyle = elem.timeTableColor;
+					strokeWeight(1);
+					context.globalAlpha = 1;
+					let numberPoints = pointsList.length;
+					for(var i = 0; i < numberPoints; i++){
+						j = (i * elem.timeTable) % numberPoints;
+						line(pointsList[i].x,pointsList[i].y,pointsList[j].x,pointsList[j].y);
+					}
+					context.closePath();
+					context.stroke();
+					context.restore(); 
+				}
 			}
 		});
 	}

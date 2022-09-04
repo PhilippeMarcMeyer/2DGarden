@@ -1,8 +1,8 @@
 [
   {
-    "birth": 6250,
-    "model": "ant",
-    "name": "ant-6250*1",
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*1",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -13,31 +13,29 @@
     "size": 30,
     "color": "#000000",
     "home": "west-anthill",
-    "bag": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    ],
-    "basePosition": {
-      "x": -1204,
-      "y": -501
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
     },
-    "innerRotation": 0.38,
+    "basePosition": {
+      "x": -1174,
+      "y": -441
+    },
+    "innerRotation": 1.08,
     "destination": null,
     "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1054,
-      "y": -501
+      "x": -1174,
+      "y": -441
     },
     "identColor": "#FDFE0D"
   },
   {
-    "birth": 6250,
-    "model": "ant",
-    "name": "ant-6250*2",
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*2",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -48,31 +46,29 @@
     "size": 30,
     "color": "#000000",
     "home": "west-anthill",
-    "bag": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    ],
-    "basePosition": {
-      "x": -1182,
-      "y": -549
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
     },
-    "innerRotation": 3.34,
+    "basePosition": {
+      "x": -1195,
+      "y": -464
+    },
+    "innerRotation": 0.93,
     "destination": null,
     "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1182,
-      "y": -549
+      "x": -1195,
+      "y": -464
     },
     "identColor": "#FFCC00"
   },
   {
-    "birth": 6250,
-    "model": "ant",
-    "name": "ant-6250*3",
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*3",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -83,31 +79,29 @@
     "size": 30,
     "color": "#000000",
     "home": "west-anthill",
-    "bag": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    ],
-    "basePosition": {
-      "x": -1165,
-      "y": -484
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
     },
-    "innerRotation": 6.15,
+    "basePosition": {
+      "x": -1122,
+      "y": -442
+    },
+    "innerRotation": 5.05,
     "destination": null,
     "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1165,
-      "y": -484
+      "x": -1122,
+      "y": -442
     },
     "identColor": "#FC9A03"
   },
   {
-    "birth": 6250,
-    "model": "ant",
-    "name": "ant-6250*4",
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*4",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -118,31 +112,29 @@
     "size": 30,
     "color": "#000000",
     "home": "west-anthill",
-    "bag": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    ],
-    "basePosition": {
-      "x": -1079,
-      "y": -423
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
     },
-    "innerRotation": 2.58,
+    "basePosition": {
+      "x": -1119,
+      "y": -550
+    },
+    "innerRotation": 2.55,
     "destination": null,
     "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1079,
-      "y": -423
+      "x": -1119,
+      "y": -550
     },
     "identColor": "#FF6501"
   },
   {
-    "birth": 6250,
-    "model": "ant",
-    "name": "ant-6250*5",
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*5",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -153,31 +145,29 @@
     "size": 30,
     "color": "#000000",
     "home": "west-anthill",
-    "bag": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    ],
-    "basePosition": {
-      "x": -1145,
-      "y": -551
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
     },
-    "innerRotation": 3.61,
+    "basePosition": {
+      "x": -1197,
+      "y": -423
+    },
+    "innerRotation": 0.21,
     "destination": null,
     "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1145,
-      "y": -551
+      "x": -1197,
+      "y": -423
     },
     "identColor": "#FE0000"
   },
   {
-    "birth": 6250,
-    "model": "ant",
-    "name": "ant-6250*6",
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*6",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -188,31 +178,29 @@
     "size": 30,
     "color": "#000000",
     "home": "west-anthill",
-    "bag": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    ],
-    "basePosition": {
-      "x": -1169,
-      "y": -492
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
     },
-    "innerRotation": 1.52,
+    "basePosition": {
+      "x": -1092,
+      "y": -430
+    },
+    "innerRotation": 3.44,
     "destination": null,
     "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1169,
-      "y": -492
+      "x": -1092,
+      "y": -430
     },
     "identColor": "#AA1B49"
   },
   {
-    "birth": 6250,
-    "model": "ant",
-    "name": "ant-6250*7",
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*7",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -223,31 +211,29 @@
     "size": 30,
     "color": "#000000",
     "home": "west-anthill",
-    "bag": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    ],
-    "basePosition": {
-      "x": -1197,
-      "y": -501
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
     },
-    "innerRotation": 3.03,
+    "basePosition": {
+      "x": -1090,
+      "y": -534
+    },
+    "innerRotation": 2.98,
     "destination": null,
     "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1197,
-      "y": -501
+      "x": -1090,
+      "y": -534
     },
     "identColor": "#3E01A4"
   },
   {
-    "birth": 6250,
-    "model": "ant",
-    "name": "ant-6250*8",
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*8",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -258,31 +244,29 @@
     "size": 30,
     "color": "#000000",
     "home": "west-anthill",
-    "bag": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    ],
-    "basePosition": {
-      "x": -1074,
-      "y": -490
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
     },
-    "innerRotation": 2.56,
+    "basePosition": {
+      "x": -1086,
+      "y": -428
+    },
+    "innerRotation": 4.85,
     "destination": null,
     "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1074,
-      "y": -490
+      "x": -1086,
+      "y": -428
     },
     "identColor": "#0000FE"
   },
   {
-    "birth": 6250,
-    "model": "ant",
-    "name": "ant-6250*9",
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*9",
     "maxLife": 3,
     "currentLife": 3,
     "mealCapacity": 20,
@@ -293,25 +277,266 @@
     "size": 30,
     "color": "#000000",
     "home": "west-anthill",
-    "bag": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    ],
-    "basePosition": {
-      "x": -1192,
-      "y": -420
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
     },
-    "innerRotation": 5.36,
+    "basePosition": {
+      "x": -1185,
+      "y": -428
+    },
+    "innerRotation": 4.48,
     "destination": null,
     "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1192,
-      "y": -420
+      "x": -1185,
+      "y": -428
     },
     "identColor": "#00B3FE"
+  },
+  {
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*10",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 30,
+    "color": "#000000",
+    "home": "west-anthill",
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
+    },
+    "basePosition": {
+      "x": -1200,
+      "y": -413
+    },
+    "innerRotation": 3.27,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
+    "position": {
+      "x": -1200,
+      "y": -413
+    },
+    "identColor": "#00FF01"
+  },
+  {
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*11",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 30,
+    "color": "#000000",
+    "home": "west-anthill",
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
+    },
+    "basePosition": {
+      "x": -1193,
+      "y": -538
+    },
+    "innerRotation": 5.14,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
+    "position": {
+      "x": -1193,
+      "y": -538
+    },
+    "identColor": "#FF00FF"
+  },
+  {
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*12",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 30,
+    "color": "#000000",
+    "home": "west-anthill",
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
+    },
+    "basePosition": {
+      "x": -1182,
+      "y": -409
+    },
+    "innerRotation": 4.37,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
+    "position": {
+      "x": -1182,
+      "y": -409
+    },
+    "identColor": "#C0C0C0"
+  },
+  {
+    "birth": 6767,
+    "model": "western-ant",
+    "name": "western-ant-6767*13",
+    "maxLife": 3,
+    "currentLife": 3,
+    "mealCapacity": 20,
+    "hungerLevel": 8,
+    "currentMeal": 20,
+    "spendingByCycle": 1,
+    "move": 6,
+    "size": 30,
+    "color": "#000000",
+    "home": "west-anthill",
+    "bag": {
+      "contentType": "bug",
+      "capacity": 6,
+      "number": 0
+    },
+    "basePosition": {
+      "x": -1118,
+      "y": -531
+    },
+    "innerRotation": 1.89,
+    "destination": null,
+    "huntsForCommunity": 0.5,
+    "entity": "entity-western-ant-6767",
+    "position": {
+      "x": -1118,
+      "y": -531
+    },
+    "identColor": "#339966"
+  },
+  {
+    "type": "entity",
+    "name": "entity-western-ant-6767",
+    "drawn": false,
+    "minionType": "ant",
+    "minionList": [
+      {
+        "name": "western-ant-6767*1",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*2",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*3",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*4",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*5",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*6",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*7",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*8",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*9",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*10",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*11",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*12",
+        "lastAction": "hunting"
+      },
+      {
+        "name": "western-ant-6767*13",
+        "lastAction": "hunting"
+      }
+    ],
+    "home": "west-anthill",
+    "bag": 0,
+    "position": {
+      "x": -1135,
+      "y": -476
+    },
+    "circles": [
+      {
+        "name": "limit-north-west",
+        "position": {
+          "x": -1000,
+          "y": -1119
+        },
+        "distance": 657
+      },
+      {
+        "name": "limit-south-west",
+        "position": {
+          "x": -1188,
+          "y": 741
+        },
+        "distance": 1218
+      },
+      {
+        "name": "center",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "distance": 1230
+      },
+      {
+        "name": "limit-north-est",
+        "position": {
+          "x": 1109,
+          "y": -935
+        },
+        "distance": 2290
+      },
+      {
+        "name": "limit-south-east",
+        "position": {
+          "x": 920,
+          "y": 1120
+        },
+        "distance": 2601
+      }
+    ],
+    "places": [],
+    "routes": [],
+    "model": "western-ant"
   }
 ]#end of file#

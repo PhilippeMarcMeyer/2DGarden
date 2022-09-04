@@ -9,7 +9,7 @@ const io = require('socket.io')(server, {
 const cookieParser = require('cookie-parser')
 const cookieName = "garden";
 const fs = require('fs');
-const { moveMessagePortToContext } = require('worker_threads');
+//const { moveMessagePortToContext } = require('worker_threads');
 const endOfFileTag = "#end of file#"
 
 let users = [];
@@ -17,7 +17,7 @@ let worldModel = null;
 let worldOnHold = false;
 let worldLoading = false;
 let maxPlantDistance = 1600;
-let limitingCirles = [];
+let limitingCircles = [];
 let mobsList = null;
 let evolutionChance = 0.1;
 
@@ -72,11 +72,11 @@ loadFile(worldFileName)
         };
       }
       worldLoading = false;
-      limitingCirles = worldModel.data.floor.shapes.filter((x) => {
+      limitingCircles = worldModel.data.floor.shapes.filter((x) => {
         return x.type && x.type === "auto-limit";
       });
 
-      limitingCirles.forEach((circle) => {
+      limitingCircles.forEach((circle) => {
         if (!circle.position) {
           circle.position = getPosition(circle.distance, circle.angleToOrigine);
         }
@@ -112,9 +112,9 @@ loadFile(worldFileName)
   function setMobsSequence(){
     intervalDays = setInterval(function () {
       if(mobsList){
-      
+        checkMobs();
       }
-    }, 100);
+    }, 10000);
   }
 
 function setDailySequence() {
@@ -124,7 +124,6 @@ function setDailySequence() {
     checkLakeAndRocks();
     checkGenerations();
     checkPlants();
-    checkMobs();
     savePlants();
     saveWorld();
     io.emit('info', {
@@ -823,11 +822,25 @@ function checkMobs() {
   if (worldModel.data.mobsModels && worldModel.data.mobsModels && Array.isArray(worldModel.data.mobsModels) && worldModel.data.mobsModels.length > 0) {
     worldModel.data.mobsModels.forEach((model) => {
       if (model.active) {
-        let mobsOfType = mobsList.filter((type) => {
-          return mobsList.model = type.name;
-        })
+        let mobsOfType = mobsList.filter((mob) => {
+          return mob.model = model.name;
+        });
         if(!mobsOfType || mobsOfType.length === 0 ){
           restoreMobs(model);
+        }else{
+          if(model.hasEntity){
+            let entityName = mobsOfType[0].entity;
+            let entities = mobsList.filter((mob) => {
+              return mob.name === entityName;
+            });
+            if(entities && entities.length > 0){
+              actionEntity(entities[0]);
+            }else{
+              console.error(`${mobsOfType[0].entity} is missing !`);
+            }
+          }else{
+            actionMobs(mobsList);
+          }
         }
       }
     });
@@ -835,7 +848,95 @@ function checkMobs() {
   }
 }
 
+function goTo(mob, goalPosition) {
+  let x = goalPosition.x - mob.position.x;
+  let y = goalPosition.y - mob.position.y;
+  let hypo = getDistance(goalPosition, mob.position);
+  if (hypo > 0) {
+    x = x / hypo;
+    y = y / hypo;
+    let orientation = getAngle({ x: x, y: y });
+    let move = Math.min(hypo,mob.move);
+    // set the next position
+  }
+
+}
+
+function actionEntity(entity){
+  let mobsOfEntity = mobsList.filter((mob) => {
+    return mob.entity === entity.name;
+  });
+  mobsOfEntity.forEach((mob) => {
+    if(mob.bag.number === mob.bag.capacity){
+      if(getDistance(mob.basePosition,mob.position) === 0){
+        // Give back to nest
+        entity.bag += mob.bag.number;
+        mob.bag.number = 0;
+        setLastAction(entity,mob,"delivering",mob.position,mob.basePosition)
+      }else{
+        setLastAction(entity,mob,"returning",mob.position,mob.basePosition)
+        goTo(mob,mob.basePosition);
+      }
+    }else{
+      // Go to hunt bugs
+      if (entity.circles.length != limitingCircles.length) {
+        limitingCircles.forEach((circle) => {
+          if (entity.circles.length === 0 || !inArrayByProperty(entity.circles, "name", circle.name)) {
+            let aCircle = {
+              name: circle.name,
+              position: { ...circle.position },
+              distance: Math.floor(getDistance(circle.position, entity.position))
+            };
+            entity.circles.push(aCircle);
+          }
+        });
+        // Check if a circle is obsolete and has disappeared and remove it
+        entity.circles.forEach((circle) => {
+          if(!inArrayByProperty(limitingCircles, "name", circle.name)){
+            circle.name = "";
+          }
+        });
+        entity.circles = entity.circles.filter((c) => {
+          return c.name !== "";
+        });
+        entity.circles.sort((a, b) => {
+          return a.distance - b.distance;
+        });
+      }
+      setLastAction(entity,mob,"hunting",mob.position,entity.circles[0].position)
+      goTo(mob,entity.circles[0].position);
+    }
+  });
+}
+
+function inArrayByProperty(arr,prop,value){
+  let found = false;
+  arr.forEach((element) => {
+    if(element[prop] === value){
+      found = true;
+    }
+  })
+  return found;
+}
+
+function setLastAction(entity,mob,action,lastPosition,goalPosition){
+  entity.minionList.forEach((m) => {
+    if(m.name === mob.name){
+      m.lastAction = action;
+      lastPosition = lastPosition;
+      goalPosition = goalPosition;
+    }
+  });
+}
+
+function actionMobs(mobsOfThisTypeList){
+  mobsOfThisTypeList.forEach((mob) => {
+
+  });
+}
+
 function restoreMobs(model){
+  let entity;
   let minPop = model.generation && model.generation.minPop ? model.generation.minPop : 5;
   let maxPop = model.generation && model.generation.minPop ? model.generation.maxPop : 15;
   let popNr = Math.floor((Math.random() * maxPop) + 0.5);
@@ -853,6 +954,22 @@ function restoreMobs(model){
       home = null;
     }
   }
+  if(model.hasEntity){
+    entity =
+    {
+      type : "entity",
+      name : `entity-${model.name}-${worldModel.gardenDay}`,
+      drawn : false,
+      minionType : "ant",
+      minionList : [],
+      home : model.home,
+      bag: 0,
+      position : {...home.position},
+      circles : [],
+      places : [],
+      routes : []
+    }
+  }
   for (let i = 0; i < popNr; i++) {
     let aMob = {
       birth : worldModel.gardenDay,
@@ -868,11 +985,15 @@ function restoreMobs(model){
       size : model.characteristics ? model.characteristics.size : 3,
       color : model.characteristics ? model.characteristics.color : "#cccc66",
       home : model.home,
-      bag : model.characteristics && model.characteristics.bagSize ? new Array(model.characteristics.bagSize) : null,
+      bag : model.characteristics && model.characteristics.bagSize ? {"contentType":"bug","capacity" : model.characteristics.bagSize,"number" : 0} : null,
       basePosition : home ? getAroundLocation(home[0].position,home[0].size[0]) : getRandomLocation(),
       innerRotation : getRandomRotation(),
       destination : null,
       huntsForCommunity : model.community && model.community.huntsForCommunity ? model.community.huntsForCommunity : 0
+    }
+    if(entity){
+      entity.minionList.push({name:aMob.name});
+      aMob.entity = entity.name;
     }
     aMob.position = aMob.basePosition;
     let found = false;
@@ -899,6 +1020,9 @@ function restoreMobs(model){
       aMob.identColor = "#ffffff";
     }
     mobsList.push(aMob);
+  }
+  if(entity){
+    mobsList.push(entity);
   }
 }
 
@@ -941,7 +1065,7 @@ function checkPlants() {
 
   let seedAllowed = {};
 
-  limitingCirles.forEach((circle) => {
+  limitingCircles.forEach((circle) => {
     circle.currentNr = 0;
     seedAllowed[circle.name] = 0;
   });
@@ -954,17 +1078,17 @@ function checkPlants() {
       p.position = getPosition(p.distance, p.angleToOrigine);
     }
     let found = false;
-    for (let i = 0; i < limitingCirles.length; i++) {
+    for (let i = 0; i < limitingCircles.length; i++) {
       if (p.parentCircle) {
-        if (p.parentCircle === limitingCirles[i].name) {
-          limitingCirles[i].currentNr++;
+        if (p.parentCircle === limitingCircles[i].name) {
+          limitingCircles[i].currentNr++;
           found = true;
           break;
         }
       } else {
-        if (getDistance(limitingCirles[i].position, p.position, limitingCirles[i].name) < limitingCirles[i].size[0]) {
-          p.parentCircle = limitingCirles[i].name;
-          limitingCirles[i].currentNr++;
+        if (getDistance(limitingCircles[i].position, p.position, limitingCircles[i].name) < limitingCircles[i].size[0]) {
+          p.parentCircle = limitingCircles[i].name;
+          limitingCircles[i].currentNr++;
           found = true;
           break;
         }
@@ -976,7 +1100,7 @@ function checkPlants() {
   let maxPlantsOutsideCircles = 25; // Plants outside circles
   let maxPlants = maxPlantsOutsideCircles;
 
-  limitingCirles.forEach((circle) => {
+  limitingCircles.forEach((circle) => {
     maxPlants += circle.maxPlants;
     console.log(`plants in circle ${circle.name} : ${circle.currentNr} / ${circle.maxPlants} `);
     seedAllowed[circle.name] = Math.max(0, circle.maxPlants - circle.currentNr);
@@ -1264,6 +1388,10 @@ function getDistance(ptA, ptB, name) {
   return Math.sqrt(Math.pow(ptB.x - ptA.x, 2) + Math.pow(ptB.y - ptA.y, 2));
 }
 
+function getAngle(pt){
+  return Math.atan2(pt.y, pt.x)
+}
+
 function getAngleAndDistance(pt) {
   return {
     distance: getDistance(pt, {
@@ -1345,4 +1473,51 @@ function pointIsInsidePoly(checkPoint, polyCenter, polySize) {
   // very approximative : should make only round rocks !!!
   let checkPointDistanceToCenter = getDistance(checkPoint, polyCenter);
   return checkPointDistanceToCenter < (polySize / 2);
+}
+
+/*
+Repo: https://github.com/bmoren/p5.collide2D/
+Created by http://benmoren.com
+Some functions and code modified version from http://www.jeffreythompson.org/collision-detection
+Version v0.7.3 | June 22, 2020
+CC BY-NC-SA 4.0
+*/
+
+function collideLineLine(x1, y1, x2, y2, x3, y3, x4, y4) {
+  // calculate the distance to intersection point
+  var uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+  var uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+
+  // if uA and uB are between 0-1, lines are colliding
+  if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+    return true;
+  }
+
+  return false;
+}
+
+function collideLinePoly (x1, y1, x2, y2, vertices) {
+
+  // go through each of the vertices, plus the next vertex in the list
+  var next = 0;
+  for (var current=0; current<vertices.length; current++) {
+
+    // get next vertex in list if we've hit the end, wrap around to 0
+    next = current+1;
+    if (next === vertices.length) next = 0;
+
+    // get the PVectors at our current position extract X/Y coordinates from each
+    var x3 = vertices[current].x;
+    var y3 = vertices[current].y;
+    var x4 = vertices[next].x;
+    var y4 = vertices[next].y;
+
+    // do a Line/Line comparison if true, return 'true' immediately and stop testing (faster)
+    var hit = this.collideLineLine(x1, y1, x2, y2, x3, y3, x4, y4);
+    if (hit) {
+      return true;
+    }
+  }
+  // never got a hit
+  return false;
 }
