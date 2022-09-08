@@ -157,9 +157,6 @@ doubl.forEach((arr) => {
 
 const randomColors = ["#9ACD32","#556B2F","#6B8E23","#7CFC00","#7FFF00","#ADFF2F","#006400","#008000","#228B22","#00FF00","#32CD32","#90EE90","#98FB98","#8FBC8F","#00FA9A","#00FF7F","#2E8B57","#66CDAA","#3CB371","#20B2AA","#2F4F4F","#008080","#008B8B","#00FFFF","#E0FFFF","#00CED1","#40E0D0","#48D1CC","#AFEEEE","#7FFFD4","#B0E0E6","#5F9EA0","#4682B4","#6495ED","#00BFFF","#1E90FF","#ADD8E6","#87CEEB","#87CEFA","#191970","#000080","#00008B","#0000CD","#0000FF","#4169E1","#8A2BE2","#4B0082","#483D8B","#6A5ACD","#7B68EE","#9370DB","#8B008B","#9400D3"]
 
-
-
-
 function setAutoGardens(){
 	autoGardens.forEach((garden) => {
 		garden.collider = {};

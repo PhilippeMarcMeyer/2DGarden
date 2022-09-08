@@ -9,6 +9,7 @@ const io = require('socket.io')(server, {
 const cookieParser = require('cookie-parser')
 const cookieName = "garden";
 const fs = require('fs');
+const twoPI = Math.PI *2;
 //const { moveMessagePortToContext } = require('worker_threads');
 const endOfFileTag = "#end of file#"
 
@@ -114,7 +115,7 @@ loadFile(worldFileName)
       if(mobsList){
         checkMobs();
       }
-    }, 10000);
+    }, 300);
   }
 
 function setDailySequence() {
@@ -849,15 +850,29 @@ function checkMobs() {
 }
 
 function goTo(mob, goalPosition) {
-  let x = goalPosition.x - mob.position.x;
-  let y = goalPosition.y - mob.position.y;
+  let dx = goalPosition.x - mob.position.x;
+  let dy = goalPosition.y - mob.position.y;
   let hypo = getDistance(goalPosition, mob.position);
   if (hypo > 0) {
-    x = x / hypo;
-    y = y / hypo;
-    let orientation = getAngle({ x: x, y: y });
-    let move = Math.min(hypo,mob.move);
-    // set the next position
+    dx = dx / hypo;
+    dy = dy / hypo;
+    mob.innerRotation = getAngle({ x: dx, y: dy });
+    let moveLength = Math.min(hypo,mob.move);
+    mob.position.x  =  mob.position.x + Math.floor((Math.cos(mob.innerRotation) * moveLength) + 0.5);
+		mob.position.y = mob.position.y - Math.floor((Math.sin(mob.innerRotation) * moveLength) + 0.5);
+    mob.destination = {...goalPosition};
+    // todo : correct this bug
+    mob.innerRotation =  (mob.innerRotation + toradians(270)) % twoPI;
+ 
+    users
+    .forEach((u) => {
+      u.socket.emit('info', {
+        what: "mob-moved",
+        who : mob.name,
+        where : mob.position,
+        orientation : mob.innerRotation
+      });
+    })
   }
 
 }
@@ -866,7 +881,8 @@ function actionEntity(entity){
   let mobsOfEntity = mobsList.filter((mob) => {
     return mob.entity === entity.name;
   });
-  mobsOfEntity.forEach((mob) => {
+  let nrOfAntsInHunt = 0;
+  mobsOfEntity.forEach((mob,index) => {
     if(mob.bag.number === mob.bag.capacity){
       if(getDistance(mob.basePosition,mob.position) === 0){
         // Give back to nest
@@ -903,8 +919,14 @@ function actionEntity(entity){
           return a.distance - b.distance;
         });
       }
-      setLastAction(entity,mob,"hunting",mob.position,entity.circles[0].position)
-      goTo(mob,entity.circles[0].position);
+      nrOfAntsInHunt++;
+      if(nrOfAntsInHunt <= entity.circles.length-1){
+        setLastAction(entity,mob,"hunting",mob.position,entity.circles[nrOfAntsInHunt-1].position)
+        goTo(mob,entity.circles[nrOfAntsInHunt-1].position);
+      }else{
+/// ????
+      }
+
     }
   });
 }

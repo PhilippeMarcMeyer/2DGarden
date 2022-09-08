@@ -22,13 +22,16 @@
       "x": -1174,
       "y": -441
     },
-    "innerRotation": 1.08,
-    "destination": null,
+    "innerRotation": 3.0781891272542192,
+    "destination": {
+      "x": -1000,
+      "y": -1119
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1174,
-      "y": -441
+      "x": -707,
+      "y": 3502
     },
     "identColor": "#FDFE0D"
   },
@@ -55,13 +58,16 @@
       "x": -1195,
       "y": -464
     },
-    "innerRotation": 0.93,
-    "destination": null,
+    "innerRotation": 0.05947216588928672,
+    "destination": {
+      "x": -1188,
+      "y": 741
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1195,
-      "y": -464
+      "x": -959,
+      "y": -3111
     },
     "identColor": "#FFCC00"
   },
@@ -88,13 +94,16 @@
       "x": -1122,
       "y": -442
     },
-    "innerRotation": 5.05,
-    "destination": null,
+    "innerRotation": 3.1491746481470084,
+    "destination": {
+      "x": 0,
+      "y": 0
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1122,
-      "y": -442
+      "x": -27,
+      "y": 3567
     },
     "identColor": "#FC9A03"
   },
@@ -121,13 +130,16 @@
       "x": -1119,
       "y": -550
     },
-    "innerRotation": 2.55,
-    "destination": null,
+    "innerRotation": 3.2132775078066707,
+    "destination": {
+      "x": 1109,
+      "y": -935
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1119,
-      "y": -550
+      "x": 798,
+      "y": 3402
     },
     "identColor": "#FF6501"
   },
@@ -154,13 +166,16 @@
       "x": -1197,
       "y": -423
     },
-    "innerRotation": 0.21,
-    "destination": null,
+    "innerRotation": -2.2099803509478972,
+    "destination": {
+      "x": -1000,
+      "y": -1119
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1197,
-      "y": -423
+      "x": -92,
+      "y": 113
     },
     "identColor": "#FE0000"
   },
@@ -187,13 +202,16 @@
       "x": -1092,
       "y": -430
     },
-    "innerRotation": 3.44,
-    "destination": null,
+    "innerRotation": -2.2099803509478972,
+    "destination": {
+      "x": -1000,
+      "y": -1119
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1092,
-      "y": -430
+      "x": -92,
+      "y": 113
     },
     "identColor": "#AA1B49"
   },
@@ -220,13 +238,16 @@
       "x": -1090,
       "y": -534
     },
-    "innerRotation": 2.98,
-    "destination": null,
+    "innerRotation": -2.2099803509478972,
+    "destination": {
+      "x": -1000,
+      "y": -1119
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1090,
-      "y": -534
+      "x": -92,
+      "y": 113
     },
     "identColor": "#3E01A4"
   },
@@ -253,13 +274,16 @@
       "x": -1086,
       "y": -428
     },
-    "innerRotation": 4.85,
-    "destination": null,
+    "innerRotation": -2.2099803509478972,
+    "destination": {
+      "x": -1000,
+      "y": -1119
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1086,
-      "y": -428
+      "x": -92,
+      "y": 113
     },
     "identColor": "#0000FE"
   },
@@ -286,13 +310,16 @@
       "x": -1185,
       "y": -428
     },
-    "innerRotation": 4.48,
-    "destination": null,
+    "innerRotation": -2.2099803509478972,
+    "destination": {
+      "x": -1000,
+      "y": -1119
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1185,
-      "y": -428
+      "x": -92,
+      "y": 113
     },
     "identColor": "#00B3FE"
   },
@@ -319,13 +346,16 @@
       "x": -1200,
       "y": -413
     },
-    "innerRotation": 3.27,
-    "destination": null,
+    "innerRotation": -2.2099803509478972,
+    "destination": {
+      "x": -1000,
+      "y": -1119
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1200,
-      "y": -413
+      "x": -92,
+      "y": 113
     },
     "identColor": "#00FF01"
   },
@@ -352,13 +382,16 @@
       "x": -1193,
       "y": -538
     },
-    "innerRotation": 5.14,
-    "destination": null,
+    "innerRotation": -2.2099803509478972,
+    "destination": {
+      "x": -1000,
+      "y": -1119
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1193,
-      "y": -538
+      "x": -92,
+      "y": 113
     },
     "identColor": "#FF00FF"
   },
@@ -385,13 +418,16 @@
       "x": -1182,
       "y": -409
     },
-    "innerRotation": 4.37,
-    "destination": null,
+    "innerRotation": -2.2099803509478972,
+    "destination": {
+      "x": -1000,
+      "y": -1119
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1182,
-      "y": -409
+      "x": -92,
+      "y": 113
     },
     "identColor": "#C0C0C0"
   },
@@ -418,13 +454,16 @@
       "x": -1118,
       "y": -531
     },
-    "innerRotation": 1.89,
-    "destination": null,
+    "innerRotation": -2.2099803509478972,
+    "destination": {
+      "x": -1000,
+      "y": -1119
+    },
     "huntsForCommunity": 0.5,
     "entity": "entity-western-ant-6767",
     "position": {
-      "x": -1118,
-      "y": -531
+      "x": -92,
+      "y": 113
     },
     "identColor": "#339966"
   },

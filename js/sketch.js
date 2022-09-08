@@ -399,8 +399,15 @@ socket.on("info", (msg) => {
 		}
 	} else if (msg.what === 'world-day') {
 		setWorldDay(msg.day)
-	}else if(msg.what === 'plant-moved'){
+	} else if(msg.what === 'plant-moved'){
 		updatePlants();
+	} else if (msg.what === 'mob-moved'){
+		mobsList.forEach((m) => {
+			if(m.name === msg.who){
+				m.position = { ...msg.where };
+				m.innerRotation = msg.orientation;
+			}
+		});
 	}
 });
 
@@ -536,22 +543,6 @@ function Floor(worldModel) {
 				context.stroke();
 				context.fill();
 				context.restore();
-
-				if (elem.timeTable) {
-					context.save();
-					context.beginPath();
-					context.strokeStyle = elem.timeTableColor;
-					strokeWeight(1);
-					context.globalAlpha = 1;
-					let numberPoints = pointsList.length;
-					for(var i = 0; i < numberPoints; i++){
-						j = (i * elem.timeTable) % numberPoints;
-						line(pointsList[i].x,pointsList[i].y,pointsList[j].x,pointsList[j].y);
-					}
-					context.closePath();
-					context.stroke();
-					context.restore(); 
-				}
 			}
 		});
 	}
@@ -645,8 +636,8 @@ function Kamera(rotStep, walkStep, rotation, position, playerName, playerColor, 
 			randomized *= flipCoin == 1 ? -1 : 1;
 		}
 		let rotation = this.rotation + randomized;
-		var dirx = Math.cos(rotation);
-		var diry = - Math.sin(rotation);
+		let dirx = Math.cos(rotation);
+		let diry = - Math.sin(rotation);
 		self.position.x = Math.floor(self.position.x + (dirx * amount * self.walkStep));
 		self.position.y = Math.floor(self.position.y + (diry * amount * self.walkStep));
 

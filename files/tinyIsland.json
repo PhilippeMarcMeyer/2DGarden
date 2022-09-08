@@ -4,7 +4,7 @@
   "baseColor": "#031F8D",
   "perimeterColor": "#031F8D",
   "backgroundImage": "BG4.png",
-  "gardenDay": 6798,
+  "gardenDay": 6808,
   "plantsFile": "tinyIslandPlants.json",
   "mobsFiles": "tynyIslandMobs.json",
   "currentCenter": {
@@ -28326,7 +28326,7 @@
             "x": 0,
             "y": 0
           },
-          "currentNr": 31
+          "currentNr": 33
         },
         {
           "name": "limit-north-west",
@@ -28357,7 +28357,7 @@
             "x": -1000,
             "y": -1119
           },
-          "currentNr": 33
+          "currentNr": 32
         },
         {
           "name": "limit-north-est",
@@ -28419,7 +28419,7 @@
             "x": -1188,
             "y": 741
           },
-          "currentNr": 24
+          "currentNr": 26
         },
         {
           "name": "limit-south-east",
@@ -28450,7 +28450,7 @@
             "x": 920,
             "y": 1120
           },
-          "currentNr": 34
+          "currentNr": 33
         },
         {
           "name": "west-anthill",
@@ -28464,6 +28464,69 @@
           "shape": "polygon",
           "timeTable": 68,
           "timeTableColor": "#4F2802",
+          "timeTableColors": [
+            "#000000",
+            "#191919",
+            "#333333",
+            "#4c4c4c",
+            "#66660c",
+            "#7f7f25",
+            "#99993f",
+            "#b20858",
+            "#cc2218",
+            "#e53b31",
+            "#05554b",
+            "#1e6e0a",
+            "#388824",
+            "#51a13d",
+            "#6b1157",
+            "#842a16",
+            "#9e4430",
+            "#b75d49",
+            "#d17709",
+            "#ea9022",
+            "#0a003c",
+            "#231955",
+            "#3d3315",
+            "#564c2e",
+            "#706648",
+            "#897f07",
+            "#a39921",
+            "#bc083a",
+            "#d62254",
+            "#ef3b13",
+            "#0f552d",
+            "#286e46",
+            "#428806",
+            "#5ba11f",
+            "#751139",
+            "#8e2a52",
+            "#a84412",
+            "#c15d2b",
+            "#db7745",
+            "#f49004",
+            "#14001e",
+            "#2d1937",
+            "#473351",
+            "#604c10",
+            "#7a662a",
+            "#937f43",
+            "#ad9903",
+            "#c6081c",
+            "#e02236",
+            "#f93b4f",
+            "#19550f",
+            "#326e28",
+            "#4c8842",
+            "#65a101",
+            "#7f111b",
+            "#982a34",
+            "#b2444e",
+            "#cb5d0d",
+            "#e57727",
+            "#049040",
+            "#1e0000"
+          ],
           "size": [
             300
           ],
