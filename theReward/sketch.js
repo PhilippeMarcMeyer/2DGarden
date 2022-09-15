@@ -2,8 +2,8 @@ const rockModels = [{
     "name": "A",
     "diameter": 80,
     "pos": {
-      "x": 125,
-      "y": 180
+      "x": -175,
+      "y": -120
     },
     color: "#776655"
   },
@@ -11,8 +11,8 @@ const rockModels = [{
     "name": "B",
     "diameter": 80,
     "pos": {
-      "x": 215,
-      "y": 300
+      "x": -85,
+      "y": 0
     },
     color: "#997755"
   },
@@ -20,8 +20,8 @@ const rockModels = [{
     "name": "C",
     "diameter": 100,
     "pos": {
-      "x": 230,
-      "y": 152
+      "x": -70,
+      "y": -148
     },
     color: "#557799"
   },
@@ -29,25 +29,31 @@ const rockModels = [{
     "name": "D",
     "diameter": 125,
     "pos": {
-      "x": 400,
-      "y": 400
+      "x": 100,
+      "y": 100
     },
     color: "#557799"
   }
 ];
     let inGame = false;
-    const size = 600;
+    const widthAndHeight = 600;
     const mobs = [{
       type: "ant",
       name: "warrior",
       color : "#dd0000",
       size: 12,
-      sightLength :120,
-      sightAngle : 2 * Math.PI /4,
+      sightLength :200,
+      fov : Math.PI/2,
+      raySrc : null,
+      rayDest : null,
+      raysDestLeft : [],
+      raysDestRight : [],
+      rayNr : 11,
+      rayAngle : Math.PI/(2*10),
       move: 6,
       pos: {
-        x: -10,
-        y: -10
+        x: -1000,
+        y: -1000
       },
       rot: 0
     }, {
@@ -56,18 +62,24 @@ const rockModels = [{
       color : "#00dd00",
       size: 6,
       move: 3,
-      sightLength :80,
-      sightAngle : 2 * Math.PI /3,
+      sightLength :120,
+      fov : Math.PI/3,
+      raySrc : null,
+      rayDest : null,
+      raysDestLeft : [],
+      raysDestRight : [],
+      rayNr : 11,
+      rayAngle : Math.PI/(3*10),
       pos: {
-        x: -10,
-        y: -10
+        x: -1000,
+        y: -1000
       },
       rot: 0
     }];
     let rocks = [];
     let context;
     function setup() {
-      createCanvas(size, size);
+      createCanvas(widthAndHeight, widthAndHeight);
       context = drawingContext;
         rocks = rockModels.map((r) => {
            let rock = {name : r.name, pos : r.pos, color : r.color,multiplier: r.multiplier,diameter:r.diameter};
@@ -77,67 +89,19 @@ const rockModels = [{
     }
     
     function draw() {
+      translate(width / 2, height / 2);
       background(102,160,80);
-      rocks.forEach((r) => {
-          context.save();
-          context.beginPath();
-          context.fillStyle = "#000000";
-          context.fillText(r.name, r.pos.x -4, r.pos.y);
-
-          context.save();
-          context.beginPath();
-          context.strokeStyle = "#eeeeee";
-          noFill();
-          circle( r.pos.x , r.pos.y, r.diameter);
-          context.stroke();
-          context.restore();
-      });
+      drawRocks();
       mobs.forEach((m) => {
-        context.save();
-        context.beginPath();
-        context.strokeStyle = "#000";
-        context.fillStyle = m.color;
-        circle( m.pos.x , m.pos.y, m.size);
-	      context.closePath();
-		    context.stroke();
-        context.fill();
-        let dir;
-        let dest = [];
-        context.beginPath();
-        context.strokeStyle = m.color;
-        context.fillStyle = m.color;
-
-        dir = polarToCart(m.rot);
-        let begin = {x : m.pos.x + (dir.x*m.size/2), y :m.pos.y+(dir.y*m.size/2)}
-        dest.push({x:begin.x + (dir.x* m.sightLength),y:begin.y + (dir.y * m.sightLength)});
-        for(let i = m.rot - (m.sightAngle /2);i <= m.rot;i+=0.1 ){
-          dir = polarToCart(m.rot +i);
-          dest.push({x:begin.x + (dir.x* m.sightLength),y:begin.y + (dir.y * m.sightLength)});
-        }
-
-
-        dest.forEach((d,i) => {
-          if(i > 0){
-            context.moveTo(begin.x, begin.y);
-            context.lineTo(d.x, d.y);
-          }
-
-        });
-        context.closePath();
-        context.stroke();
-        context.beginPath();
-        context.strokeStyle = "#000";
-        context.moveTo(begin.x, begin.y);
-        context.lineTo(dest[0].x, dest[0].y);
-        context.closePath();
-        context.stroke();
-        context.restore();
-
+        drawMob(m);
+        calcRays(m);
+        collideRays(m)
+        drawRays(m);
       });
       if(!inGame){
           mobs.forEach((m) => {
-              m.pos.x = Math.floor((Math.random() * size));
-              m.pos.y = Math.floor((Math.random() * size));
+              m.pos.x = Math.floor((Math.random() * widthAndHeight)) - widthAndHeight/2;
+              m.pos.y = Math.floor((Math.random() * widthAndHeight)) - widthAndHeight/2;
               m.rot = getRandomRotation();
           });
           let isOnRock = false;
@@ -151,8 +115,8 @@ const rockModels = [{
         });
         if(isOnRock){
           mobs.forEach((m) => {
-            m.pos.x = -10;
-            m.pos.y = -10;
+            m.pos.x = -1000;
+            m.pos.y = -1000;
         });
         }else{
           inGame = true;
@@ -160,6 +124,97 @@ const rockModels = [{
       }
     }
     
+    function drawRocks(){
+      rocks.forEach((r) => {
+        context.save();
+        context.beginPath();
+        context.fillStyle = "#000000";
+        context.fillText(r.name, r.pos.x -4, r.pos.y);
+        context.save();
+        context.beginPath();
+        context.strokeStyle = "#eeeeee";
+        noFill();
+        circle( r.pos.x , r.pos.y, r.diameter);
+        context.stroke();
+        context.restore();
+    });
+    }
+
+    function drawRays(m){
+      context.save();
+
+      context.beginPath();
+      context.strokeStyle = "#000";
+      context.moveTo(m.raySrc.x, m.raySrc.y);
+      context.lineTo(m.rayDest.x, m.rayDest.y);
+      context.closePath();
+      context.stroke();
+
+      context.beginPath();
+      context.strokeStyle = m.color;
+      m.raysDestLeft.forEach((r) => {
+        context.moveTo(m.raySrc.x, m.raySrc.y);
+        context.lineTo(r.x, r.y);
+      });
+      m.raysDestRight.forEach((r) => {
+        context.moveTo(m.raySrc.x, m.raySrc.y);
+        context.lineTo(r.x, r.y);
+      });
+      context.closePath();
+      context.stroke();
+
+      context.restore();
+    }
+
+    function drawMob(m){
+      context.save();
+      context.beginPath();
+      context.strokeStyle = "#000";
+      context.fillStyle = m.color;
+      circle( m.pos.x , m.pos.y, m.size);
+      context.closePath();
+      context.stroke();
+      context.fill();
+    }
+
+    function collideRays(m){
+      // todo : and get Position of prey and follow
+      // determine which ray to follow
+      // check collision against boulders
+      // just follow the nearest free ray, right preference
+      // check collision against sides
+      // if all the rays collide turn 90° clockwise
+      // bug get position of hunter and flee opposite
+      // when cornered turn and choose the farther free ay
+    }
+
+    function calcRays(m){
+      m.rayDest = null;
+      m.raysDestLeft = [];
+      m.raysDestRight = [];
+      let dir = polarToCartesian(m.rot);
+      m.raySrc = { // just a point on the circle perimeter
+        x: m.pos.x + (dir.x * m.size / 2),
+        y: m.pos.y + (dir.y * m.size / 2)
+      }
+      m.rayDest = {
+        x: m.raySrc.x + (dir.x * m.sightLength),
+        y: m.raySrc.y + (dir.y * m.sightLength)
+      };
+      for (let i = 0; i <= (m.rayNr / 2) - 1; i++) {
+        dir = polarToCartesian(m.rot + ((i+1) * m.rayAngle));
+        m.raysDestRight.push({
+          x: m.raySrc.x + (dir.x * m.sightLength),
+          y: m.raySrc.y + (dir.y * m.sightLength)
+        });
+        dir = polarToCartesian(m.rot - ((i+1) * m.rayAngle));
+        m.raysDestLeft.push({
+          x: m.raySrc.x + (dir.x * m.sightLength),
+          y: m.raySrc.y + (dir.y * m.sightLength)
+        })
+      }
+    }
+
     function getDistance(ptA, ptB, name) {
       if (!(ptA && ptA.x != undefined && ptA.y != undefined && ptB && ptB.x != undefined && ptB.y != undefined)) {
         if (!name) name = "???";
@@ -173,6 +228,6 @@ const rockModels = [{
       return Math.floor((Math.random() * Math.PI * 2) * 100) / 100;
     }
 
-    function polarToCart(rot){
-      return {x: Math.cos(rot), y :- Math.sin(rot)}
+    function polarToCartesian(rot){
+      return {x: Math.cos(rot), y : Math.sin(rot)}
     }
