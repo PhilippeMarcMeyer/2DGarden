@@ -849,17 +849,57 @@ function checkMobs() {
   }
 }
 
-function goTo(mob, goalPosition) {
+function round2(nr){
+  return Math.round(nr*100)/100;
+}
+
+function goTo(mob, goalPosition,index) {
+  const circlePieces = 9;
+  let circleCount = 0;
+  const rotPace = round2(twoPI / circlePieces);
+  mob.innerRotation = mob.innerRotation % twoPI;
   let dx = goalPosition.x - mob.position.x;
   let dy = goalPosition.y - mob.position.y;
-  let hypo = getDistance(goalPosition, mob.position);
+  let hypo = getDistance(goalPosition, mob.position,"beetween 2 mobs");
   if (hypo > 0) {
     dx = dx / hypo;
     dy = dy / hypo;
-    mob.innerRotation = getAngle({ x: dx, y: dy });
-    let moveLength = Math.min(hypo,mob.move);
-    mob.position.x  =  mob.position.x + Math.floor((Math.cos(mob.innerRotation) * moveLength) + 0.5);
-		mob.position.y = mob.position.y - Math.floor((Math.sin(mob.innerRotation) * moveLength) + 0.5);
+    let maybeRotation = round2(getAngle({ x: dx, y: dy }));
+    let moveLength = Math.round(Math.min(hypo,mob.move));
+    let mayBeNextPos = {x : mob.position.x + Math.floor((Math.cos(maybeRotation) * moveLength) + 0.5), y : mob.position.y - Math.floor((Math.sin(maybeRotation) * moveLength) + 0.5)};
+
+/*     if (index !== undefined && index > 0) {
+      found = false;
+      while (circleCount < circlePieces || found) {
+        maybeRotation = mob.innerRotation + (rotPace * circleCount);
+        mayBeNextPos = { x: mob.position.x + Math.floor((Math.cos(maybeRotation) * moveLength) + 0.5), y: mob.position.y - Math.floor((Math.sin(maybeRotation) * moveLength) + 0.5) };
+        for (let i = 0; i < index; i++) {
+          let distanceToPrevious = getDistance(mayBeNextPos, mobsList[i].position,"beetween 2 mobs (2)");
+          let minDistance = Math.max(mobsList[i].size, mob.size);
+          if (distanceToPrevious >= minDistance) {
+            // ok with this ant, see next
+
+          } else {
+            // bad with this ant, try the same ant with new rotation
+            maybeRotation = null;
+            mayBeNextPos = null;
+            circleCount++;
+          }
+          if(maybeRotation!= null && i >= (index-1)){
+            found = true;
+          }
+        }
+      }
+    }  */
+
+    if(maybeRotation != null){
+     // console.log("found location for ant " + mob.name)
+      mob.position = mayBeNextPos;
+      mob.innerRotation = maybeRotation;
+    }else{
+     // console.log("Could not move ant " + mob.name)
+    }
+
     mob.destination = {...goalPosition};
     // todo : correct this bug
     mob.innerRotation =  (mob.innerRotation + toradians(270)) % twoPI;
@@ -884,7 +924,7 @@ function actionEntity(entity){
   let nrOfAntsInHunt = 0;
   mobsOfEntity.forEach((mob,index) => {
     if(mob.bag.number === mob.bag.capacity){
-      if(getDistance(mob.basePosition,mob.position) === 0){
+      if(getDistance(mob.basePosition,mob.position,`beetween ant ${mob.name} and nest`) === 0){
         // Give back to nest
         entity.bag += mob.bag.number;
         mob.bag.number = 0;
@@ -901,7 +941,7 @@ function actionEntity(entity){
             let aCircle = {
               name: circle.name,
               position: { ...circle.position },
-              distance: Math.floor(getDistance(circle.position, entity.position))
+              distance: Math.floor(getDistance(circle.position, entity.position,"beetween nest and circle"))
             };
             entity.circles.push(aCircle);
           }
@@ -922,7 +962,7 @@ function actionEntity(entity){
       nrOfAntsInHunt++;
       if(nrOfAntsInHunt <= entity.circles.length-1){
         setLastAction(entity,mob,"hunting",mob.position,entity.circles[nrOfAntsInHunt-1].position)
-        goTo(mob,entity.circles[nrOfAntsInHunt-1].position);
+        goTo(mob,entity.circles[nrOfAntsInHunt-1].position,index);
       }else{
 /// ????
       }
@@ -1108,7 +1148,7 @@ function checkPlants() {
           break;
         }
       } else {
-        if (getDistance(limitingCircles[i].position, p.position, limitingCircles[i].name) < limitingCircles[i].size[0]) {
+        if (getDistance(limitingCircles[i].position, p.position, limitingCircles[i].name,"beetwen plant and circle center") < limitingCircles[i].size[0]) {
           p.parentCircle = limitingCircles[i].name;
           limitingCircles[i].currentNr++;
           found = true;
@@ -1262,7 +1302,7 @@ function checkPlants() {
       let lakePosition = findLake[0].position;
       let lakeRadius = Math.floor(findLake[0].size[0]);
       newPlants = newPlants.filter((seed) => {
-        return getDistance(lakePosition, seed.position) > lakeRadius;
+        return getDistance(lakePosition, seed.position,"beetween seed and lake") > lakeRadius;
       });
       let seedsAfter = newPlants.length;
       console.log(`${seedsBefore - seedsAfter} seed(s) have fallen into the lake...`);
@@ -1309,7 +1349,7 @@ function checkPlants() {
       });
       if (oldPlantsInVicinity.length > 0) {
         oldPlantsInVicinity = oldPlantsInVicinity.filter((oldOne) => {
-          return (getDistance(youth.position, oldOne.position) <= criticalDistance);
+          return (getDistance(youth.position, oldOne.position,"beetween young plant and older one") <= criticalDistance);
         });
       }
       if (oldPlantsInVicinity.length > 0) {
@@ -1419,7 +1459,7 @@ function getAngleAndDistance(pt) {
     distance: getDistance(pt, {
       x: 0,
       y: 0
-    }),
+    },"getAngleAndDistance"),
     angleToOrigine: Math.atan2(pt.y, pt.x)
   }
 }
