@@ -151,11 +151,15 @@ const rockModels = [{
       context.stroke();
 
       context.beginPath();
-      context.strokeStyle = m.color;
+      context.strokeStyle = '#0000dd';
       m.raysDestLeft.forEach((r) => {
         context.moveTo(m.raySrc.x, m.raySrc.y);
         context.lineTo(r.x, r.y);
       });
+      context.closePath();
+      context.stroke();
+      context.beginPath();
+      context.strokeStyle = '#ddaa00';
       m.raysDestRight.forEach((r) => {
         context.moveTo(m.raySrc.x, m.raySrc.y);
         context.lineTo(r.x, r.y);
@@ -231,3 +235,58 @@ const rockModels = [{
     function polarToCartesian(rot){
       return {x: Math.cos(rot), y : Math.sin(rot)}
     }
+
+    function findCircleLineIntersections(r, h, k, m, n) {
+      // https://cscheng.info/2016/06/09/calculate-circle-line-intersection-with-javascript-and-p5js.html
+      // circle: (x - h)^2 + (y - k)^2 = r^2
+      // line: y = m * x + n
+      // r: circle radius
+      // h: x value of circle centre
+      // k: y value of circle centre
+      // m: slope
+      // n: y-intercept
+  
+      // get a, b, c values
+      var a = 1 + sq(m);
+      var b = -h * 2 + (m * (n - k)) * 2;
+      var c = sq(h) + sq(n - k) - sq(r);
+  
+      // get discriminant
+      var d = sq(b) - 4 * a * c;
+      if (d >= 0) {
+          // insert into quadratic formula
+          var intersections = [
+              (-b + sqrt(sq(b) - 4 * a * c)) / (2 * a),
+              (-b - sqrt(sq(b) - 4 * a * c)) / (2 * a)
+          ];
+          if (d == 0) {
+              // only 1 intersection
+              return [intersections[0]];
+          }
+          return intersections;
+      }
+      // no intersection
+      return [];
+  }
+
+  function lineFromPoints(P, Q)
+{
+    var a = Q.y - P.y;
+    var b = P.x - Q.x;
+    var c = a*(P.x) + b*(P.y)
+ 
+    if (b < 0)
+        document.write("The line passing through " +
+                       "points P and Q is:  " + a +
+                       "x - " + b + "y = " + c + "<br>")
+    else
+        document.write("The line passing through " +
+                       "points P and Q is:  "+ a + 
+                       "x + " + b + "y = " + c + "<br>")
+}
+ 
+// y = mx + c
+var P = {x:3,y:2}
+var Q = {x:2,y:6}
+ 
+lineFromPoints(P, Q)
