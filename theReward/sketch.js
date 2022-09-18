@@ -76,16 +76,17 @@ const rockModels = [{
       },
       rot: 0
     }];
+
     let rocks = [];
     let context;
     function setup() {
       createCanvas(widthAndHeight, widthAndHeight);
       context = drawingContext;
         rocks = rockModels.map((r) => {
-           let rock = {name : r.name, pos : r.pos, color : r.color,multiplier: r.multiplier,diameter:r.diameter};
+           let rock = {name : r.name, pos : r.pos, color : r.color, diameter : r.diameter};
           return rock;
       })
-      framerate = 20;
+      framerate = 1;
     }
     
     function draw() {
@@ -107,8 +108,8 @@ const rockModels = [{
           let isOnRock = false;
           mobs.forEach((m) => {
             rocks.forEach((r) => {
-               let dist = getDistance(m.pos,r.pos);
-               if(dist <= (r.diameter / 2) + m.size){
+               let distance = getDistance(m.pos,r.pos);
+               if(distance <= (r.diameter / 2) + m.size){
                 isOnRock = true;
                }
           });
@@ -182,14 +183,57 @@ const rockModels = [{
     }
 
     function collideRays(m){
-      // todo : and get Position of prey and follow
-      // determine which ray to follow
-      // check collision against boulders
-      // just follow the nearest free ray, right preference
-      // check collision against sides
-      // if all the rays collide turn 90° clockwise
-      // bug get position of hunter and flee opposite
-      // when cornered turn and choose the farther free ay
+      if(!m.rayDest || !m.raySrc) return;
+      let nearByRocks = rocks.filter((r) => {
+        return getDistance(r.pos,m.pos) <= m.sightLength + r.diameter;
+      });
+      if(nearByRocks.length){
+        let result = collideRay(nearByRocks,m.raySrc,m.rayDest);
+        if(result){
+          m.rayDest.x = result.endPt.x;
+          m.rayDest.y = result.endPt.y;
+          m.rayDest.d = result.d;
+        }
+        m.raysDestRight.forEach((ray) => {
+          let result = collideRay(nearByRocks,m.raySrc,ray);
+          if(result){
+            ray.x = result.endPt.x;
+            ray.y = result.endPt.y;
+            ray.d = result.d;
+          }
+        });
+        m.raysDestLeft.forEach((ray) => {
+          let result = collideRay(nearByRocks,m.raySrc,ray);
+          if(result){
+            ray.x = result.endPt.x;
+            ray.y = result.endPt.y;
+            ray.d = result.d;
+          }
+        });
+      }
+    }
+
+    function collideRay(rocks,raySrc, rayDest){
+      let distMin = 999;
+      let pt = null;
+      rocks.forEach((r) => {
+        let arr = interceptCircleLine({x:r.pos.x,y:r.pos.y,radius:r.diameter/2},{p1:{x:raySrc.x,y:raySrc.y},p2:{x:rayDest.x,y:rayDest.y}});
+        if(arr.length > 0){
+          for(let i = 0; i <= arr.length; i++){
+            if(arr[i] != null){
+              let distance = getDistance(arr[i],raySrc,arr[i]);
+              if(distance < distMin){
+                distMin = distance;
+                pt = {...arr[i]};
+              }
+            }
+          }
+        }
+      });
+      if(pt){
+        return {endPt : {...pt}, d : distMin};
+      }
+      return null;
     }
 
     function calcRays(m){
@@ -199,22 +243,26 @@ const rockModels = [{
       let dir = polarToCartesian(m.rot);
       m.raySrc = { // just a point on the circle perimeter
         x: m.pos.x + (dir.x * m.size / 2),
-        y: m.pos.y + (dir.y * m.size / 2)
+        y: m.pos.y + (dir.y * m.size / 2),
+        d: null
       }
       m.rayDest = {
         x: m.raySrc.x + (dir.x * m.sightLength),
-        y: m.raySrc.y + (dir.y * m.sightLength)
+        y: m.raySrc.y + (dir.y * m.sightLength),
+        d: null
       };
       for (let i = 0; i <= (m.rayNr / 2) - 1; i++) {
         dir = polarToCartesian(m.rot + ((i+1) * m.rayAngle));
         m.raysDestRight.push({
           x: m.raySrc.x + (dir.x * m.sightLength),
-          y: m.raySrc.y + (dir.y * m.sightLength)
+          y: m.raySrc.y + (dir.y * m.sightLength),
+          d: null
         });
         dir = polarToCartesian(m.rot - ((i+1) * m.rayAngle));
         m.raysDestLeft.push({
           x: m.raySrc.x + (dir.x * m.sightLength),
-          y: m.raySrc.y + (dir.y * m.sightLength)
+          y: m.raySrc.y + (dir.y * m.sightLength),
+          d: null
         })
       }
     }
@@ -236,57 +284,36 @@ const rockModels = [{
       return {x: Math.cos(rot), y : Math.sin(rot)}
     }
 
-    function findCircleLineIntersections(r, h, k, m, n) {
-      // https://cscheng.info/2016/06/09/calculate-circle-line-intersection-with-javascript-and-p5js.html
-      // circle: (x - h)^2 + (y - k)^2 = r^2
-      // line: y = m * x + n
-      // r: circle radius
-      // h: x value of circle centre
-      // k: y value of circle centre
-      // m: slope
-      // n: y-intercept
-  
-      // get a, b, c values
-      var a = 1 + sq(m);
-      var b = -h * 2 + (m * (n - k)) * 2;
-      var c = sq(h) + sq(n - k) - sq(r);
-  
-      // get discriminant
-      var d = sq(b) - 4 * a * c;
-      if (d >= 0) {
-          // insert into quadratic formula
-          var intersections = [
-              (-b + sqrt(sq(b) - 4 * a * c)) / (2 * a),
-              (-b - sqrt(sq(b) - 4 * a * c)) / (2 * a)
-          ];
-          if (d == 0) {
-              // only 1 intersection
-              return [intersections[0]];
-          }
-          return intersections;
+    function interceptCircleLine(circle, line){
+      //https://stackoverflow.com/users/3877726/blindman67
+      var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
+      v1 = {};
+      v2 = {};
+      v1.x = line.p2.x - line.p1.x;
+      v1.y = line.p2.y - line.p1.y;
+      v2.x = line.p1.x - circle.x;
+      v2.y = line.p1.y - circle.y;
+      b = (v1.x * v2.x + v1.y * v2.y);
+      c = 2 * (v1.x * v1.x + v1.y * v1.y);
+      b *= -2;
+      d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
+      if(isNaN(d)){ // no intercept
+          return [];
       }
-      // no intersection
-      return [];
+      u1 = (b - d) / c;  // these represent the unit distance of point one and two on the line
+      u2 = (b + d) / c;    
+      retP1 = {};   // return points
+      retP2 = {}  
+      ret = []; // return array
+      if(u1 <= 1 && u1 >= 0){  // add point if on the line segment
+          retP1.x = line.p1.x + v1.x * u1;
+          retP1.y = line.p1.y + v1.y * u1;
+          ret[0] = retP1;
+      }
+      if(u2 <= 1 && u2 >= 0){  // second add point if on the line segment
+          retP2.x = line.p1.x + v1.x * u2;
+          retP2.y = line.p1.y + v1.y * u2;
+          ret[ret.length] = retP2;
+      }       
+      return ret;
   }
-
-  function lineFromPoints(P, Q)
-{
-    var a = Q.y - P.y;
-    var b = P.x - Q.x;
-    var c = a*(P.x) + b*(P.y)
- 
-    if (b < 0)
-        document.write("The line passing through " +
-                       "points P and Q is:  " + a +
-                       "x - " + b + "y = " + c + "<br>")
-    else
-        document.write("The line passing through " +
-                       "points P and Q is:  "+ a + 
-                       "x + " + b + "y = " + c + "<br>")
-}
- 
-// y = mx + c
-var P = {x:3,y:2}
-var Q = {x:2,y:6}
- 
-lineFromPoints(P, Q)
