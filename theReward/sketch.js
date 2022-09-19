@@ -35,7 +35,9 @@ const rockModels = [{
     color: "#557799"
   }
 ];
+    const doDrawRays = true;
     let inGame = false;
+    let rayNumber = 15;
     const widthAndHeight = 600;
     const mobs = [{
       type: "ant",
@@ -48,8 +50,8 @@ const rockModels = [{
       rayDest : null,
       raysDestLeft : [],
       raysDestRight : [],
-      rayNr : 11,
-      rayAngle : Math.PI/(2*10),
+      rayNr : rayNumber,
+      rayAngle : (Math.PI/2)/(rayNumber-1),
       move: 6,
       pos: {
         x: -1000,
@@ -63,13 +65,13 @@ const rockModels = [{
       size: 6,
       move: 3,
       sightLength :120,
-      fov : Math.PI/3,
+      fov : Math.PI/2,
       raySrc : null,
       rayDest : null,
       raysDestLeft : [],
       raysDestRight : [],
-      rayNr : 11,
-      rayAngle : Math.PI/(3*10),
+      rayNr : rayNumber,
+      rayAngle : (Math.PI/2)/(rayNumber-1),
       pos: {
         x: -1000,
         y: -1000
@@ -93,36 +95,63 @@ const rockModels = [{
       translate(width / 2, height / 2);
       background(102,160,80);
       drawRocks();
-      mobs.forEach((m) => {
-        drawMob(m);
-        calcRays(m);
-        collideRays(m)
-        drawRays(m);
-      });
       if(!inGame){
-          mobs.forEach((m) => {
-              m.pos.x = Math.floor((Math.random() * widthAndHeight)) - widthAndHeight/2;
-              m.pos.y = Math.floor((Math.random() * widthAndHeight)) - widthAndHeight/2;
-              m.rot = getRandomRotation();
-          });
-          let isOnRock = false;
-          mobs.forEach((m) => {
-            rocks.forEach((r) => {
-               let distance = getDistance(m.pos,r.pos);
-               if(distance <= (r.diameter / 2) + m.size){
-                isOnRock = true;
-               }
-          });
+        setStartingMobPositions()
+      }else{
+        mobs.forEach((m) => {
+          drawMob(m);
+          calcRays(m);
+          collideRays(m);
+          if(doDrawRays){
+            drawRays(m);
+          }
+          findOtherMobs(m);
+          moveMob(m);
         });
-        if(isOnRock){
-          mobs.forEach((m) => {
-            m.pos.x = -1000;
-            m.pos.y = -1000;
-        });
-        }else{
-          inGame = true;
-        }
       }
+    }
+
+    function setStartingMobPositions(){
+      const margin = 75;
+      const half = Math.floor(widthAndHeight / 2);
+      const minPos = margin - half;
+      const maxPos = half - margin;
+      const minDist = half - margin;
+       mobs.forEach((m) => {
+           m.pos.x = Math.floor((Math.random() * widthAndHeight)) - half;
+           m.pos.y = Math.floor((Math.random() * widthAndHeight)) - half;
+           if(m.pos.x < minPos) m.pos.x = margin;
+           if(m.pos.x > maxPos) m.pos.x = maxPos;
+           if(m.pos.y < minPos) m.pos.y = minPos;
+           if(m.pos.y > maxPos) m.pos.y = maxPos;
+
+           m.rot = getRandomRotation();
+       });
+       let isOnRock = false;
+       mobs.forEach((m) => {
+         rocks.forEach((r) => {
+            let distance = getDistance(m.pos,r.pos);
+            if(distance <= (r.diameter / 2) + m.size){
+             isOnRock = true;
+            }
+       });
+     });
+     if (isOnRock || getDistance(mobs[0].pos,mobs[1].pos) < minDist) {
+       mobs.forEach((m) => {
+         m.pos.x = -1000;
+         m.pos.y = -1000;
+       });
+     } else{
+       inGame = true;
+     }
+    }
+
+    function findOtherMobs(m){
+
+    }
+
+    function moveMob(m){
+
     }
     
     function drawRocks(){
