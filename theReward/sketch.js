@@ -296,6 +296,24 @@ const rockModels = [{
       }
     }
 
+    function intersectPointLineLine(lineA, lineB) {
+      // from Burke on p5js.org modified to my needs
+       const ua = ((lineB.p2.x - lineB.p1.x) * (lineA.p1.y - lineB.p1.y) - 
+                 (lineB.p2.y - lineB.p1.y) * (lineA.p1.x - lineB.p1.x)) /
+                ((lineB.p2.y - lineB.p1.y) * (lineA.p2.x - lineA.p1.x) - 
+                 (lineB.p2.x - lineB.p1.x) * (lineA.p2.y - lineA.p1.y));
+      
+      const ub = ((lineA.p2.x - lineA.p1.x) * (lineA.p1.y - lineB.p1.y) - 
+                 (lineA.p2.y - lineA.p1.y) * (lineA.p1.x - lineB.p1.x)) /
+                ((lineB.p2.y - lineB.p1.y) * (lineA.p2.x - lineA.p1.x) - 
+                 (lineB.p2.x - lineB.p1.x) * (lineA.p2.y - lineA.p1.y));
+      
+      const x = lineA.p1.x + ua * (lineA.p2.x - lineA.p1.x);
+      const y = lineA.p1.y + ua * (lineA.p2.y - lineA.p1.y);
+      
+      return {x:x,y:y};
+    }
+
     function getDistance(ptA, ptB, name) {
       if (!(ptA && ptA.x != undefined && ptA.y != undefined && ptB && ptB.x != undefined && ptB.y != undefined)) {
         if (!name) name = "???";
@@ -346,3 +364,31 @@ const rockModels = [{
       }       
       return ret;
   }
+function getEquationOfLine(line) {
+  if (line.p1.x === line.p2.x) { // vertical line
+    return {
+      x: 0,
+      y: line.p1.y,
+      c: 0
+    };
+  } else if (line.p1.y === line.p2.y) { // horizontal line
+    return {
+      x: line.p1.x,
+      y: 0,
+      c: 0
+    };
+  } else {
+    // x is the slope, c is the constant
+    let slope = (line.p2.y - line.p1.y) / (line.p2.x - line.p1.x);
+    // c = y1 − m∗x1
+    let x1 = line.p1.x;
+    let y1 = line.p1.y;
+    let constant = y1 - slope*x1;
+    return {
+      x: slope,
+      y: 0,
+      c: constant
+    };
+  }
+}
+
