@@ -1,11 +1,16 @@
+/*
+Wip : the red dot figures the hunter and the green one the prey
+For the present time mobs just move around and avoid the obstacles (the circles and borders)
+Soon the hunter will catch the prey and find its reward
+*/
+
 const rockModels = [{
     "name": "A",
     "diameter": 80,
     "pos": {
       "x": -175,
       "y": -120
-    },
-    color: "#776655"
+    }
   },
   {
     "name": "B",
@@ -13,8 +18,7 @@ const rockModels = [{
     "pos": {
       "x": -85,
       "y": 0
-    },
-    color: "#997755"
+    }
   },
   {
     "name": "C",
@@ -22,8 +26,7 @@ const rockModels = [{
     "pos": {
       "x": -70,
       "y": -148
-    },
-    color: "#557799"
+    }
   },
   {
     "name": "D",
@@ -31,8 +34,79 @@ const rockModels = [{
     "pos": {
       "x": 100,
       "y": 100
-    },
-    color: "#557799"
+    }
+  },
+  {
+    "name": "E",
+    "diameter": 65,
+    "pos": {
+      "x": 230,
+      "y": 0
+    }
+  },
+  {
+    "name": "F",
+    "diameter": 75,
+    "pos": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "name": "G",
+    "diameter": 45,
+    "pos": {
+      "x": 200,
+      "y": -120
+    }
+  },
+  {
+    "name": "H",
+    "diameter": 85,
+    "pos": {
+      "x": -200,
+      "y": -230
+    }
+  },
+  {
+    "name": "I",
+    "diameter": 45,
+    "pos": {
+      "x": 200,
+      "y": 230
+    }
+  },
+  {
+    "name": "J",
+    "diameter": 65,
+    "pos": {
+      "x": -150,
+      "y": 230
+    }
+  },
+  {
+    "name": "K",
+    "diameter": 65,
+    "pos": {
+      "x": -210,
+      "y": 130
+    }
+  },
+  {
+    "name": "L",
+    "diameter": 75,
+    "pos": {
+      "x": -10,
+      "y": -130
+    }
+  },
+  {
+    "name": "M",
+    "diameter": 55,
+    "pos": {
+      "x": -110,
+      "y": -230
+    }
   }
 ];
 const doDrawRays = true;
@@ -55,7 +129,7 @@ const mobs = [{
   raysDestRight: [],
   rayNr: rayNumber,
   rayAngle: (Math.PI / 2) / (rayNumber - 1),
-  move: 6,
+  move: 7,
   pos: {
     x: -1000,
     y: -1000
@@ -66,7 +140,7 @@ const mobs = [{
   name: "defender",
   color: "#00dd00",
   size: 6,
-  move: 3,
+  move: 5,
   sightLength: 120,
   fov: Math.PI / 2,
   raySrc: null,
@@ -92,7 +166,6 @@ function setup() {
     let rock = {
       name: r.name,
       pos: r.pos,
-      color: r.color,
       diameter: r.diameter
     };
     return rock;
@@ -101,6 +174,7 @@ function setup() {
 }
 
 function draw() {
+  frameRate(12)
   translate(width / 2, height / 2);
   background(102, 160, 80);
   drawRocks();
@@ -155,11 +229,54 @@ function setStartingMobPositions() {
 }
 
 function findOtherMobs(m) {
-
+  // todo (ray intersect ray ?)
 }
 
 function moveMob(m) {
-
+  let previousPos = {
+    ...m.pos
+  };
+  let previousRot = m.rot;
+  let maxDist = m.rayDest.d;
+  let maxRay = m.rayDest;
+  for (let i = 0; i < ((m.rayNr / 2) - 1); i++) {
+    if (m.raysDestLeft[i].d > maxDist) {
+      maxDist = m.raysDestLeft[i].d;
+      maxRay = m.raysDestLeft[i];
+    }
+    if (m.raysDestRight[i].d > maxDist) {
+      maxDist = m.raysDestRight[i].d;
+      maxRay = m.raysDestRight[i];
+    }
+  }
+  if (maxDist > 0) {
+    maxDist = Math.min(m.move, maxDist);
+    if (maxDist < m.move) {
+      m.rot = getRandomRotation();
+    } else {
+      let newPos = polarToCartesian(maxRay.rot);
+      m.pos.x += Math.floor(newPos.x * maxDist);
+      m.pos.y += Math.floor(newPos.y * maxDist);
+      m.rot = maxRay.rot;
+    }
+    let insideRocks = rocks.filter((r) => {
+      return getDistance(r.pos, m.pos) < (r.diameter / 2) - 2;
+    });
+    if (insideRocks.length > 0) {
+      m.pos = {
+        ...previousPos
+      };
+      m.rot = getRandomRotation();
+    }else{
+      let nearHalf = half - m.size;
+      if(m.pos.x > nearHalf || m.pos.x < -nearHalf || m.pos.y > nearHalf || m.pos.y < -nearHalf ){
+        m.pos = {
+          ...previousPos
+        };
+        m.rot = getRandomRotation(); 
+      }
+    }
+  }
 }
 
 function drawRocks() {
@@ -254,6 +371,7 @@ function collideRays(m) {
     m.rayDest.x = result.endPt.x;
     m.rayDest.y = result.endPt.y;
     m.rayDest.d = result.d;
+    m.rayDest.equation = result.equation;
   }
   m.raysDestRight.forEach((ray) => {
     let result = collideRayBorders(m.raySrc, ray);
@@ -261,6 +379,7 @@ function collideRays(m) {
       ray.x = result.endPt.x;
       ray.y = result.endPt.y;
       ray.d = result.d;
+      ray.equation = result.equation;
     }
   });
   m.raysDestLeft.forEach((ray) => {
@@ -269,6 +388,7 @@ function collideRays(m) {
       ray.x = result.endPt.x;
       ray.y = result.endPt.y;
       ray.d = result.d;
+      ray.equation = result.equation;
     }
   });
 }
@@ -367,7 +487,8 @@ function calcRays(m) {
   m.rayDest = null;
   m.raysDestLeft = [];
   m.raysDestRight = [];
-  let dir = polarToCartesian(m.rot);
+  let currentRot = m.rot;
+  let dir = polarToCartesian(currentRot);
   m.raySrc = { // just a point on the circle perimeter
     x: m.pos.x + (dir.x * m.size / 2),
     y: m.pos.y + (dir.y * m.size / 2),
@@ -376,20 +497,25 @@ function calcRays(m) {
   m.rayDest = {
     x: m.raySrc.x + (dir.x * m.sightLength),
     y: m.raySrc.y + (dir.y * m.sightLength),
-    d: null
+    d: null,
+    rot : currentRot
   };
   for (let i = 0; i <= (m.rayNr / 2) - 1; i++) {
-    dir = polarToCartesian(m.rot + ((i + 1) * m.rayAngle));
+    currentRot = m.rot + ((i + 1) * m.rayAngle)
+    dir = polarToCartesian(currentRot);
     m.raysDestRight.push({
       x: m.raySrc.x + (dir.x * m.sightLength),
       y: m.raySrc.y + (dir.y * m.sightLength),
-      d: null
+      d: null,
+      rot : currentRot
     });
+    currentRot = m.rot - ((i + 1) * m.rayAngle);
     dir = polarToCartesian(m.rot - ((i + 1) * m.rayAngle));
     m.raysDestLeft.push({
       x: m.raySrc.x + (dir.x * m.sightLength),
       y: m.raySrc.y + (dir.y * m.sightLength),
-      d: null
+      d: null,
+      rot : currentRot
     })
   }
 }
@@ -468,9 +594,8 @@ function interceptCircleLine(circle, line) {
   }
   return ret;
 }
-// Experimental below : trying to use linear equations of the lines
+
 function getEquationOfLine(line) {
-  // WIP
   if (line.p1.x === line.p2.x) { // vertical line
     return {
       slope: null,
