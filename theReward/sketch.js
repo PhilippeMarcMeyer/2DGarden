@@ -110,15 +110,31 @@ const rockModels = [{
   }
 ];
 const doDrawRays = true;
+const seenMobMagnifier = 6;
+const unseenMobMagnifier = 3;
 let inGame = false;
 let rayNumber = 15;
 
 const widthAndHeight = 600;
 const half = 300;
 
+class LivingBeing{
+  // WIP
+  constructor(type, specie,size,pos,insight,alive) {
+    this.type = type;
+    this.specie = specie;
+    this.size = size;
+    this.lastPos = pos;
+    this.lastDist = lastDist;
+    this.insight = insight;
+    this.alive = alive;
+  }
+
+}
+
 const mobs = [{
-  type: "ant",
-  name: "warrior",
+  specie: "ant",
+  type: "hunter",
   color: "#dd0000",
   size: 12,
   sightLength: 200,
@@ -134,10 +150,11 @@ const mobs = [{
     x: -1000,
     y: -1000
   },
-  rot: 0
+  rot: 0,
+  mobList : []
 }, {
-  type: "bug",
-  name: "defender",
+  specie: "bug",
+  type: "prey",
   color: "#00dd00",
   size: 6,
   move: 5,
@@ -153,7 +170,8 @@ const mobs = [{
     x: -1000,
     y: -1000
   },
-  rot: 0
+  rot: 0,
+  mobList : []
 }];
 
 let rocks = [];
