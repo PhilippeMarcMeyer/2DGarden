@@ -3,8 +3,8 @@ Wip : the red dot figures the hunter and the green one the prey
 mobs just move around and avoid the obstacles (the circles and borders)
 The hunter catches the preys and find its reward
 TODO : fix
-the hunter sees its preys event if they are concealed by a rock
-the prey does not flee from the hunter
+the hunter sees its preys even if they are concealed by a rock
+the mobs are clumsy avoiding the rocks
 */
 
 const rockModels = [{
@@ -112,10 +112,11 @@ const rockModels = [{
   }
 }
 ];
-const doDrawRays = true;
+const doDrawRays = false;
 const mobMagnifier = 3;
 let inGame = false;
 let rayNumber = 15;
+let preyNr = 9; // not to many as it defers the game init (9 or 10 max)
 
 const widthAndHeight = 600;
 const half = 300;
@@ -135,73 +136,7 @@ raysDestRight: [],
 detectMobs: [],
 rayNr: rayNumber,
 rayAngle: (Math.PI / 2) / (rayNumber - 1),
-move: 7,
-pos: {
-  x: -1000,
-  y: -1000
-},
-rot: 0,
-mobList : []
-}, {
-id: 2,
-specie: "bug",
-type: "prey",
-color: "#00dd00",
-size: 6,
-move: 5,
-sightLength: 120,
-fov: Math.PI / 2,
-raySrc: null,
-rayDest: null,
-raysDestLeft: [],
-raysDestRight: [],
-detectMobs: [],
-rayNr: rayNumber,
-rayAngle: (Math.PI / 2) / (rayNumber - 1),
-pos: {
-  x: -1000,
-  y: -1000
-},
-rot: 0,
-mobList : []
-}, {
-id: 3,
-specie: "bug",
-type: "prey",
-color: "#00dd00",
-size: 6,
-move: 5,
-sightLength: 120,
-fov: Math.PI / 2,
-raySrc: null,
-rayDest: null,
-raysDestLeft: [],
-raysDestRight: [],
-detectMobs: [],
-rayNr: rayNumber,
-rayAngle: (Math.PI / 2) / (rayNumber - 1),
-pos: {
-  x: -1000,
-  y: -1000
-},
-rot: 0,
-mobList : []
-}, {
-id: 4,
-specie: "bug",
-type: "prey",
-color: "#00dd00",
-size: 6,
-move: 5,
-sightLength: 120,
-fov: Math.PI / 2,
-raySrc: null,
-rayDest: null,
-raysDestLeft: [],
-raysDestRight: [],
-detectMobs: [],
-rayNr: rayNumber,
-rayAngle: (Math.PI / 2) / (rayNumber - 1),
+move: 6,
 pos: {
   x: -1000,
   y: -1000
@@ -209,6 +144,33 @@ pos: {
 rot: 0,
 mobList : []
 }];
+
+for(let i = 0;i < preyNr; i++){
+  mobs.push({
+  id: i+2,
+  fleeing : false,
+  specie: "bug",
+  type: "prey",
+  color: "#00dd00",
+  size: 6,
+  move: 5,
+  sightLength: 120,
+  fov: Math.PI / 2,
+  raySrc: null,
+  rayDest: null,
+  raysDestLeft: [],
+  raysDestRight: [],
+  detectMobs: [],
+  rayNr: rayNumber,
+  rayAngle: (Math.PI / 2) / (rayNumber - 1),
+  pos: {
+    x: -1000,
+    y: -1000
+  },
+  rot: 0,
+  mobList : []
+});
+}
 
 let rocks = [];
 let context;
@@ -255,7 +217,7 @@ if (!inGame) {
 }
 
 function setStartingMobPositions() {
-const margin = 75;
+const margin = 10;
 const minPos = margin - half;
 const maxPos = half - margin;
 const minDist = half - margin;
@@ -290,6 +252,8 @@ if (isOnRock || getDistance(mobs[0].pos, mobs[1].pos) < minDist) {
 
 function moveMob(m) {
 let preyChased = false;
+let hunterInView = false;
+let dangerPt;
 let maxDist,maxRay;
 let previousPos = {
   ...m.pos
@@ -314,6 +278,23 @@ if( m.detectMobs.length){ // If a mob has been detected
       }
       preyChased = true;
     }
+  }else{
+      let hunters = m.detectMobs.filter((x) => {
+        return x.type == "hunter";
+      });
+      if(hunters.length){
+        if(!m.fleeing){
+            dangerPt = hunters[0].pos;
+            let dangerPtFromMe = {x:(dangerPt.x-m.pos.x),y:(dangerPt.y-m.pos.y)};
+            let dangerPtFromMeNormalized = normalizePoint(dangerPtFromMe);
+            m.rot = getAngle(dangerPtFromMeNormalized) + Math.PI;
+            hunterInView = true;
+            m.fleeing = true; 
+            return;
+        }
+      }else{
+        m.fleeing = false; 
+      }
   }
 }
 maxDist = m.rayDest.d;
@@ -407,14 +388,54 @@ context.restore();
 }
 
 function drawMob(m) {
-context.save();
-context.beginPath();
+if(m.type == "hunter"){
+  drawHunter(m);
+  return;
+}
+let d1 =  m.size*0.8;
+let d2 =  m.size*0.6;
 context.strokeStyle = "#000";
 context.fillStyle = m.color;
-circle(m.pos.x, m.pos.y, m.size);
-context.closePath();
+circle(m.pos.x, m.pos.y, d1);
 context.stroke();
 context.fill();
+let heading = polarToCartesian(m.rot);
+let headPoint = {x:0,y:0};
+headPoint.x = m.pos.x + heading.x * d2;
+headPoint.y = m.pos.y + heading.y * d2;
+circle(headPoint.x, headPoint.y, d2);
+context.stroke();
+context.fill();
+}
+
+function drawHunter(m){
+let d1 =  m.size*0.4;
+let d2 =  m.size*0.5;
+context.strokeStyle = "#000";
+context.fillStyle = "#d55";
+// body
+circle(m.pos.x, m.pos.y, d2);
+context.stroke();
+context.fill();
+context.fillStyle ="#f00";
+// head
+let heading = polarToCartesian(m.rot);
+let headPoint = {x:0,y:0};
+headPoint.x = m.pos.x + heading.x * d2;
+headPoint.y = m.pos.y + heading.y * d2;
+circle(headPoint.x, headPoint.y, d1);
+context.stroke();
+context.fill();
+context.fillStyle ="#d55";
+// tail
+let tailPoint = {x:0,y:0};
+  tailPoint.x = m.pos.x - heading.x * d2;
+tailPoint.y = m.pos.y - heading.y * d2;
+circle(tailPoint.x, tailPoint.y, d2);
+  context.stroke();
+context.fill();
+//context.closePath();
+
 }
 
 function collideRays(m) {
@@ -692,7 +713,7 @@ return Math.sqrt(Math.pow(ptB.x - ptA.x, 2) + Math.pow(ptB.y - ptA.y, 2));
 }
 
 function getRandomRotation() {
-return Math.floor((Math.random() * Math.PI * 2) * 100) / 100;
+  return Math.floor((Math.random() * Math.PI * 2) * 100) / 100;
 }
 
 function polarToCartesian(rot) {
