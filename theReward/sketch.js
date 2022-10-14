@@ -1,7 +1,11 @@
 /*
 Wip : the red dot figures the hunter and the green one the prey
-For the present time mobs just move around and avoid the obstacles (the circles and borders)
-Soon the hunter will catch the prey and find its reward
+mobs just move around and avoid the obstacles (the circles and borders)
+The hunter catches the preys and find its reward
+TODO : fix
+The hunter rotation is not good as sometimes it is opposite to its perys
+the hunter sees its preys event if they are concealed by a rock
+the prey does not flee from the hunter
 */
 
 const rockModels = [{
@@ -110,29 +114,15 @@ const rockModels = [{
   }
 ];
 const doDrawRays = true;
-const seenMobMagnifier = 6;
-const unseenMobMagnifier = 3;
+const mobMagnifier = 3;
 let inGame = false;
 let rayNumber = 15;
 
 const widthAndHeight = 600;
 const half = 300;
 
-class LivingBeing{
-  // WIP
-  constructor(type, specie,size,pos,insight,alive) {
-    this.type = type;
-    this.specie = specie;
-    this.size = size;
-    this.lastPos = pos;
-    this.lastDist = lastDist;
-    this.insight = insight;
-    this.alive = alive;
-  }
-
-}
-
-const mobs = [{
+let mobs = [{
+  id: 1,
   specie: "ant",
   type: "hunter",
   color: "#dd0000",
@@ -143,6 +133,7 @@ const mobs = [{
   rayDest: null,
   raysDestLeft: [],
   raysDestRight: [],
+  detectMobs: [],
   rayNr: rayNumber,
   rayAngle: (Math.PI / 2) / (rayNumber - 1),
   move: 7,
@@ -153,6 +144,7 @@ const mobs = [{
   rot: 0,
   mobList : []
 }, {
+  id: 2,
   specie: "bug",
   type: "prey",
   color: "#00dd00",
@@ -164,6 +156,51 @@ const mobs = [{
   rayDest: null,
   raysDestLeft: [],
   raysDestRight: [],
+  detectMobs: [],
+  rayNr: rayNumber,
+  rayAngle: (Math.PI / 2) / (rayNumber - 1),
+  pos: {
+    x: -1000,
+    y: -1000
+  },
+  rot: 0,
+  mobList : []
+}, {
+  id: 3,
+  specie: "bug",
+  type: "prey",
+  color: "#00dd00",
+  size: 6,
+  move: 5,
+  sightLength: 120,
+  fov: Math.PI / 2,
+  raySrc: null,
+  rayDest: null,
+  raysDestLeft: [],
+  raysDestRight: [],
+  detectMobs: [],
+  rayNr: rayNumber,
+  rayAngle: (Math.PI / 2) / (rayNumber - 1),
+  pos: {
+    x: -1000,
+    y: -1000
+  },
+  rot: 0,
+  mobList : []
+}, {
+  id: 4,
+  specie: "bug",
+  type: "prey",
+  color: "#00dd00",
+  size: 6,
+  move: 5,
+  sightLength: 120,
+  fov: Math.PI / 2,
+  raySrc: null,
+  rayDest: null,
+  raysDestLeft: [],
+  raysDestRight: [],
+  detectMobs: [],
   rayNr: rayNumber,
   rayAngle: (Math.PI / 2) / (rayNumber - 1),
   pos: {
@@ -192,6 +229,12 @@ function setup() {
 }
 
 function draw() {
+  let nrPreys = mobs.filter((m) => {
+    return m.type == "prey";
+  }).length;
+  if(nrPreys == 0){
+    location.reload();
+  } 
   frameRate(12)
   translate(width / 2, height / 2);
   background(102, 160, 80);
@@ -203,10 +246,10 @@ function draw() {
       drawMob(m);
       calcRays(m);
       collideRays(m);
+      m.detectMobs = detectOtherMobs(m);
       if (doDrawRays) {
         drawRays(m);
       }
-      findOtherMobs(m);
       moveMob(m);
     });
   }
@@ -246,17 +289,34 @@ function setStartingMobPositions() {
   }
 }
 
-function findOtherMobs(m) {
-  // todo (ray intersect ray ?)
-}
-
 function moveMob(m) {
+  let maxDist,maxRay;
   let previousPos = {
     ...m.pos
   };
-  let previousRot = m.rot;
-  let maxDist = m.rayDest.d;
-  let maxRay = m.rayDest;
+  if( m.detectMobs.length){ // If a mob has been detected
+    if(m.type == "hunter"){
+      let preys = m.detectMobs.filter((x) => {
+        return x.type == "prey";
+      });
+      if(preys.length){
+        let destPt = preys[0].pos;
+        let destPtFromHunter= {x:(destPt.x-m.pos.x),y:(destPt.y-m.pos.y)};
+        let destPtFromHunterNormalized = normalizePoint(destPtFromHunter);
+        m.rot = getAngle(destPtFromHunterNormalized);
+        maxDist = Math.min(m.move, m.detectMobs[0].dist);
+        m.pos.x += Math.floor((destPtFromHunterNormalized.x * maxDist) + 0.5);
+        m.pos.y += Math.floor((destPtFromHunterNormalized.y * maxDist) + 0.5);
+        if(m.detectMobs[0].dist < m.size){
+          mobs = mobs.filter((m) => {
+            return m.id !=preys[0].id;
+          });
+        }
+      }
+    }
+  }
+  maxDist = m.rayDest.d;
+  maxRay = m.rayDest;
   for (let i = 0; i < ((m.rayNr / 2) - 1); i++) {
     if (m.raysDestLeft[i].d > maxDist) {
       maxDist = m.raysDestLeft[i].d;
@@ -359,6 +419,7 @@ function collideRays(m) {
   let nearByRocks = rocks.filter((r) => {
     return getDistance(r.pos, m.pos) <= m.sightLength + r.diameter;
   });
+
   if (nearByRocks.length) {
     let result = collideRayCircle(nearByRocks, m.raySrc, m.rayDest);
     if (result) {
@@ -458,9 +519,68 @@ function collideRayBorders(raySrc, rayDest) {
   }
 }
 
+function detectOtherMobs(m) {
+  let nearByMobs = mobs.filter((otherMob) => {
+    if(m.id === otherMob.id){
+      return false;
+    }else{
+      let dist = getDistance(m.pos, otherMob.pos);
+      otherMob.dist = dist;
+      return dist <= m.sightLength + (otherMob.size * mobMagnifier);
+    }
+  });
+  return nearByMobs;
+}
+
+
+function collideRayMobs(mobs, raySrc, rayDest) {
+  let distMin = 999;
+  let pt = null;
+
+  rocks.forEach((r) => {
+    let arr = interceptCircleLine({
+      x: r.pos.x,
+      y: r.pos.y,
+      radius: r.diameter / 2
+    }, {
+      p1: {
+        x: raySrc.x,
+        y: raySrc.y
+      },
+      p2: {
+        x: rayDest.x,
+        y: rayDest.y
+      }
+    });
+    if (arr.length > 0) {
+      for (let i = 0; i <= arr.length; i++) {
+        if (arr[i] != null) {
+          let distance = getDistance(arr[i], raySrc, arr[i]);
+          if (distance < distMin) {
+            distMin = distance;
+            pt = {
+              ...arr[i]
+            };
+          }
+        }
+      }
+    }
+  });
+  if (pt) {
+    return {
+      endPt: {
+        ...pt
+      },
+      d: distMin
+    };
+  }
+  return null;
+}
+
 function collideRayCircle(rocks, raySrc, rayDest) {
   let distMin = 999;
   let pt = null;
+
   rocks.forEach((r) => {
     let arr = interceptCircleLine({
       x: r.pos.x,
@@ -640,4 +760,18 @@ function getEquationOfLine(line) {
       c: constant
     };
   }
+}
+
+function getAngle(pt){
+  return Math.atan2(pt.y, pt.x)
+}
+
+function normalizePoint(pt){
+  let result = {x:0,y:0};
+  let biggest = Math.max(Math.abs(pt.x), Math.abs(pt.y));
+  if(biggest != 0){
+    result.x = pt.x / biggest;
+    result.y = pt.y / biggest;
+  }
+  return result;
 }
