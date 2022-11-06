@@ -2,57 +2,39 @@
 Wip : the red dot figures the hunter and the yellow ones the preys
 mobs move around and avoid the obstacles (circles that are figured by rocks and borders)
 The hunter catches the preys and find its reward
-TODO : 
-the hunter sees its preys even if they are concealed by a rock
-the preys flee when detecting the hunter but then sometimes go straight to it
-use ie6 classes for the mobs
-develop 2 modes for the preys : in peaceful mode they tend to gather around the flowers to eat
+dot number temporaly shown
+to eat
 10/20/22 : the hunter now pauses to devours its prey and shakes a little
            the hunter is slower than its preys
 10/21/22 : gradients, improvement of setup (much quicker)
+10/27/22 : peaceful mode : the preys go under a flower
+TODO : 
+the hunter sees its preys even if they are concealed by a rock
+the preys flee when detecting the hunter but then sometimes go straight to it <==== !!!
+use ie6 classes for the mobs
+Ideas : Being concealed by flowers could give an advantage (so they may wait longer under the flower cover before panicking). Preys could stay in panic mode longer due to adrenalin. Use dot product to avoid bug turning straight into the ant mouth ! What about some traits and genetic algo (the bug could panic less or more, tend to turn large or not...) Preys could counter attack spiting acid
+
 */
-
 const doDrawRays = false;
-const mobMagnifier = 3;
-const widthAndHeight = 600;
-const half = 300;
-
-
-const letters = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z".split(",");
-const preyNr = 12; 
+const doDrawDotProduct = false;
+const gameSpeed = 15;
+const preyNr = 24; 
+const hunterNr = 3;
 const flowerNr = 17;
+const rockNr = 16;
+const mobMagnifier = 3;
+const widthAndHeight = 740;
+const half = 300;
+const trueHalf = widthAndHeight / 2;
+const letters = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z".split(",");
 const flowerColors = ["#AE4FBE","#D792EF","#6FADDF","#AE6FBE","#D794EF","#7FADDF"];
-
+const rayNumber = 15;
 
 let inGame = false;
-let rayNumber = 15;
 let fibers = [];
 let rockModels = [];
-let mobs = [{
-  id: 1,
-  specie: "ant",
-  type: "hunter",
-  color: "#dd0000",
-  size: 12,
-  sightLength: 200,
-  fov: Math.PI / 2,
-  raySrc: null,
-  rayDest: null,
-  raysDestLeft: [],
-  raysDestRight: [],
-  detectMobs: [],
-  rayNr: rayNumber,
-  rayAngle: (Math.PI / 2) / (rayNumber - 1),
-  move: 4,
-  pos: {
-    x: -1000,
-    y: -1000
-  },
-  rot: 0,
-  drawnRot : 0,
-  mobList : [],
-  ready : false
-}];
+let counter = 0;
+let mobs = [];
 let flowers = [];
 let rocks = [];
 let context;
@@ -63,20 +45,22 @@ function setup() {
   context = drawingContext;
   gradient = context.createLinearGradient(0, 0, widthAndHeight, widthAndHeight);
   gradient.addColorStop(0, "rgb(250,168,80)");
- gradient.addColorStop(0.5, "rgb(71,156,71)");
- gradient.addColorStop(1, "rgb(47,156,120)");
+  gradient.addColorStop(0.5, "rgb(71,156,71)");
+  gradient.addColorStop(1, "rgb(47,156,120)");
   fibers = createFibers(widthAndHeight,35);
   if(rocks.length) return;
-  letters.forEach((letter) => {
-  rockModels.push({
-    "name": letter,
-    "diameter": Math.floor(random(40,100) + 0.5),
-    "pos": {
-      "x": Math.floor(random(-half,half) + 0.5),
-      "y": Math.floor(random(-half,half) + 0.5)
-    },
-    "poly": getPolyModel(Math.floor(random(0,polyModels.length-1) + 0.5))
-  });
+  letters.forEach((letter,i) => {
+    if(i < rockNr-1){
+      rockModels.push({
+        "name": letter,
+        "diameter": Math.floor(random(40,100) + 0.5),
+        "pos": {
+          "x": Math.floor(random(-half,half) + 0.5),
+          "y": Math.floor(random(-half,half) + 0.5)
+        },
+        "poly": getPolyModel(Math.floor(random(0,polyModels.length-1) + 0.5))
+      });
+  }
 });
   rocks = rockModels.map((r) => {
     let rock = {
@@ -97,9 +81,17 @@ function setup() {
   for(let i = 0 ; i < flowerNr-1 ; i++){
     let flower = {pos:{}};
     flower.poly = JSON.parse(JSON.stringify(flowerPolies));
-    flower.pos.x = Math.floor(random(-half,half) + 0.5);
-    flower.pos.y = Math.floor(random(-half,half) + 0.5);
-    flower.size = Math.floor(random(15,65) + 0.5);
+    let isInside = false;
+    do {
+      flower.pos.x = Math.floor(random(-half,half) + 0.5);
+      flower.pos.y = Math.floor(random(-half,half) + 0.5);
+      let nearByRocks = rockModels.filter((r) => {
+        return getDistance(flower.pos,r.pos) <= r.diameter/2;
+      });
+      isInside = nearByRocks.length > 0;
+    } while(isInside);
+
+    flower.size = Math.floor(random(25,65) + 0.5);
     flower.color = flowerColors[Math.floor(Math.random(0,flowerColors.length-1) + 0.5)];
     flower.poly.forEach((petal) => {
           petal.forEach((pt) => {
@@ -109,35 +101,12 @@ function setup() {
       });
     flowers.push(flower);
   }
-  
+  for(let i = 0;i < hunterNr; i++){
+    mobs.push(new Ant(++counter,1))
+  }
   for(let i = 0;i < preyNr; i++){
-    mobs.push({
-    id: i+2,
-    fleeing : false,
-    specie: "bug",
-    type: "prey",
-    color: "#EBB667",
-    size: 6,
-    move: Math.floor(random(5,8)+0.5),
-    sightLength: 120,
-    fov: Math.PI / 2,
-    raySrc: null,
-    rayDest: null,
-    raysDestLeft: [],
-    raysDestRight: [],
-    detectMobs: [],
-    rayNr: rayNumber,
-    rayAngle: (Math.PI / 2) / (rayNumber - 1),
-    pos: {
-      x: -1000,
-      y: -1000
-    },
-    rot: 0,
-    drawnRot : 0,
-    mobList : [],
-    ready : false
-  });
-}
+    mobs.push(new Bug(++counter,1))
+  }
   while (!inGame) {
     setStartingMobPositions();
   }
@@ -150,7 +119,7 @@ function draw() {
   if(nrPreys == 0){
     location.reload();
   } 
-  frameRate(12)
+  frameRate(gameSpeed)
      context.fillStyle = gradient;
   rect(0,0,width,height);
     context.fill();
@@ -164,8 +133,11 @@ function draw() {
     text('the garden is loading...',-150,0);
     textSize(12);
   } else {
+    fill(0, 102, 153, 255);
+    text(`bugs eaten : ${preyNr - mobs.length + hunterNr} / ${preyNr}`,-trueHalf +20,-trueHalf +20);
+    textSize(12);
     mobs.forEach((m) => {
-      drawMob(m);
+      m.drawMob();
       calcRays(m)
       collideRays(m);
       m.detectMobs = detectOtherMobs(m);
@@ -241,16 +213,23 @@ function moveMob(m) {
   if(m.stopFor > 0){
     return;
   }
+  if(m.fleeFor > 0){
+    m.fleeFor--;
+  }
+    if(m.fleeFor <= 0){
+    m.fleeing = false;
+  }
+  let isHunter = m.type == "hunter";
   let preyChased = false;
   let dangerPt;
-  let maxDist,maxRay;
+  let maxDist,maxRay,minDist,minRay;
   let previousPos = {
     ...m.pos
   };
-  let previousRot =  m.drawnRot ?  m.drawnRot : m.rot;
-  
-  if( m.detectMobs.length){ // If a mob has been detected
-    if(m.type == "hunter"){
+  let previousRot =  m.rot;
+   // If a mob has been detected
+  if(m.detectMobs.length){
+    if(isHunter){
       let preys = m.detectMobs.filter((x) => {
         return x.type == "prey";
       });
@@ -266,45 +245,76 @@ function moveMob(m) {
           mobs = mobs.filter((m) => {
             return m.id !=preys[0].id;
           });
-          m.stopFor = Math.round(frameRate()) * 1;
+          m.stopFor = Math.round(frameRate()) * 3;
         }
         preyChased = true;
+        m.hunting = true;
       }
     }else{
         let hunters = m.detectMobs.filter((x) => {
           return x.type == "hunter";
         });
         if(hunters.length){
-          if(!m.fleeing){
+          if(!m.fleeing || frameCount%6 == 1){
               dangerPt = hunters[0].pos;
-              let dangerPtFromMe = {x:(dangerPt.x-m.pos.x),y:(dangerPt.y-m.pos.y)};
-              let dangerPtFromMeNormalized = normalizePoint(dangerPtFromMe);
-              m.rot = getAngle(dangerPtFromMeNormalized) + Math.PI;
+              let dot = Math.acos(((dangerPt.x - m.pos.x) * Math.cos(m.rot) + (dangerPt.y - m.pos.y) * Math.sin(m.rot)) / getDistance(dangerPt,m.pos));
+              m.lastDot = Math.floor(dot*100)/100;
+            let rotDiff = Math.abs(m.rot - hunters[0].rot);
+              if(dot < HALF_PI ){
+                m.rot = (m.rot + PI + (Math.random()+0.25)) % TWO_PI;
+              }
               hunterInView = true;
               m.fleeing = true; 
+              m.preferedPt = null;
+              m.fleeFor = Math.round(frameRate()) * 2;
               return;
           }
         }else{
-          m.fleeing = false; 
+          if(m.fleeFor == 0){
+            m.fleeing = false; 
+            let minDist = 9999;
+          flowers.forEach((f) => {
+            let dist = getDistance(m.pos,f.pos);
+            if(dist < minDist){
+              minDist = dist;
+              m.preferedPt = f.pos;
+            }
+          });
         }
+      }
     }
+  }else{
+    m.hunting = false;
   }
+  let isPeacefullMode = !isHunter && !m.fleeing;
+  
   maxDist = m.rayDest.d;
   maxRay = m.rayDest;
-  for (let i = 0; i < ((m.rayNr / 2) - 1); i++) {
-    if (m.raysDestLeft[i].d > maxDist) {
-      maxDist = m.raysDestLeft[i].d;
-      maxRay = m.raysDestLeft[i];
-    }
-    if (m.raysDestRight[i].d > maxDist) {
-      maxDist = m.raysDestRight[i].d;
-      maxRay = m.raysDestRight[i];
+  minDist = 9999;
+  // todo go to the nearest flower
+  if(isPeacefullMode && m.preferedPt != null){
+    let flowerPtFromMe = {x:(m.preferedPt.x-m.pos.x),y:(m.preferedPt.y-m.pos.y)};
+    let flowerPtFromMeNormalized = normalizePoint(flowerPtFromMe);
+    maxRay.rot = getAngle(flowerPtFromMeNormalized);
+    maxDist = getDistance(m.pos,m.preferedPt);
+  }else{
+    for (let i = 0; i < ((m.rayNr / 2) - 1); i++) {
+      if (m.raysDestLeft[i].d > maxDist) {
+        maxDist = m.raysDestLeft[i].d;
+        maxRay = m.raysDestLeft[i];
+      }
+      if (m.raysDestRight[i].d > maxDist) {
+        maxDist = m.raysDestRight[i].d;
+        maxRay = m.raysDestRight[i];
+      }
     }
   }
+let move = m.fleeing ? m.urgencyMove : m.move;
+  move = m.hunting ? m.huntingMove : move;
   if (maxDist > 0) {
+    maxDist = Math.min(move, maxDist);
     if(!preyChased){
-      maxDist = Math.min(m.move, maxDist);
-      if (maxDist < m.move) {
+      if (maxDist < move) {
         m.rot = getRandomRotation();
       } else {
         let newPos = polarToCartesian(maxRay.rot);
@@ -322,31 +332,28 @@ function moveMob(m) {
       while (isInside && i < 20){
         m.rot = getRandomRotation(); 
         let heading = polarToCartesian(m.rot);
-        let escapeDist = insideRocks[0].diameter / 5 + m.move;
+        let escapeDist = insideRocks[0].diameter / 5 + move;
         m.pos.x = m.pos.x + heading.x * escapeDist;
         m.pos.y = m.pos.y + heading.y * escapeDist;
         isInside = getDistance(insideRocks[0].pos, m.pos) < (insideRocks[0].diameter / 2) - 2;
         i++;
       }
     }else{
-      let nearHalf = half - m.size;
+      let nearHalf = trueHalf - m.size;
       if(m.pos.x > nearHalf || m.pos.x < -nearHalf || m.pos.y > nearHalf || m.pos.y < -nearHalf )        {
-        if(m.pos.x > nearHalf) m.pos.x -= m.move; 
-        if(m.pos.x < -nearHalf) m.pos.x += m.move; 
-        if(m.pos.y > nearHalf) m.pos.y -= m.move; 
-        if(m.pos.y < -nearHalf) m.pos.y += m.move; 
-
+        if(m.pos.x > nearHalf) m.pos.x -= move; 
+        if(m.pos.x < -nearHalf) m.pos.x += move; 
+        if(m.pos.y > nearHalf) m.pos.y -= move; 
+        if(m.pos.y < -nearHalf) m.pos.y += move; 
         m.rot = getRandomRotation(); 
       }
     }
   }
-  m.drawnRot = getDistance(previousPos,m.pos) < 3 ? previousRot : m.rot;
 }
 
 function drawRocks() {
   rocks.forEach((r) => {
     drawPoly(r);
-    //drawCircle(r)
   });
 }
 
@@ -381,7 +388,6 @@ function drawPoly(r){
         context.lineTo(r.poly[i].x, r.poly[i].y);
     }
     context.closePath();
-    //context.stroke();
     context.fill();
     context.restore();
 }
@@ -413,72 +419,6 @@ function drawRays(m) {
   context.stroke();
 
   context.restore();
-}
-
-function drawMob(m) {
-  if(m.type == "hunter"){
-    drawHunter(m);
-    return;
-  }
-  let d1 =  m.size*0.8;
-  let d2 =  m.size*0.6;
-  context.strokeStyle = "#000";
-  context.fillStyle = m.color;
-  circle(m.pos.x, m.pos.y, d1);
-  context.stroke();
-  context.fill();
-  let heading = polarToCartesian(m.drawnRot);
-  let headPoint = {x:0,y:0};
-  headPoint.x = m.pos.x + heading.x * d2;
-  headPoint.y = m.pos.y + heading.y * d2;
-  circle(headPoint.x, headPoint.y, d2);
-  context.stroke();
-  context.fill();
-}
-
-function drawHunter(m){
-  let d0 =  m.size*0.95;
-  let d1 =  m.size*0.4;
-  let d2 =  m.size*0.5;
-  context.strokeStyle = "#000";
-  context.fillStyle = "#d55";
-  // body
-  circle(m.pos.x, m.pos.y, d2);
-  context.stroke();
-  context.fill();
-  context.fillStyle ="#f00";
-  // head
-  let stopRot = m.stopFor > 0 ? (frameCount%2 == 0 ? 0.05: -0.05 ) : 0;
-  let heading = polarToCartesian(m.drawnRot+stopRot);
-  let headPoint = {x:0,y:0};
-  headPoint.x = m.pos.x + heading.x * d2;
-  headPoint.y = m.pos.y + heading.y * d2;
-  let rotAntenna = m.drawnRot+0.3;
-  let antenaPt = polarToCartesian(rotAntenna);
-  antenaPt.x = headPoint.x + antenaPt.x * d0
-  antenaPt.y = headPoint.y + antenaPt.y * d0;
-  line(headPoint.x,headPoint.y,antenaPt.x,antenaPt.y);
-  
-  rotAntenna = m.drawnRot-0.3;
-  antenaPt = polarToCartesian(rotAntenna);
-  antenaPt.x = headPoint.x + antenaPt.x * d0
-  antenaPt.y = headPoint.y + antenaPt.y * d0;
-  line(headPoint.x,headPoint.y,antenaPt.x,antenaPt.y);
-  
-  circle(headPoint.x, headPoint.y, d1);
-  context.stroke();
-  context.fill();
-  context.fillStyle ="#d55";
-
-  // tail
-  let tailPoint = {x:0,y:0};
-  tailPoint.x = m.pos.x - heading.x * d2;
-  tailPoint.y = m.pos.y - heading.y * d2;
-  circle(tailPoint.x, tailPoint.y, d2);
-  context.stroke();
-  context.fill();
- //context.closePath();
-
 }
 
 function collideRays(m) {
@@ -554,26 +494,26 @@ function collideRayBorders(raySrc, rayDest) {
     }
   });
 
-  if (endPt.x <= -half) {
-    endPt.x = -half + 5;
+  if (endPt.x <= -trueHalf) {
+    endPt.x = -trueHalf + 5;
     if (!equation.horizontal && !equation.vertical) {
       endPt.y = (equation.slope * endPt.x) + equation.c;
     }
   }
-  if (endPt.x >= half) {
-    endPt.x = half - 5;
+  if (endPt.x >= trueHalf) {
+    endPt.x = trueHalf - 5;
     if (!equation.horizontal && !equation.vertical) {
       endPt.y = (equation.slope * endPt.x) + equation.c;
     }
   }
-  if (endPt.y <= -half) {
-    endPt.y = -half + 5;
+  if (endPt.y <= -trueHalf) {
+    endPt.y = -trueHalf + 5;
     if (!equation.horizontal && !equation.vertical) {
       endPt.x = (endPt.y - equation.c) / equation.slope;
     }
   }
-  if (endPt.y >= half) {
-    endPt.y = half - 5;
+  if (endPt.y >= trueHalf) {
+    endPt.y = trueHalf - 5;
     if (!equation.horizontal && !equation.vertical) {
       endPt.x = (endPt.y - equation.c) / equation.slope;
     }
@@ -588,7 +528,7 @@ function collideRayBorders(raySrc, rayDest) {
 
 function detectOtherMobs(m) {
   let nearByMobs = mobs.filter((otherMob) => {
-    if(m.id === otherMob.id){
+    if(m.type === otherMob.type){
       return false;
     }else{
       let dist = getDistance(m.pos, otherMob.pos);
