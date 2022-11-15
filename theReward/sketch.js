@@ -231,7 +231,7 @@ function moveMob(m) {
   if(m.detectMobs.length){
     if(isHunter){
       let preys = m.detectMobs.filter((x) => {
-        return x.type == "prey";
+        return x.type == "prey" && getDistance(x.pos,m.pos) < m.sightLength;
       });
       if(preys.length){
         let destPt = preys[0].pos;
@@ -252,10 +252,11 @@ function moveMob(m) {
       }
     }else{
         let hunters = m.detectMobs.filter((x) => {
-          return x.type == "hunter";
+          return x.type == "hunter" && getDistance(x.pos,m.pos) < m.sightLength;
         });
         if(hunters.length){
-          if(!m.fleeing || frameCount%6 == 1){
+          let justCheck = frameCount%6 == 1;
+          if(!m.fleeing || justCheck){
               dangerPt = hunters[0].pos;
               let dot = Math.acos(((dangerPt.x - m.pos.x) * Math.cos(m.rot) + (dangerPt.y - m.pos.y) * Math.sin(m.rot)) / getDistance(dangerPt,m.pos));
               m.lastDot = Math.floor(dot*100)/100;
@@ -263,11 +264,14 @@ function moveMob(m) {
               if(dot < HALF_PI ){
                 m.rot = (m.rot + PI + (Math.random()+0.25)) % TWO_PI;
               }
-              hunterInView = true;
-              m.fleeing = true; 
-              m.preferedPt = null;
-              m.fleeFor = Math.round(frameRate()) * 2;
-              return;
+            if(!justCheck){
+                hunterInView = true;
+                m.fleeing = true; 
+                m.preferedPt = null;
+                m.fleeFor = frameRate();
+              return;            
+            }
+
           }
         }else{
           if(m.fleeFor == 0){
@@ -286,7 +290,7 @@ function moveMob(m) {
   }else{
     m.hunting = false;
   }
-  let isPeacefullMode = !isHunter && !m.fleeing;
+  let isPeacefullMode = !m.fleeing;
   
   maxDist = m.rayDest.d;
   maxRay = m.rayDest;
