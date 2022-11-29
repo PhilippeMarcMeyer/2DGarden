@@ -17,7 +17,6 @@ let users = [];
 let worldModel = null;
 let worldOnHold = false;
 let worldLoading = false;
-let maxPlantDistance = 1600;
 let limitingCircles = [];
 let mobsList = null;
 let evolutionChance = 0.1;
@@ -37,6 +36,9 @@ app.use(express.static(__dirname));
 worldLoading = true;
 
 const worldFileName = 'tinyIsland.json';
+const fibersFile = 'fibers.json';
+
+let fibers = [];
 
 loadFile(worldFileName)
   .then(function (data) {
@@ -46,9 +48,23 @@ loadFile(worldFileName)
       worldModel = {
         ...data
       };
-      return loadFile(worldModel.plantsFile);
+      return loadFile(fibersFile)
     }
   })
+.then(function(data){
+  if (!data) {
+    console.log(data)
+    fibers = createFibers(worldModel.radius*2,35);
+    fs.writeFile(`./files/${fibersFile}`, JSON.stringify(fibers), err => {
+      if (err) {
+        console.log("Error writing fiber file:", err);
+      } 
+    });
+  } else {
+    fibers = [...data];
+  }
+  return loadFile(worldModel.plantsFile);
+})
   .then(function (plants) {
     if (plants && "error" in plants) {
       console.log(`${plants.filename} could not be loaded due to error ${plants.error}.`);
@@ -104,10 +120,15 @@ loadFile(worldFileName)
       } else {
         mobsList = [...mobs];
       }
-      setDailySequence();
+      mobsList = [];
+/*       setDailySequence();
       setMobsSequence();
-      checkMobs();
+      checkMobs(); */
     }
+  })
+  .catch((error) => {
+    console.log(error);
+
   });
 
   function setMobsSequence(){
@@ -136,34 +157,46 @@ function setDailySequence() {
 
 function loadFile(filename) {
   return new Promise(function (resolve, reject) {
-    fs.readFile(`./files/${filename}`, "utf8", (err, fileContent) => {
-      if (err) {
-        reject({
-          "filename": filename,
-          "error": err
-        });
-      } else {
-        try {
-          if (fileContent === '') {
-            resolve(null);
+    try {
+      let path = `./files/${filename}`;
+      if (fs.existsSync(path)) {
+        fs.readFile(path, "utf8", (err, fileContent) => {
+          if (err) {
+            reject({
+              "filename": filename,
+              "error": err
+            });
           } else {
-            let offset = fileContent.indexOf(endOfFileTag);
-            if (offset !== -1) {
-              fileContent = fileContent.substring(0, offset);
+            try {
+              if (fileContent === '') {
+                resolve(null);
+              } else {
+                let offset = fileContent.indexOf(endOfFileTag);
+                if (offset !== -1) {
+                  fileContent = fileContent.substring(0, offset);
+                }
+                let data = JSON.parse(fileContent);
+                resolve(data);
+              }
+            } catch (e) {
+              reject({
+                "filename": filename,
+                "error": "invalid json"
+              });
             }
-            let data = JSON.parse(fileContent);
-            resolve(data);
           }
-        } catch (e) {
-          reject({
-            "filename": filename,
-            "error": "invalid json"
-          });
-        }
+        });
       }
-    });
+    } catch(err) {
+      console.error(err);
+      reject({
+        "filename": filename,
+        "error": "file does not exists"
+      });
+    }
   });
 }
+
 
 function saveMobs(callback) {
   let mobs = null;
@@ -296,6 +329,19 @@ app.get('/mobs', function (req, res) {
     });
   }
 });
+
+app.get('/fibers', function (req, res) {
+  if (serverLoaded) {
+    if (fibers.length) {
+      res.status(200).json(fibers);
+    }
+  } else {
+    res.status(202).json({
+      "error": "Server is still loading ! Try later"
+    });
+  }
+});
+
 
 io.on('connection', (socket) => {
   let idconnected = socket.id;
@@ -1192,6 +1238,7 @@ function checkPlants() {
   let newPlants = [];
   worldModel.data.plants.forEach((x) => {
     let model;
+    x.bugs = 0;
     if (x.model) {
       model = worldModel.data.models.filter((y) => {
         return y.name === x.model;
@@ -1213,7 +1260,7 @@ function checkPlants() {
         if(x.bugs === undefined){
           x.bugs = 0;
         }
-        x.bugs = getNewBugs(x);
+        x.bugs = 0; // getNewBugs(x);
         if (Math.random() <= getSeedsChance(x.model)) {
           console.log("seeds ?")
           let parentCircle = x.parentCircle || "outSideCircles";
@@ -1582,4 +1629,44 @@ function collideLinePoly (x1, y1, x2, y2, vertices) {
   }
   // never got a hit
   return false;
+}
+
+function createFibers(numFibers,baseLength){
+  let width = worldModel.radius*2;
+  let height = worldModel.radius*2;
+
+  let result = [];
+  const twoPI = 2 * Math.PI;
+  for (let i=0; i<numFibers; i++){
+    let x1 = Math.random() * width - width/2;
+    let y1 = Math.random() * height - height/2;
+    let theta = Math.random() * twoPI;
+    let segmentLength = Math.random() * baseLength + 2;
+    let x2 = Math.cos(theta) * segmentLength + x1;
+    let y2 = Math.sin(theta) * segmentLength + y1;
+    
+    let r = Math.floor(Math.random()*75+15);
+    let g = Math.floor(Math.random()*50+15);
+    let b =  Math.floor(Math.random()*20+100);
+
+    x1 = Math.floor(x1);
+    x2 = Math.floor(x2);
+    y1 = Math.floor(y1);
+    y2 = Math.floor(y2);
+
+    let color = {r:r,g:g,b:b};
+    
+    result.push({
+    p1: {
+      x: x1,
+      y: y1
+    },
+    p2: {
+      x: x2,
+      y: y2
+    },
+      color : color
+  });
+  }
+ return result;
 }

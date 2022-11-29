@@ -15,6 +15,7 @@ const camOverPlantLimit = 32;
 let playerColors = '#4e3d28,#2f1b0c,#303030,#2f4f4f,#5a5e6b,#1d4851,#132e18,#2c0020,#172b3b'.split(',');
 let otherPlayersIndex = 0;
 let _otherPlayers = [];
+let fibers = [];
 let onLine = true;
 let lastOnline = new Date().getTime();
 const maxLastPing = 2000;
@@ -117,6 +118,12 @@ function setup() {
 			if(mobs && Array.isArray(mobs) && mobs.length > 0){
 				mobsList = [...mobs];
 				console.log(mobsList);
+			}
+			return fibersGet();
+		})
+		.then(function (fibs) {
+			if(fibs && Array.isArray(fibs) && fibs.length > 0){
+				fibers = [...fibs];
 			}
 			gameLoaded = true;
 		});
@@ -494,7 +501,6 @@ function Floor(worldModel) {
 		context.fill();
 		context.stroke();
 		context.restore(); 
-
 		self.elements.forEach((elem) => {
 			if (elem.shape === "circle") {
 /* 			    context.save();
@@ -545,6 +551,10 @@ function Floor(worldModel) {
 				context.restore();
 			}
 		});
+		if(fibers){
+			let centralPt = drawingPositionGet({x:0,y:0});
+			drawFibers(centralPt);
+		}
 	}
 
 	this.init();
@@ -1779,9 +1789,6 @@ function Plant(data) {
 					context.restore();
 				}
 			}
-			if(self.bugs){
-				console.log(self.bugs);
-			}
 			if(self.bugsList && self.bugsList.length>0){
 				context.save();
 				context.strokeStyle = "#ffaa00";
@@ -2196,6 +2203,42 @@ function Plant(data) {
 		return new Promise(function (resolve, reject) {
 			var xhr = new XMLHttpRequest();
 			xhr.open("GET", "mobs", true);
+			xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+			xhr.onload = function () {
+				if (this.status >= 200 && this.status < 300) {
+					try {
+						let data = JSON.parse(xhr.response);
+						resolve(data);
+					} catch (e) {
+						reject({ "error": "invalid json" });
+					}
+				} else {
+					reject({ "error": xhr.statusText });
+				}
+			};
+			xhr.onerror = function () {
+				reject({ "error": xhr.statusText });
+			};
+			xhr.send();
+		});
+	}
+
+	function drawFibers(center){
+		let numFibers = fibers.length;
+		strokeWeight(5);
+		context.globalAlpha = 0.2;
+		for (let i=0; i < numFibers; i++){
+		  stroke(fibers[i].color.r,fibers[i].color.g,fibers[i].color.b);
+		  line(fibers[i].p1.x+center.x,fibers[i].p1.y+center.y, fibers[i].p2.x+center.x,fibers[i].p2.y+center.y);
+		}
+		strokeWeight(1);
+		context.globalAlpha = 1;
+	  }
+	  
+	function fibersGet() {
+		return new Promise(function (resolve, reject) {
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "fibers", true);
 			xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 			xhr.onload = function () {
 				if (this.status >= 200 && this.status < 300) {

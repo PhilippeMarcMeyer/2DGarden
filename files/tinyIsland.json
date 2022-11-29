@@ -4,7 +4,7 @@
   "baseColor": "#031F8D",
   "perimeterColor": "#031F8D",
   "backgroundImage": "BG4.png",
-  "gardenDay": 6813,
+  "gardenDay": 6828,
   "plantsFile": "tinyIslandPlants.json",
   "mobsFiles": "tynyIslandMobs.json",
   "currentCenter": {
@@ -28326,7 +28326,7 @@
             "x": 0,
             "y": 0
           },
-          "currentNr": 35
+          "currentNr": 30
         },
         {
           "name": "limit-north-west",
@@ -28357,7 +28357,7 @@
             "x": -1000,
             "y": -1119
           },
-          "currentNr": 31
+          "currentNr": 32
         },
         {
           "name": "limit-north-est",
@@ -28388,7 +28388,7 @@
             "x": 1109,
             "y": -935
           },
-          "currentNr": 19
+          "currentNr": 18
         },
         {
           "name": "limit-south-west",
@@ -28450,7 +28450,7 @@
             "x": 920,
             "y": 1120
           },
-          "currentNr": 31
+          "currentNr": 33
         },
         {
           "name": "west-anthill",
